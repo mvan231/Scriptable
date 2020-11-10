@@ -3,7 +3,7 @@
 ## Scripts
 
 * [RH-Downloads.js](RH-Downloads.js) - a widget to show the total downloads for a user of RoutineHub. This will show total downloads, the recent widget update Date/Time, and the increase in downloads since the previous day (resets at 00:00). 
-
+* [RH Downloads](RH%20Downloads.js)
 <!--## Widgets
 * [xkcd-widget](xkcd-widget) - a widget to show current/random xkcd comic
 * [peanuts-widget](peanuts-widget) - a widget to show current/random Peanuts™ comic
