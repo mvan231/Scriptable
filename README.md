@@ -12,8 +12,6 @@
 
 ## First time adding a widget?
 
-First time adding a widget? 
-
 **Here is what to do:**
 * Tap and hold an empty area of the home screen until you enter the "jiggle mode"
 * Tap the plus button in the upper left
