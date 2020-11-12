@@ -1,3 +1,4 @@
+# Strava API Script / Widget
 Requirements before getting started:
 * You will need the following items from Strava's website:
      * client ID
