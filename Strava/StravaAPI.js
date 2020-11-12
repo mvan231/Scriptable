@@ -31,11 +31,39 @@ $------------>
 
 version history:
 
+v1.1
+- Incorporated updater mechanism
+
 v1.0
 - Initial Release (get activity data current commented out)
 
 $------------<
 */
+let version = "1.1"
+
+let updateCheck = new Request('https://raw.githubusercontent.com/mvan231/Scriptable/main/Strava/file.json')
+let uC = await updateCheck.loadJSON()
+log(uC)
+log(uC.version)
+let needUpdate
+if (uC.version != version){
+  needUpdate = "yes"
+ log("Server version available")
+  if (!config.runsInWidget)
+  {
+  log("running standalone")
+
+  let upd = new Alert()
+  upd.title="Server Version Available\n\nChanges:\n"+uC.notes
+  upd.addAction("OK")
+  upd.message="Press OK to get the update from GitHub"
+  await upd.present()
+  Safari.open("https://raw.githubusercontent.com/mvan231/Scriptable/main/Strava/StravaAPI.js")
+  exit()
+  } 
+}else{
+  log("up to date")
+}
 
 let wi = new ListWidget()
 
@@ -180,9 +208,16 @@ athReq.headers={
   log("athlete stats are\n"+JSON.stringify(result))
   
 let addTe
+/*
+####
+add widget title
+####
+*/
 let title = wi.addStack()
 title.addSpacer()
-let titleTex = title.addText("Strava YTD")
+
+let adl = needUpdate?" - Update Available":""
+let titleTex = title.addText("Strava YTD"+adl)
 title.addSpacer()
 titleTex.textColor = Color.dynamic(Color.red(), Color.orange())
 titleTex.font = Font.boldRoundedSystemFont(14)
