@@ -16,10 +16,14 @@ The script will gather the tokens for you and store them in your Scriptable fold
 
 ## Instructions:
 
-1. Download the script using supermamon's Import Script tool (find on [his page](https://github.com/supermamon/scriptable-scripts), or copy the raw code and paste into a new script in Scriptable. 
-1. With the above mentioned items handy, run the script from within the Scriptable app. 
+1. Download the script using supermamon's Import Script tool (find on [his page](https://github.com/supermamon/scriptable-scripts), or copy the raw code and paste into a new script in Scriptable
+1. With the above mentioned items handy, run the script from within the Scriptable app
 3. You will be presented with a dialog to enter the values and accept them
+     ![dialog](https://i.imgur.com/9lqJLhY.jpg)
 4. Next, you will be told to authorize on the next step
 5. Login to Strava and tap "Authorize"
-6. Let the script finish setup and run again to see the widget.
+     ![login and authorize](https://i.imgur.com/kuGBpeB.jpg)
+5. Copy the resultant URL to clipboard and return to Scriptable
+     ![copy url](https://i.imgur.com/o2N704i.jpg)
+6. Let the script finish setup and run again to see the widget
 7. To add the widget to Home Screen, find the instructions [here](https://github.com/mvan231/Scriptable#first-time-adding-a-widget)
