@@ -5,6 +5,8 @@ Requirements before getting started:
      * client secret
      * athlete ID 
 
+[Strava Developer Portal - Getting Started Guide](https://developers.strava.com/docs/getting-started/)
+
 The athlete ID can be grabbed from the strava website URL. For info: 
 https://support.strava.com/hc/en-us/articles/216928797-Where-do-i-find-my-Strava-ID-?mobile_site=true
 
