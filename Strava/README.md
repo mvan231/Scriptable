@@ -28,6 +28,7 @@ The script will gather the tokens for you and store them in your Scriptable fold
 6. Let the script finish setup and run again to see the widget
 7. To add the widget to Home Screen, find the instructions [here](https://github.com/mvan231/Scriptable#first-time-adding-a-widget)
 
+This widget works best if set to medium size as shown below.
 
 Examples of the widget:
 ![example](https://i.imgur.com/iViNi9X.jpg)
