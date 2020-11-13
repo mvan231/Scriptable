@@ -37,5 +37,6 @@ The script will gather the tokens for you and store them in your Scriptable fold
 
 This widget works best if set to medium size as shown below.
 
+**Note:** This widget only displays totals that are marked as visible to everyone. Private items will come in a future update. 
 Examples of the widget:
 ![example](https://i.imgur.com/iViNi9X.jpg)
