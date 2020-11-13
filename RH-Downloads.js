@@ -5,7 +5,7 @@
 
 RH-Downloads by mvan231
 
-v1.2 - Tweak to chdcking if the file contains the index key\n- Add in updater mechanism\n- Fix issue with multiple urls being used and the delta from day to day not being reset for all urls
+v1.2 - Tweak to checking if the file contains the index key\n- Add in updater mechanism\n- Fix issue with multiple urls being used and the delta from day to day not being reset for all urls
 
 v1.1 Add support for checking multiple links and cycle through them with each refresh of the widget 
 
