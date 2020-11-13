@@ -1,11 +1,56 @@
+// Variables used by Scriptable.
+// These must be at the very top of the file. Do not edit.
+// icon-color: orange; icon-glyph: magic;
 /*
 
 RH-Downloads by mvan231
+
+v1.2 - Tweak to chdcking if the file contains the index key\n- Add in updater mechanism\n- Fix issue with multiple urls being used and the delta from day to day not being reset for all urls
 
 v1.1 Add support for checking multiple links and cycle through them with each refresh of the widget 
 
 v1.0 Initial Release
 
+*/
+
+
+let version = "1.2"
+
+/*
+#####
+Update Check
+#####
+*/
+let updateCheck = new Request('https://raw.githubusercontent.com/mvan231/Scriptable/main/RH-D.json')
+let uC = await updateCheck.loadJSON()
+log(uC)
+log(uC.version)
+let needUpdate
+if (uC.version != version){
+  needUpdate = "yes"
+ log("Server version available")
+  if (!config.runsInWidget)
+  {
+  log("running standalone")
+
+  let upd = new Alert()
+  upd.title="Server Version Available"
+  upd.addAction("OK")
+  upd.addDestructiveAction("Later")
+  upd.add
+  upd.message="Changes:\n"+uC.notes+"\n\nPress OK to get the update from GitHub"
+    if (await upd.present()==0){
+    Safari.open("https://raw.githubusercontent.com/mvan231/Scriptable/main/RH-Downloads.js")
+    throw new Error("Update Time!")
+    }
+  } 
+}else{
+  log("up to date")
+}
+/*
+#####
+End Update Check
+#####
 */
 
 /*
@@ -51,11 +96,8 @@ if (!ab.fileExists(path))
   log("index is "+file.index)
 
 // if file doesn't contain the index key:value
-if (!file.index && (!String(file.index).length))file.index = -1 
-//if (file.hasOwnProperty('index'))file.index = -1
-
-/*if (!file.weekDelta)
-*/
+// if (!file.index && (!String(file.index).length))file.index = -1 
+if (!file.hasOwnProperty('index'))file.index = -1
 
 /*
 #####
@@ -68,7 +110,6 @@ if (!file.index && (!String(file.index).length))file.index = -1
    Grab HTML and Parse
 #####
 */
-log("index is "+file.index)
 
 log(url.length)
 file.index += 1
@@ -84,7 +125,6 @@ log(url)
 var name
 //initialize the regex variable
 var reg
-
 
 await wv.loadURL(url)
 
@@ -109,6 +149,11 @@ if (url.includes("user"))
 }
 log(name)
 
+/*
+#####
+get number of downloads
+#####
+*/
 reg = /\<p\>Downloads\: (\d+)\<\/p>/
 var str
 var lastUpd
@@ -118,20 +163,23 @@ if (reg.exec(html))
   str = html.match(reg)[1]
   log(str)
   }else{
-    window.stop();
+    throw new Error("Cannot match on the site");
   }
 
-log(file[name])
+/*
+#####
+if file[name] does not exist, create it
+#####
+*/
 
 if (!file[name])
 {
 file[name] = {
   downloads:str,
-  dayDelta:0
+  dayDelta:0,
+  date:now.getDate()
   }
 }else{
-  //temp.dayDelta=file[name].dayDelta
-  //temp.downloads=file[name].downloads
 }
 /*
 #####
@@ -140,13 +188,17 @@ file[name] = {
 */
 var diff
 
-if (file.date != now.getDate())
+if (!file.hasOwnProperty([name].date))file[name].date = now.getDate()
+
+log(file[name].date)
+
+if (file[name].date != now.getDate())
   {
     file[name].dayDelta = 0
   }
     
   // calculate difference between new RH count, file download count and the previous delta value. this shows the change in downloads throughout the current day
-  diff = (str - file[name].downloads) + file[name].dayDelta
+    diff = (str - file[name].downloads) + file[name].dayDelta
 
 /*
 #####
@@ -155,16 +207,12 @@ if (file.date != now.getDate())
 */
 
 //   assign dictionary items new Values
-/*temp.dayDelta = diff
-temp.downloads = str*/
 
-file.date = now.getDate()
-//file[name] = temp
 file[name] = {
   dayDelta:diff,
-  downloads:str
+  downloads:str,
+  date:now.getDate()
 }
-
 // save file with updates
 ab.writeString(path, JSON.stringify(file))
 
@@ -177,7 +225,8 @@ ab.writeString(path, JSON.stringify(file))
   const w = new ListWidget()
   w.setPadding(14, 5, 14, 5)
   
-  const main = w.addText("RH Downloads")
+  var upText = needUpdate?"\nUpdate Available":""
+  const main = w.addText("RH Downloads"+upText)
   main.textColor = Color.gray()
   main.centerAlignText()
 
