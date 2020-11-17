@@ -5,6 +5,9 @@
 
 RH-Downloads by mvan231
 
+v1.3 - Tweaks to widget styling
+- Fixed a bug with the date check not working properly
+
 v1.2 - Tweak to checking if the file contains the index key\n- Add in updater mechanism\n- Fix issue with multiple urls being used and the delta from day to day not being reset for all urls
 
 v1.1 Add support for checking multiple links and cycle through them with each refresh of the widget 
@@ -14,7 +17,8 @@ v1.0 Initial Release
 */
 
 
-let version = "1.2"
+let version = "1.3"
+
 
 /*
 #####
@@ -85,14 +89,14 @@ if (!ab.fileExists(path))
 {
   //if file does not exist
   file={}
-  file.date = now.getDate()
+//   file.date = now.getDate()
   file.index = -1
   ab.write(path, Data.fromString(JSON.stringify(file)))
   ab.writeString(path, JSON.stringify(file))
 }
   //parse the existing file or the newly created file
   file = JSON.parse(ab.readString(path))
-  log(file.date)
+//   log(file.date)
   log("index is "+file.index)
 
 // if file doesn't contain the index key:value
@@ -188,9 +192,12 @@ file[name] = {
 */
 var diff
 
-if (!file.hasOwnProperty([name].date))file[name].date = now.getDate()
+if (!file[name].date)
+  {
+    log("[name].date doesnt exist???")
+file[name].date = now.getDate()
+}
 
-log(file[name].date)
 
 if (file[name].date != now.getDate())
   {
@@ -233,7 +240,8 @@ ab.writeString(path, JSON.stringify(file))
   if (name)
   {
     const nameText = w.addText(name)
-    nameText.textColor=Color.gray()
+    nameText.textColor=Color.dynamic(Color.brown(), Color.lightGray())
+    nameText.font=Font.lightRoundedSystemFont(13)
     nameText.centerAlignText()
   }
 
