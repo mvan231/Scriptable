@@ -8,8 +8,8 @@
 * [Strava Widget](Strava) - widget to give you your year-to-date stats from Strava's API
 
 * [MEE6 Leaderboard Widget](MEE6%20LeaderBoard%20Info.js) - This widget will show you the current stats for a given user according to the MEE6 leaderboard for that server. 
-    * Input arguments in the widget are required as "serverId|userName" e.g. 491379054331559936|mvan231
     ![example](https://i.imgur.com/xzqEoue.jpg)
+
 ## Scripts
 
 * [ScriptBackup.js](ScriptBackup.js) - This script will backup all of your current scripts into the iCloud Drive Scriptable directory underneath the folder "ScriptBackup" and then under "yyyy_MM_dd" folder that is created when it runs.
