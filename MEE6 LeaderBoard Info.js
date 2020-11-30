@@ -73,7 +73,7 @@ log(url)
 Update Check
 #####
 */
-let version = "1.2"
+let version = "1.3"
 
 let updateCheck = new Request('https://raw.githubusercontent.com/mvan231/Scriptable/main/MEE6.json')
 let uC = await updateCheck.loadJSON()
@@ -94,7 +94,7 @@ if (uC.version != version){
   upd.add
   upd.message="Changes:\n"+uC.notes+"\n\nPress OK to get the update from GitHub"
     if (await upd.present()==0){
-    Safari.open("https://raw.githubusercontent.com/mvan231/Scriptable/main/MEE6%20Leaderboard%20Info.js")
+    Safari.open("https://raw.githubusercontent.com/mvan231/Scriptable/main/MEE6%20LeaderBoard%20Info.js")
     throw new Error("Update Time!")
     }
   } 
