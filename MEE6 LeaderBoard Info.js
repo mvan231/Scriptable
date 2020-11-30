@@ -47,7 +47,7 @@ if (imgBack && !fm.fileExists(dir+"/MEE6back"))
     }
 if (imgBack && fm.fileExists(dir+"/MEE6back.jpg"))
 {
-  fm.readImage(dir+"/MEE6back.jpg")
+  img = fm.readImage(dir+"/MEE6back.jpg")
 }
   
 b = fm.readString(path)
@@ -73,7 +73,7 @@ log(url)
 Update Check
 #####
 */
-let version = "1.0"
+let version = "1.1"
 
 let updateCheck = new Request('https://raw.githubusercontent.com/mvan231/Scriptable/main/MEE6.json')
 let uC = await updateCheck.loadJSON()
