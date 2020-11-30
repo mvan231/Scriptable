@@ -13,7 +13,7 @@ let url =['491379054331559936','760937324711641108']
 /*---------------------
 image background, set to true to use an image as the background of the widget
 ---------------------*/
-const imgBack = false
+const imgBack = true
 let img
 /*---------------------
 start setup
@@ -40,10 +40,10 @@ if(!fm.fileExists(path)){
   fm.writeString(path, tDict)
 }
 
-if (imgBack && !fm.fileExists(dir+"/MEE6back"))
+if (imgBack && !fm.fileExists(dir+"/MEE6back.jpg"))
     {
       img = await Photos.fromLibrary()
-      fm.writeImage(dir+"/MEE6back", img)
+      fm.writeImage(dir+"/MEE6back.jpg", img)
     }
 if (imgBack && fm.fileExists(dir+"/MEE6back.jpg"))
 {
@@ -73,7 +73,7 @@ log(url)
 Update Check
 #####
 */
-let version = "1.1"
+let version = "1.2"
 
 let updateCheck = new Request('https://raw.githubusercontent.com/mvan231/Scriptable/main/MEE6.json')
 let uC = await updateCheck.loadJSON()
