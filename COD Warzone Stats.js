@@ -2,7 +2,7 @@
 // These must be at the very top of the file. Do not edit.
 // icon-color: green; icon-glyph: magic;
 let param = args.widgetParameter
-param = "dutchvan231"
+// param = "dutchvan231"
 if (!param)throw new Error("please set a username in widget parameter")
 
 param=encodeURI(param)
