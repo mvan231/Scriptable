@@ -2,7 +2,7 @@
 // These must be at the very top of the file. Do not edit.
 // icon-color: green; icon-glyph: magic;
 let param = args.widgetParameter
-//param = "yourUsername"
+param = "dutchvan231"
 if (!param)throw new Error("please set a username in widget parameter")
 
 param=encodeURI(param)
@@ -13,7 +13,7 @@ param=encodeURI(param)
 Update Check
 #####
 */
-let version = "1.3"
+let version = "1.0"
 
 let updateCheck = new Request('https://raw.githubusercontent.com/mvan231/Scriptable/main/COD%20Warzone%20Stats.json')
 let uC = await updateCheck.loadJSON()
