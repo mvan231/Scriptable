@@ -10,6 +10,8 @@
 * [MEE6 Leaderboard Widget](MEE6%20LeaderBoard%20Info.js) - This widget will show you the current stats for a given user according to the MEE6 leaderboard for that server. 
     ![example](https://i.imgur.com/xzqEoue.jpg)
 
+* [COD Warzone Stats Widget](COD%20Warzone%20Stats.js) - Setting your PSN username as the widget parameter will show you the user stats for COD Warzone. This can be adjusted for other COD games as well.
+    ![example](https://i.imgur.com/52X0MaC.jpg)
 ## Scripts
 
 * [ScriptBackup.js](ScriptBackup.js) - This script will backup all of your current scripts into the iCloud Drive Scriptable directory underneath the folder "ScriptBackup" and then under "yyyy_MM_dd" folder that is created when it runs.
