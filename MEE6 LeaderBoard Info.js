@@ -13,8 +13,17 @@ let url =['491379054331559936','760937324711641108']
 /*---------------------
 image background, set to true to use an image as the background of the widget
 ---------------------*/
-const imgBack = true
+const imgBack = false
 let img
+/*---------------------
+font color setup
+
+below colors are in this order for light/dark mode (lightColor, darkColor)
+---------------------*/
+
+let titleCol = Color.dynamic(Color.blue(),Color.red())
+let bodyCol = Color.dynamic(Color.darkGray(), Color.lightGray())
+
 /*---------------------
 start setup
 ---------------------*/
@@ -73,7 +82,7 @@ log(url)
 Update Check
 #####
 */
-let version = "1.3"
+let version = "1.4"
 
 let updateCheck = new Request('https://raw.githubusercontent.com/mvan231/Scriptable/main/MEE6.json')
 let uC = await updateCheck.loadJSON()
@@ -140,7 +149,7 @@ level=level.toString()
 count =count.toString()
 var upText = needUpdate?"\nUpdate Available":""
 let title = w.addText(json.guild.name + upText)
-title.textColor=Color.blue()
+title.textColor=titleCol //Color.blue()
 title.font=Font.boldRoundedSystemFont(18)
 if (justify=="center")title.centerAlignText()
 if (justify=="right")title.rightAlignText()
@@ -161,6 +170,7 @@ start function section
 function fonter(text,size){
   let a = w.addText(text)
   a.font=Font.lightRoundedSystemFont(size)
+  a.textColor = bodyCol
   if (justify=="center")a.centerAlignText()
   if (justify=="right")a.rightAlignText()
 }
