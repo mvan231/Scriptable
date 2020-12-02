@@ -1,2 +1,2 @@
 
-{"version":"1.4","notes":"- Added color customization into the header of the script. These are dynamic based on light/dark mode"}
+{"version":"1.5","notes":"- Added avatar to widget display\n- Avatar cache to iCloud Drive folder\n-Progress bar displaying progress until next level\n-Medium Widget size now supported better than previous version"}
