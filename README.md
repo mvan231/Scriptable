@@ -8,6 +8,7 @@
 * [Strava Widget](Strava) - widget to give you your year-to-date stats from Strava's API
 
 * [MEE6 Leaderboard Widget](MEE6%20LeaderBoard%20Info.js) - This widget will show you the current stats for a given user according to the MEE6 leaderboard for that server. 
+
     ![example](https://i.imgur.com/xzqEoue.jpg)
 
 * [COD Warzone Stats Widget](COD%20Warzone%20Stats.js) - Setting your PSN username as the widget parameter will show you the user stats for COD Warzone. This can be adjusted for other COD games as well.
