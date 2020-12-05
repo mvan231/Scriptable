@@ -22,6 +22,10 @@
 
 * [ScriptBackup.js](ScriptBackup.js) - This script will backup all of your current scripts into the iCloud Drive Scriptable directory underneath the folder "ScriptBackup" and then under "yyyy_MM_dd" folder that is created when it runs.
 
+## Utilites (from others)
+---
+* [no-background from supermamon](https://github.com/supermamon/scriptable-no-background) - a module to simulate transparent background for widgets. Includes examples.
+* [openweathermap from supermamon](https://github.com/supermamon/scriptable-scripts/tree/master/openweathermap) - A module to encapsulate OpenWeatherMap's [One Call API](https://openweathermap.org/api/one-call-api) and more
 
 ## First time adding a widget?
 
