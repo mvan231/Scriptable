@@ -18,6 +18,9 @@
 
 * [COD Warzone Stats Widget](COD%20Warzone%20Stats.js) - Setting your PSN username as the widget parameter will show you the user stats for COD Warzone. This can be adjusted for other COD games as well.
     ![example](https://i.imgur.com/52X0MaC.jpg)
+
+* [Transparent StockChange Widget](Transparent%20StockChange.js) - Credit for the original code base for this widget goes to [Murdo](https://github.com/CaptainMurdo/Scriptable/blob/master/StockPrice.js). I helped him to modify it to have dynamic column creation for adding more stocks in. I have also just made an update for this so it can have a transparent background using no-background.js from Supermamon. 
+
 ## Scripts
 
 * [ScriptBackup.js](ScriptBackup.js) - This script will backup all of your current scripts into the iCloud Drive Scriptable directory underneath the folder "ScriptBackup" and then under the date formatted "yyyy_MM_dd" folder that is created when it runs.
