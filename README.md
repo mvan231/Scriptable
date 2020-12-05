@@ -14,13 +14,13 @@
     As of v1.5, we now have avatar display and progress to next level. Avatar image is cached so no need to download it each time the widget refreshes.
     ![new v1.5](https://i.imgur.com/88TIBs3.jpg)
     
-    Big thanks to [juniorchen](https://github.com/Juniorchen2012/scriptable) for the progress bar portion of the code. You can check the progress widget out [here](https://github.com/Juniorchen2012/scriptable/blob/master/progress.js)
+    Big thanks to [juniorchen](https://github.com/Juniorchen2012/scriptable) for the base of the progress bar portion of the code. You can check the progress widget out [here](https://github.com/Juniorchen2012/scriptable/blob/master/progress.js)
 
 * [COD Warzone Stats Widget](COD%20Warzone%20Stats.js) - Setting your PSN username as the widget parameter will show you the user stats for COD Warzone. This can be adjusted for other COD games as well.
     ![example](https://i.imgur.com/52X0MaC.jpg)
 ## Scripts
 
-* [ScriptBackup.js](ScriptBackup.js) - This script will backup all of your current scripts into the iCloud Drive Scriptable directory underneath the folder "ScriptBackup" and then under "yyyy_MM_dd" folder that is created when it runs.
+* [ScriptBackup.js](ScriptBackup.js) - This script will backup all of your current scripts into the iCloud Drive Scriptable directory underneath the folder "ScriptBackup" and then under the date formatted "yyyy_MM_dd" folder that is created when it runs.
 
 ## Utilites (from others)
 ---
