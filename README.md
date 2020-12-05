@@ -20,6 +20,7 @@
     ![example](https://i.imgur.com/52X0MaC.jpg)
 
 * [Transparent StockChange Widget](Transparent%20StockChange.js) - Credit for the original code base for this widget goes to [Murdo](https://github.com/CaptainMurdo/Scriptable/blob/master/StockPrice.js). I helped him to modify it to have dynamic column creation for adding more stocks in. I have also just made an update for this so it can have a transparent background using no-background.js from Supermamon. 
+    ![example](https://i.imgur.com/4QxTrw8.jpg)
 
 ## Scripts
 
