@@ -12,6 +12,7 @@
     ![example](https://i.imgur.com/xzqEoue.jpg)
 
     As of v1.5, we now have avatar display and progress to next level. Avatar image is cached so no need to download it each time the widget refreshes.
+    
     ![new v1.5](https://i.imgur.com/88TIBs3.jpg)
     
     Big thanks to [juniorchen](https://github.com/Juniorchen2012/scriptable) for the base of the progress bar portion of the code. You can check the progress widget out [here](https://github.com/Juniorchen2012/scriptable/blob/master/progress.js)
