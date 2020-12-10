@@ -22,6 +22,9 @@
 
 * [Transparent StockChange Widget](Transparent%20StockChange.js) - Credit for the original code base for this widget goes to [Murdo](https://github.com/CaptainMurdo/Scriptable/blob/master/StockPrice.js). I helped him to modify it to have dynamic column creation for adding more stocks in. I have also just made an update for this so it can have a transparent background using no-background.js from Supermamon. 
     ![example](https://i.imgur.com/4QxTrw8.jpg)
+    
+* [Upcoming Calendar Events Widget](Upcoming%20Calendar%20Widget.js) - This widget was made as a request from some users on r/Scriptable. It's just a simple calendar display showing your upcoming events in a medium widget format.
+    ![example1](https://i.imgur.com/B5N98lW.jpg) ![example2](https://i.imgur.com/rCgF54y.jpg)
 
 ## Scripts
 
