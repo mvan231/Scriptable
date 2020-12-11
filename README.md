@@ -25,6 +25,9 @@
     
 * [Upcoming Calendar Events Widget](Upcoming%20Calendar%20Widget.js) - This widget was made as a request from some users on r/Scriptable. It's just a simple calendar display showing your upcoming events in a medium widget format.
     ![example1](https://i.imgur.com/B5N98lW.jpg) ![example2](https://i.imgur.com/rCgF54y.jpg)
+
+    * Now has support for small widget size too!
+    ![small example](https://i.imgur.com/2s1lN6f.jpg) ![small example2](https://i.imgur.com/MRoqurH.jpg)
     
 * [Twitter Feed Widget](Twitter%20Feed%20Widget.js) - This widget can display tweets from public profiles on your home screen and shows them to you in chronological order as well as how long ago (or on what date) the tweet was posted. This can be configured as a medium or large size widget for your own preference. Simply set the username you'd like to "follow" in the widget parameter, and you'll be all set.
     ![twitter setup](https://i.imgur.com/7YGqOga.jpg)
