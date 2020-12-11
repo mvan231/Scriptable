@@ -4,10 +4,8 @@
 /*
 ####################
 ####################
-
 begin configuration
 (user definable)
-
 ####################
 ####################
 */
@@ -17,26 +15,29 @@ const eventsToShow = 10
 /*
 ####################
 ####################
-
 begin building widget
 and start of script
-
 ####################
 ####################
 */
-
-
+let widgSizeSmall=false
+if(config.widgetFamily=='small')widgSizeSmall=true
 let w = new ListWidget()
 var ind=0
+w.setPadding(5,20,5,5)
 let main = w.addStack()
-let left = main.addStack()
-left.size=new Size(140, 135)
-main.addSpacer(1)
-let right = main.addStack()
-right.size=new Size(140, 135)
+main.addSpacer()
+let right,left = main.addStack()
+left.size=new Size(170, 135)
+if (!widgSizeSmall){
+main.addSpacer(0)
+right = main.addStack()
+right.size=new Size(170, 135)
+right.layoutVertically()
+}
 main.layoutHorizontally()
 left.layoutVertically()
-right.layoutVertically()
+
 let dF = new DateFormatter()
 await CalendarEvent.thisWeek().then(successCallback, failureCallback)
 Script.setWidget(w)
@@ -98,17 +99,24 @@ function f(item){
     ind+=1
     log(ind)
     let s
+    let h = widgSizeSmall?5:eventsToShow/2
+log(h)
     if (ind <=eventsToShow){
-      if (ind <=eventsToShow/2)
+      if (ind <= eventsToShow/2)
       {
         s = left.addStack()
-      }else if (ind >eventsToShow/2)
+        addIt()
+      }else if ((ind >eventsToShow/2) && !widgSizeSmall)
         {
           s=right.addStack()
+          addIt()
         }
+        
+      function addIt(){
+          
         let dot = getColorDot(item.calendar.color.hex)
         s.setPadding(5,5,5,5)
-        s.size= new Size(140, 27)
+        s.size= new Size(150, 27)
         let s1 = s.addStack()
         let imStack = s1.addStack()
         imStack.setPadding(2,0,2,0)
@@ -146,6 +154,7 @@ function f(item){
         log('diff is '+diff)
         s.url="calshow:"+diff
         s.layoutVertically()
+      }
     }
   }
 }
