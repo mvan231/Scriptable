@@ -2,7 +2,7 @@
 
 ## Widgets
 
-* [RH-Downloads.js](RH-Downloads.js) - a widget to show the total downloads for a user of RoutineHub. This will show total downloads, the recent widget update Date/Time, and the increase in downloads since the previous day (resets at 00:00).
+* [RH-Downloads.js](RH-Downloads.js) - a widget to show the total downloads for a user of RoutineHub or a given shortcut hosted on RoutineHub. This will show total downloads, the recent widget update Date/Time, and the increase in downloads since the previous day (resets at 00:00).
     * If you see a text in the widget saying "Update Available", please run the script from within Scriptable to get the update.  
 
 * [Strava Widget](Strava) - widget to give you your year-to-date stats from Strava's API
