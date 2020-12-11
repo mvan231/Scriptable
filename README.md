@@ -44,7 +44,7 @@
 ---
 * [no-background from supermamon](https://github.com/supermamon/scriptable-no-background) - a module to simulate transparent background for widgets. Includes examples.
 * [openweathermap from supermamon](https://github.com/supermamon/scriptable-scripts/tree/master/openweathermap) - A module to encapsulate OpenWeatherMap's [One Call API](https://openweathermap.org/api/one-call-api) and more
-
+* [import-script.js from supermamon](https://github.com/supermamon/scriptable-scripts/tree/master/Import-Script) - A helpful script for importing scripts to scriptable from various different sites
 ## First time adding a widget?
 
 **Here is what to do:**
