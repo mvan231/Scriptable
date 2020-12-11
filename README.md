@@ -38,6 +38,7 @@
 ## Scripts
 
 * [ScriptBackup.js](ScriptBackup.js) - This script will backup all of your current scripts into the iCloud Drive Scriptable directory underneath the folder "ScriptBackup" and then under the date formatted "yyyy_MM_dd" folder that is created when it runs.
+* [Remove Scheduled Notifications.js](Remove%20Scheduled%20Notifications.js) - See how many pending notifications you have in the Scriptable app and choose from them to remove them, or alternatively, remove them all with one button.
 
 ## Utilites (from others)
 ---
