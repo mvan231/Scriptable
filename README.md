@@ -30,6 +30,26 @@
     ![small example](https://i.imgur.com/2s1lN6f.jpg) ![small example2](https://i.imgur.com/MRoqurH.jpg)
     
 * [Twitter Widget](Twitter%20Widget.js) - This widget can display tweets from public profiles on your home screen and shows them to you in chronological order as well as how long ago (or on what date) the tweet was posted. This can be configured as a medium or large size widget for your own preference. Simply set the username you'd like to "follow" in the widget parameter, and you'll be all set.
+    * Customization options have been added as of version 1.1
+    ![customization](https://i.imgur.com/8YpoQmJ.jpg)
+        * rtsOn setting can be changed below to display retweets along with normal tweets. 
+           * false = do not display retweets
+           * true = display retweets with tweets
+        * postFontSize setting can be modified to have larger or smaller font in the widget as you desire.
+           * 9 is the default
+        * postFontColor setting can be modified as you wish. This will change the text color of the tweets shown. Default is set to be dynamic.
+           * default = Color.dynamic(Color.black(), Color.white())
+        * twitterIcon setting will change the display of the Twitter icon in the widget. 
+           * false = off
+           * true = on
+        * clockIcon setting will change the display of the clock symbol in the widget. 
+           * false = off
+           * true = on
+        * widgAccentColor setting can be modified to your liking. This controls the widget title color, time since  last refresh, and icon colors (if chosen to display them)
+        * checkUpdates setting is to allow or deny uodate checking function. If an update is available, you will be shown 'Update Available' in the widget title instead of the username entered as the widget parameter. 
+           * false = do not check for updates
+           * true = check for updates
+    
     ![twitter setup](https://i.imgur.com/7YGqOga.jpg)
     
     ![example](https://i.imgur.com/pWPL10j.jpg) ![example2](https://i.imgur.com/Vsqwoyz.jpg)
