@@ -1,31 +1,78 @@
 // Variables used by Scriptable.
 // These must be at the very top of the file. Do not edit.
 // icon-color: blue; icon-glyph: dove;
-// Variables used by Scriptable.
-// These must be at the very top of the file. Do not edit.
-// icon-color: deep-gray; icon-glyph: magic;
-// Variables used by Scriptable.
-// These must be at the very top of the file. Do not edit.
-// icon-color: blue; icon-glyph: dove;
-
 /*
 <><><><><><><><><><><>
-rtsOn set to true will display retweets along with normal tweets. set to false, it will not display retweets￼
+<><><><><><><><><><><>
+
+Start Settings Info
+
+<><><><><><><><><><><>
+<><><><><><><><><><><>
+
+• rtsOn setting below can be changed below to display retweets along with normal tweets. 
+    • false = do not display retweets
+    • true = display retweets with tweets
+
+• postFontSize setting below can be modified to have larger or smaller font as you desire in the widget.
+    • 9 is the default
+    
+• postFontColor setting below can be modified as you wish. This will change the text color of the tweets shown. Default is set to be dynamic.
+    
+    default = 
+    Color.dynamic(Color.black(), Color.white())
+
+• twitterIcon setting below will change the display of the Twitter icon in the widget
+    • false = off
+    • true = on
+    
+• clockIcon setting below will change the display of the clock symbol in the widget
+    • false = off
+    • true = on
+    
+• widgAccentColor setting below can be modified to your liking. this controls the widget title color, time since  last refresh, and icon colors (if chosen to display them)
+
+• checkUpdates setting below is to allow or deny uodate checking function. if an update is available, you will be shown 'Update Available' in the widget title instead of the username entered as the widget parameter
+    • false = do not check for updates
+    • true = check for updates
+<><><><><><><><><><><>
+<><><><><><><><><><><>
+
+End Settings Info
+
+<><><><><><><><><><><>
+<><><><><><><><><><><>
+
+<><><><><><><><><><><>
+<><><><><><><><><><><>
+
+Start Settings
+
+<><><><><><><><><><><>
 <><><><><><><><><><><>
 */
 const rtsOn = true
+const postFontSize = 9
+const postFontColor = Color.dynamic(Color.black(), Color.white())
+const twitterIcon = true
+const clockIcon = true
+const widgAccentColor = Color.blue()
+const checkUpdates = true
 /*
+<><><><><><><><><><><>
+<><><><><><><><><><><>
+
+End Settings
+
 <><><><><><><><><><><>
 <><><><><><><><><><><>
 */
 
-const twColor = new Color('#02ABED')
+// run the updateCheck() function to see if there are any updates available for the script 
+let needUpdate = checkUpdates?await updateCheck(1.1):false
 const twImgB64 = twit()
-
 let w = new ListWidget()
-
 let url,numT,wSize = config.widgetFamily
-// log(wSize)
 switch(wSize){
   case 'medium':
   case 'small':
@@ -38,13 +85,11 @@ switch(wSize){
     numT = 5;
     break
 }
-// log(numT)
 if (args.widgetParameter){
   url = args.widgetParameter
 }else{
   url = 'scriptableapp'//'ps5uknews'
 }
-
 let json = await apiCall(url)
 log(json)
 const titleTxt = json[0].user.name
@@ -53,9 +98,11 @@ let tStack = tMain.addStack()
 tMain.addSpacer(1)
 let timeStack = tMain.addStack()
 tMain.layoutVertically()
-
 tStack.addSpacer()
-let title = tStack.addText(titleTxt+' Tweets')
+let title = tStack.addText(needUpdate?'Update Available':titleTxt+' Tweets')
+title.centerAlignText()
+title.font=Font.boldMonospacedSystemFont(15)
+title.textColor=widgAccentColor
 tStack.addSpacer()
 let timeSpacer
   if (wSize=='small'){
@@ -65,22 +112,17 @@ let timeSpacer
   }
 timeStack.addSpacer(timeSpacer)
 let dt = timeStack.addDate(new Date())
-timeStack.addSpacer()
 dt.applyRelativeStyle()
 dt.font=Font.boldMonospacedSystemFont(8)
-dt.textColor=Color.blue()
-title.centerAlignText()
-title.font=Font.boldMonospacedSystemFont(15)
-title.textColor=Color.blue()
-
+dt.textColor=widgAccentColor
+timeStack.addSpacer()
 let lineImg = lineSep()
-
 json.forEach(f)
-
 w.setPadding(10,10,10,10)
 Script.setWidget(w)
 Script.complete()
 w.presentLarge()
+
 
 
 /*
@@ -151,19 +193,19 @@ function dateDelt(dateString){
 }
     
 function lineSep(){
-//generate line separator
-const context =new DrawContext()
-let width = 340,h=1
-context.size=new Size(width, h)
-context.opaque=false
-context.respectScreenScale=true
-const path = new Path()
-path.move(new Point(1,h))
-path.addLine(new Point(width,h))
-context.addPath(path)
-context.setStrokeColor(Color.blue())
-context.strokePath()
-return context.getImage()
+  //generate line separator
+  const context =new DrawContext()
+  let width = 340,h=1
+  context.size=new Size(width, h)
+  context.opaque=false
+  context.respectScreenScale=true
+  const path = new Path()
+  path.move(new Point(1,h))
+  path.addLine(new Point(width,h))
+  context.addPath(path)
+  context.setStrokeColor(Color.blue())
+  context.strokePath()
+  return context.getImage()
 }
 
 function f(item,index){
@@ -181,22 +223,27 @@ function f(item,index){
     line.imageOpacity=.4
     let tx2 = tx.addStack()
     let tx1 = tx.addStack()
-    let twImg = tx1.addImage(Image.fromData(Data.fromBase64String(twImgB64)))
-    twImg.tintColor=Color.blue()
+    if(twitterIcon){
+      let twImg = tx1.addImage(Image.fromData(Data.fromBase64String(twImgB64)))
+      twImg.tintColor=widgAccentColor
+    }
     let symbol = SFSymbol.named("clock.fill")
     symbol.applyMediumWeight()
     let font = Font.systemFont(10)
     symbol.applyFont(font)
-    let image = tx1.addImage(symbol.image)
-    image.resizable=false
-    image.tintColor = Color.blue()
+    if (clockIcon){
+      let image = tx1.addImage(symbol.image)
+      image.resizable=false
+      image.tintColor = widgAccentColor
+    }
     w.addSpacer(1)
     log(out.created_at)
     let dt = tx1.addText(dateDelt(out.created_at))
-    dt.font=Font.systemFont(9)
+    dt.font=Font.systemFont(postFontSize)
     log(out.text)
     let txt = tx2.addText(out.text)
-    txt.font=Font.systemFont(9)
+    txt.font=Font.systemFont(postFontSize)
+    txt.textColor=postFontColor
     tx1.setPadding(2,5,2,5)
     tx2.setPadding(2,5,2,5)
     tx.setPadding(10,2,10,2)
@@ -209,6 +256,45 @@ function f(item,index){
   }
 }
 
+async function updateCheck(version){
+  /*
+  #####
+  Update Check
+  #####
+  */  
+  let updateCheck = new Request('https://raw.githubusercontent.com/mvan231/Scriptable/main/Twitter%20Widget.json')
+  let uC = await updateCheck.loadJSON()
+  log(uC)
+  log(uC.version)
+  let needUpdate=false
+  if (uC.version != version){
+    needUpdate = true
+    log("Server version available")
+    if (!config.runsInWidget)
+    {
+    log("running standalone")
+    let upd = new Alert()
+    upd.title="Server Version Available"
+    upd.addAction("OK")
+    upd.addDestructiveAction("Later")
+    upd.add
+    upd.message="Changes:\n"+uC.notes+"\n\nPress OK to get the update from GitHub"
+      if (await upd.present()==0){
+      Safari.open("https://raw.githubusercontent.com/mvan231/Scriptable/main/Twitter%20Widget.js")
+      throw new Error("Update Time!")
+      }
+    } 
+  }else{
+    log("up to date")
+  }
+  
+  return needUpdate
+/*
+#####
+End Update Check
+#####g
+*/
+}
 
 function twit(){
   //twitter image base64
