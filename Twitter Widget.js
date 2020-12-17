@@ -30,11 +30,28 @@ Start Settings Info
     • false = off
     • true = on
     
-• widgAccentColor setting below can be modified to your liking. this controls the widget title color, time since  last refresh, and icon colors (if chosen to display them)
+• widgAccentColor setting below can be modified to your liking. this controls the widget title color, time since  last refresh, line separator color, and icon colors (if chosen to display them)
 
 • checkUpdates setting below is to allow or deny uodate checking function. if an update is available, you will be shown 'Update Available' in the widget title instead of the username entered as the widget parameter
     • false = do not check for updates
     • true = check for updates
+    
+• displayTimeSinceRefresh setting below determines if the elapsed time since the widget last refreshed is displayed or not
+    • false = do not display time since refresh
+    • true = display time since refresh
+    
+• widgBackgroundColor setting below allows you to customize the widget background color. the default is to not use a color other than black in dark mode and white in light mode. 
+
+• displayTitle setting below configures whether or not the username title is used at the top of the widget or not
+    • false = do not display username at top
+    • true = display username at top
+    
+• displayLine setting below configures whether or not the tweet separators will be displayed or not
+    • false = do not display the line separators
+    • true = display the line separators
+    
+• numT setting below can be tweaked for rhe medium and small size widget or for the large size. the undefined setting is for running the script in the app instead of in widget
+    • the number set is the number of tweets that will display in the widget
 <><><><><><><><><><><>
 <><><><><><><><><><><>
 
@@ -51,13 +68,55 @@ Start Settings
 <><><><><><><><><><><>
 <><><><><><><><><><><>
 */
-const rtsOn = true
-const postFontSize = 9
-const postFontColor = Color.dynamic(Color.black(), Color.white())
-const twitterIcon = true
-const clockIcon = true
-const widgAccentColor = Color.blue()
-const checkUpdates = true
+let numT,wSize = config.widgetFamily
+
+
+let fm = FileManager.iCloud()
+let path=fm.documentsDirectory()
+let scrPath = path+'/Twitter Widget Settings.js'
+let mod = importModule(scrPath)
+
+if(fm.fileExists(scrPath)){
+  var rtsOn = mod.rtsOn
+  var postFontSize = mod.postFontSize
+  var postFontColor = mod.postFontColor
+  var twitterIcon = mod.twitterIcon
+  var clockIcon = mod.clockIcon
+  var widgAccentColor = mod.widgAccentColor
+  var checkUpdates = mod.checkUpdates
+  var displayTimeSinceRefresh = mod.displayTimeSinceRefresh
+  var widgBackgroundColor = mod.widgBackgroundColor
+  var displayTitle = mod.displayTitle
+  var displayLine = mod.displayLine
+  
+  numT = mod.numTweets(wSize)
+}else{
+  var rtsOn = true
+  var postFontSize = 9
+  var postFontColor = Color.dynamic(Color.black(), Color.white())
+  var twitterIcon = true
+  var clockIcon = true
+  var widgAccentColor = Color.blue()
+  var checkUpdates = true
+  var displayTimeSinceRefresh = true
+  var widgBackgroundColor = Color.dynamic(Color.white(), Color.black())
+  var displayTitle = true
+  var displayLine = true
+
+  switch(wSize){
+    case 'medium':
+    case 'small':
+      numT = 2;
+      break;
+    case 'large':
+      numT = 5;
+      break
+    case undefined:
+      numT = 5;
+      break
+  }
+
+}
 /*
 <><><><><><><><><><><>
 <><><><><><><><><><><>
@@ -69,22 +128,9 @@ End Settings
 */
 
 // run the updateCheck() function to see if there are any updates available for the script 
-let needUpdate = checkUpdates?await updateCheck(1.1):false
+let needUpdate = (checkUpdates="true")?await updateCheck(1.2):false
 const twImgB64 = twit()
-let w = new ListWidget()
-let url,numT,wSize = config.widgetFamily
-switch(wSize){
-  case 'medium':
-  case 'small':
-    numT = 2;
-    break;
-  case 'large':
-    numT = 5;
-    break
-  case undefined:
-    numT = 5;
-    break
-}
+let url,w = new ListWidget()
 if (args.widgetParameter){
   url = args.widgetParameter
 }else{
@@ -95,30 +141,30 @@ log(json)
 const titleTxt = json[0].user.name
 let tMain = w.addStack()
 let tStack = tMain.addStack()
-tMain.addSpacer(1)
 let timeStack = tMain.addStack()
 tMain.layoutVertically()
 tStack.addSpacer()
+if(displayTitle){
 let title = tStack.addText(needUpdate?'Update Available':titleTxt+' Tweets')
 title.centerAlignText()
 title.font=Font.boldMonospacedSystemFont(15)
-title.textColor=widgAccentColor
+title.textColor=widgAccentColor}
 tStack.addSpacer()
-let timeSpacer
-  if (wSize=='small'){
-  timeSpacer = 75
-  }else{
-  timeSpacer=150
-  }
-timeStack.addSpacer(timeSpacer)
+tStack.layoutHorizontally()
+timeStack.addSpacer()
+if (displayTimeSinceRefresh){
 let dt = timeStack.addDate(new Date())
 dt.applyRelativeStyle()
 dt.font=Font.boldMonospacedSystemFont(8)
 dt.textColor=widgAccentColor
+}
 timeStack.addSpacer()
+timeStack.layoutHorizontally()
+
 let lineImg = lineSep()
 json.forEach(f)
 w.setPadding(10,10,10,10)
+w.backgroundColor=widgBackgroundColor
 Script.setWidget(w)
 Script.complete()
 w.presentLarge()
@@ -135,15 +181,16 @@ async function apiCall(handle){
   //twitter api using fifi's method
   const firstUrl='https://twitter.com/'
   let r = new Request(firstUrl)
-  let b = await r.loadString()
-  let matched = b.match(/https:\/\/abs\.twimg\.com\/responsive-web\/client-web-legacy\/main\.[^\"]+\.js/)
+//   let b = await r.loadString()
+//   let matched = b.match(/https:\/\/abs\.twimg\.com\/responsive-web\/client-web-legacy\/main\.[^\"]+\.js/)
 //   log(matched)
-  r.url=matched[0]
-  b=await r.loadString()
-  matched = b.match(/\"(AAAAAAAA[^\"]+)\"/)
+//   r.url=matched[0]
+//   b=await r.loadString()
+//   matched = b.match(/\"(AAAAAAAA[^\"]+)\"/)
 //   log(matched[1])
   let secondUrl = 'https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name='+handle+'&count='+50+'&exclude_replies=true&include_rts='+rtsOn
-  let bearer = matched[1]
+//   let bearer = matched[1]
+let bearer = 'AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA'
   log(bearer)
   r.url=secondUrl
   r.method='GET'
@@ -195,7 +242,7 @@ function dateDelt(dateString){
 function lineSep(){
   //generate line separator
   const context =new DrawContext()
-  let width = 340,h=1
+  let width = 200,h=1
   context.size=new Size(width, h)
   context.opaque=false
   context.respectScreenScale=true
@@ -203,7 +250,7 @@ function lineSep(){
   path.move(new Point(1,h))
   path.addLine(new Point(width,h))
   context.addPath(path)
-  context.setStrokeColor(Color.blue())
+  context.setStrokeColor(widgAccentColor)
   context.strokePath()
   return context.getImage()
 }
@@ -211,32 +258,36 @@ function lineSep(){
 function f(item,index){
 
   let out = item
-  log('index:'+index+' contains:\n'+ out.text)
-  
+//   log('index:'+index+' contains:\n'+ out.text)
   if (index <= (numT-1)) {
 
     let tx = w.addStack()
     lineS = tx.addStack()
-    let line = lineS.addImage(lineImg)
+    lineS.addSpacer()
+    if (displayLine){let line = lineS.addImage(lineImg)
     line.centerAlignImage()
     line.resizable=false
-    line.imageOpacity=.4
+    line.imageOpacity=.6}
+    lineS.addSpacer()    
+    lineS.layoutHorizontally()
     let tx2 = tx.addStack()
     let tx1 = tx.addStack()
+    let font = Font.systemFont(10)
     if(twitterIcon){
       let twImg = tx1.addImage(Image.fromData(Data.fromBase64String(twImgB64)))
       twImg.tintColor=widgAccentColor
+      twImg.imageSize=new Size(12,12)
+      
     }
     let symbol = SFSymbol.named("clock.fill")
     symbol.applyMediumWeight()
-    let font = Font.systemFont(10)
+
     symbol.applyFont(font)
     if (clockIcon){
       let image = tx1.addImage(symbol.image)
       image.resizable=false
       image.tintColor = widgAccentColor
     }
-    w.addSpacer(1)
     log(out.created_at)
     let dt = tx1.addText(dateDelt(out.created_at))
     dt.font=Font.systemFont(postFontSize)
@@ -247,9 +298,9 @@ function f(item,index){
     tx1.setPadding(2,5,2,5)
     tx2.setPadding(2,5,2,5)
     tx.setPadding(10,2,10,2)
-    tx.size=new Size(350,60)
-    tx2.size=new Size(350,40)
-    tx2.addSpacer()
+    
+    tx.size=new Size(0,60)
+    tx2.size=new Size(0,40)
     tx.url = 'https://mobile.twitter.com/'+url+'/status/'+out.id_str
     tx.layoutVertically()
     log(tx.url)
