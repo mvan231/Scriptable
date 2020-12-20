@@ -6,3 +6,5 @@
     * Each calendar color only appears one time per date. 
     * If you'd like certain calendars to not be included, you can add the calendar name(s) to the calIgnore array at the beginning of the script. 
         * **Note:** each calendar to be ignored must be added inside of single or double quotes and separated by a comma (if more than one). I.e. ['Personal','Work']
+    * If you'd like just the left or the right side of the widget to be shown in a medium or small widget, you can use the widget parameter of 'left' or 'right' respectively. 
+        ![Example](https://i.imgur.com/ri9Wzwr.jpg)
