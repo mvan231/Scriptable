@@ -29,7 +29,7 @@
     * Now has support for small widget size too! (**Note:** the events are not tappable in the small widget size)
     ![small example](https://i.imgur.com/2s1lN6f.jpg) ![small example2](https://i.imgur.com/MRoqurH.jpg)
     
-* [Upcoming Calendar Indicator](Upcoming%20Calendar%20Indicator.js)
+* [Upcoming Calendar Indicator](Upcoming%20Calendar%20Indicator)
      
     * **Credit goes to [Raigo Jerva](https://gist.github.com/rudotriton/b51d227c3d1d9cb497829ae45583224f#instructions) for the original code that I modified to create the base of the view for the right side of the widget.**
         Inspiration was drawn from a comment on one of the r/Scriptable subreddit posts, but I cannot find it any longer. 
