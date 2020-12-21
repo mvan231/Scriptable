@@ -14,13 +14,19 @@ and start of script
 
 //calendar names can be added to the calIgnore array below if you do not want them to be shown in either the list of calendar events or the indicators on the month view
 const calIgnore = ['']
-/*-----------------------
-|                       |
-|                       |
------------------------*/
+/*--------------------------
+|------version history------
+v1.0 
+- initial release
 
-let needUpdated = await updateCheck(1.0)
+v1.1
+- update to improve efficiency of loading with full medium widget
+--------------------------*/
+
+let needUpdated = await updateCheck(1.1)
 log(needUpdated)
+
+
 
 let widg,l,r
 if(args.widgetParameter){
@@ -97,7 +103,7 @@ async function createWidget() {
       let dateStack = weekdayStack.addStack();
       
       let dateStackUp = dateStack.addStack()
-      let dayStack = dateStackUp.addStack()  
+//       let dayStack = dateStackUp.addStack()  
       dateStackUp.size = new Size(20, 17);
       dateStackUp.centerAlignContent();   
       dateStack.size = new Size(20, 20);
@@ -106,9 +112,9 @@ async function createWidget() {
           date.getDate().toString(),
           currentDayColor
         );
-        dayStack.addImage(highlightedDate);
+        dateStackUp.addImage(highlightedDate);
       }else{
-        addWidgetTextLine(dayStack, `${month[i][j]}`, {
+        addWidgetTextLine(dateStackUp, `${month[i][j]}`, {
           color: textColor,
           opacity: (i > 5 || i == 0) ? opacity : 1,
           font: Font.boldSystemFont(10),
