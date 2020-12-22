@@ -14,11 +14,11 @@
 
     ![example](https://i.imgur.com/xzqEoue.jpg)
 
-    As of v1.5, we now have avatar display and progress to next level. Avatar image is cached so no need to download it each time the widget refreshes.
+    * As of v1.5, we now have avatar display and progress to next level. Avatar image is cached so no need to download it each time the widget refreshes.
     
     ![new v1.5](https://i.imgur.com/88TIBs3.jpg)
     
-    Big thanks to [juniorchen](https://github.com/Juniorchen2012/scriptable) for the base of the progress bar portion of the code. You can check the progress widget out [here](https://github.com/Juniorchen2012/scriptable/blob/master/progress.js)
+    * Big thanks to [juniorchen](https://github.com/Juniorchen2012/scriptable) for the base of the progress bar portion of the code. You can check the progress widget out [here](https://github.com/Juniorchen2012/scriptable/blob/master/progress.js)
 
 * ### [COD Warzone Stats Widget](COD%20Warzone%20Stats.js)
     * Setting your PSN username as the widget parameter will show you the user stats for COD Warzone. This can be adjusted for other COD games as well.
@@ -96,21 +96,3 @@
 * Tap and hold on the widget now, and tap "Edit Widget"
 * Tap the "Script" option, and select the script name to run
 * Tap outside the edit widget window and you should be all set
-
-<!--* this is just template info borrowed from Supermamon's page
-[RH Downloads](RH%20Downloads.js)
-## Widgets
-* [xkcd-widget](xkcd-widget) - a widget to show current/random xkcd comic
-* [peanuts-widget](peanuts-widget) - a widget to show current/random Peanuts™ comic
-* [ig-latest-post](instagram-widgets) - randomly show between the 12 of the most recent post from a user or users.
-* [simple-weather-widget](openweathermap/simple-weather-widget.js) - example widget that uses the [openweathermap](openweathermap) module
-* [transparent-backgrounds](no-background/examples) - example scripts that use the [no-background](no-background) module
-* [us-elections.js](misc/us-elections.js) - show the latest electoral votes for all candidates
-
-## Utilites
----
-* [no-background](no-background) - a module to simulate transparent background for widgets. Includes examples.
-* [openweathermap](openweathermap) - A module to encapsulate OpenWeatherMap's [One Call API](https://openweathermap.org/api/one-call-api) and more
-* [basic-ui](utilities/basic-ui.js) - a helper moduel for user interactions
-* [json-utils](utilities/json-utils.js) - a helper module for reading, storing, and converint JSON.
--->
