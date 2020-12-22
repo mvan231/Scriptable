@@ -8,17 +8,6 @@
         * **Note:** each calendar to be ignored must be added inside of single or double quotes and separated by a comma (if more than one). I.e. ['Personal','Work']
     * If you'd like just the left or the right side of the widget to be shown in a medium or small widget, you can use the widget parameter of 'left' or 'right' respectively. 
         ![Example](https://i.imgur.com/ri9Wzwr.jpg)
-    * set the flag for allowDynamicSpacing to true if you want extra soacing between the events in the left side event list if there are less than 5. If you don't want the dynamic spacing, set to false. 
-
-const allowDynamicSpacing = true
-
-//set the flag for monWeekStart to true if you want Monday to be the start of the week in the month view. If  you rather Sunday be the start of the week, then set to false.
-
-const monWeekStart = false
-
-
-//set the useBackgroundColor flag to true to utilize the backgroundColor variable below. This can be set per your liking.
-
-const useBackgroundColor = false
-
-//backgroundColor below is setup to be dynamic so it changes between light and dark appearance modes. The first color is for light mode and the second color for dark mode
+    * Set the flag for allowDynamicSpacing to true if you want extra soacing between the events in the left side event list if there are less than 5. If you don't want the dynamic spacing, set to false. 
+    * Set the flag for monWeekStart to true if you want Monday to be the start of the week in the month view. If  you rather Sunday be the start of the week, then set to false.
+    * Set the useBackgroundColor flag to true to utilize the backgroundColor variable. This can be set per your liking.
