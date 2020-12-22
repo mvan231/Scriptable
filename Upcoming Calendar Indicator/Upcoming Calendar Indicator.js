@@ -1,7 +1,59 @@
 // Variables used by Scriptable.
 // These must be at the very top of the file. Do not edit.
 // icon-color: light-gray; icon-glyph: calendar-alt;
+/*
+####################
+####################
+start of user definition
+####################
+####################
+*/
 
+//calendar names can be added to the calIgnore array below if you do not want them to be shown in either the list of calendar events or the indicators on the month view. Thwse must be enclosed in single or double quotes.  
+
+const calIgnore = []
+
+//set the flag for allowDynamicSpacing to true if you want extra soacing between the events in the left side event list if there are less than 5. If you don't want the dynamic spacing, set to false. 
+
+const allowDynamicSpacing = true
+
+//set the flag for monWeekStart to true if you want Monday to be the start of the week in the month view. If  you rather Sunday be the start of the week, then set to false.
+
+const monWeekStart = false
+
+
+//set the useBackgroundColor flag to true to utilize the backgroundColor variable below. This can be set per your liking.
+
+const useBackgroundColor = false
+
+//backgroundColor below is setup as darkGray ny default but can be changed to hex as well
+
+const backgroundColor = Color.darkGray()
+
+
+//For more info see the github page.
+
+/*
+####################
+####################
+end of user definition
+####################
+####################
+*/
+
+/*--------------------------
+|------version history------
+v1.0 
+- initial release
+
+v1.1
+- update to improve efficiency of loading with full medium widget
+
+v1.2
+- add date URLs to the month view to allow you to tap on a date and go to it in the calendar app
+- add spacing in cases where less than 5 events are found for the calendar event list (user choice to use this or not in the configuration section)
+- add user choice for background color selection
+--------------------------*/
 
 /*
 ####################
@@ -12,18 +64,7 @@ and start of script
 ####################
 */
 
-//calendar names can be added to the calIgnore array below if you do not want them to be shown in either the list of calendar events or the indicators on the month view
-const calIgnore = ['']
-/*--------------------------
-|------version history------
-v1.0 
-- initial release
-
-v1.1
-- update to improve efficiency of loading with full medium widget
---------------------------*/
-
-let needUpdated = await updateCheck(1.1)
+let needUpdated = await updateCheck(1.2)
 log(needUpdated)
 
 
@@ -36,10 +77,12 @@ if(args.widgetParameter){
   l=true
 }
 var ind=0
+var eventCounter=0
 let w = new ListWidget()
+if(useBackgroundColor)w.backgroundColor=backgroundColor
 let main = w.addStack()
 let left = main.addStack()
-left.size=new Size(0, 135)
+left.size=new Size(0, 135) 
 left.layoutVertically()
 if(r && l)main.addSpacer(15)
 let right = main.addStack()
@@ -88,9 +131,6 @@ async function createWidget() {
     font: Font.boldSystemFont(12),
   });
 
-  // between the month name and the week calendar
-//   right.addSpacer(1);
-
   const calendarStack = right.addStack();
   calendarStack.spacing = 2;
 
@@ -103,7 +143,6 @@ async function createWidget() {
       let dateStack = weekdayStack.addStack();
       
       let dateStackUp = dateStack.addStack()
-//       let dayStack = dateStackUp.addStack()  
       dateStackUp.size = new Size(20, 17);
       dateStackUp.centerAlignContent();   
       dateStack.size = new Size(20, 20);
@@ -114,13 +153,29 @@ async function createWidget() {
         );
         dateStackUp.addImage(highlightedDate);
       }else{
-        addWidgetTextLine(dateStackUp, `${month[i][j]}`, {
+        let sat,sun
+        if (monWeekStart){
+          sat = 5
+          sun = 6
+        }else{
+          sat = 6
+          sun = 0
+        }
+        addWidgetTextLine(dateStackUp, `${month[i][j]}`,
+        {
           color: textColor,
-          opacity: (i > 5 || i == 0) ? opacity : 1,
+          opacity: (i == sat || i == sun) ? opacity : 1,
           font: Font.boldSystemFont(10),
           align: "left",
         });
       }
+      
+      //comment out due for better performance if needed
+      const oDate = new Date(2001,00,01).getTime()
+      const nDate = new Date(date.getFullYear(),date.getMonth(),month[i][j])
+      var diff = ((nDate-oDate)/1000)
+      diff=Number(diff)+50000
+      dateStack.url="calshow:"+diff
       
       let colorDotStack = dateStack.addStack()
       colorDotStack.size=new Size(20, 3)
@@ -179,9 +234,13 @@ async function createWidget() {
  */
 function buildMonthVertical() {
   const date = new Date();
-  const firstDayStack = new Date(date.getFullYear(), date.getMonth(), 2);
-  const lastDayStack = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-  const month = [["S"],["M"], ["T"], ["W"], ["T"], ["F"], ["S"]];
+  const firstDayStack = new Date(date.getFullYear(), date.getMonth(), monWeekStart?1:2);
+  const lastDayStack = new Date(date.getFullYear(), date.getMonth() + 1, 0);  
+  let month  
+  if(!monWeekStart){
+    month = [["S"],["M"], ["T"], ["W"], ["T"], ["F"], ["S"]];  
+  }else{
+    month = [["M"], ["T"], ["W"], ["T"], ["F"], ["S"],["S"]];}
 
   let dayStackCounter = 0;
 
@@ -203,7 +262,7 @@ function buildMonthVertical() {
     while (dayStacks.length < length) {
       month[index].push(" ");
     }
-  });
+  });  
 
   return month;
 }
@@ -294,6 +353,8 @@ async function successCallback(result) {
     newCalArray = res
   })
   newCalArray = mergeArrays(calcal,newCalArray)
+
+  newCalArray.forEach(eventCount)
   newCalArray.forEach(f)
 }
 
@@ -309,65 +370,65 @@ async function failureCallback(error) {
   console.error("Error generating calendar data: " + error);
 }
 
-// function getColorDot(colorHex){
-//   const context =new DrawContext()
-//     context.size=new Size(10,10)
-//     context.opaque=false
-//     context.respectScreenScale=true
-//     context.setFillColor(new Color('#'+colorHex))
-//     const path = new Path()
-//     path.addEllipse(new Rect(0, 0, 10,10))
-//     context.addPath(path)
-//     context.fillPath()
-//     return context.getImage() 
-// }
+function eventCount(item){
+  let now = new Date()
+
+  if (item.startDate.getTime() > now.getTime())
+  {
+    if(!calIgnore.includes(item.calendar.title)){
+      eventCounter +=1
+    }      
+  }
+}
+
 
 function f(item){
   let now = new Date()
-//   log(item.title)
-//   log('now '+now.getTime())  
-//   log('startTime '+item.startDate.getTime())
-
   if (item.startDate.getTime() > now.getTime())
   {
     if(!calIgnore.includes(item.calendar.title)){
     
     ind+=1
-//     log(ind)
     let s
     let h = 5
-// log(h)
-    if (ind <=5){
+    let eventDisplay = 5
+    let spacer
+    if(!allowDynamicSpacing)eventCounter=null
+    switch (eventCounter) {
+      case 1:
+      case 2:
+      case 3:
+        spacer = null
+        break
+      case 4:
+        spacer = 3
+        break
+      default:
+        spacer = 0
+        break
+    }
+
+    if (ind <=eventDisplay){
+        left.addSpacer(spacer)
         s = left.addStack()
-        s.setPadding(5,5,5,5)
+        left.addSpacer(spacer)
         s.size= new Size(0, 27)
         let s1 = s.addStack()
         let imStack = s1.addStack()
         imStack.setPadding(2,0,2,0)
-        let dot = colorDots([item.calendar.color.hex])//getColorDot(item.calendar.color.hex)
+        let dot = colorDots([item.calendar.color.hex])
         dot.size=new Size(5,5)
         let im = imStack.addImage(dot)
-          
-//         let im = s1.addImage(dot)
         im.resizable=false
-        
-//         imStack.layoutVertically()        
-//         let titleS = s1.addStack()
-//         let titleS1 = titleS.addStack()
-//         let tx = titleS1.addText(item.title)  
         let tx = s1.addText(item.title)
-        tx.font=Font.systemFont(12)  
-//         titleS1.layoutVertically()
-        
+        tx.font=Font.systemFont(12)         
         let dd = item.startDate
         dF.dateFormat='MMM d'
         let ddd=dF.string(dd)
         dF.dateFormat='EEE'
-        let eee = dF.string(dd)
-        
+        let eee = dF.string(dd)        
         let s2=s.addStack()
-        let dt = s2.addText(eee+' '+ddd+' ')
-        
+        let dt = s2.addText(eee+' '+ddd+' ')        
         dt.font=Font.systemFont(8)
         if(!item.isAllDay){
           let staTime = s2.addDate(item.startDate)
@@ -451,9 +512,9 @@ async function updateCheck(version){
   }
   
   return needUpdate
-/*
-#####
-End Update Check
-#####g
-*/
+  /*
+  #####
+  End Update Check
+  #####g
+  */
 }
