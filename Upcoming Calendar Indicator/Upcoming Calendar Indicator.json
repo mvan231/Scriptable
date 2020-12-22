@@ -1,1 +1,1 @@
-{"version":"1.1","notes":"- update to improve efficiency of loading with full medium widget"}
+{"version":"1.1","notes":"- add date URLs to the month view to allow you to tap on a date and go to it in the calendar app\n- add spacing in cases where less than 5 events are found for the calendar event list (user choice to use this or not in the configuration section)\n- add user choice for background color selection"}
