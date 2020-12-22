@@ -26,9 +26,11 @@
     
 * ### [Upcoming Calendar Events Widget](Upcoming%20Calendar%20Widget.js)
     * This widget was made as a request from some users on r/Scriptable. It's just a simple calendar display showing your upcoming events in a medium widget format.
+   
     ![example1](https://i.imgur.com/B5N98lW.jpg) ![example2](https://i.imgur.com/rCgF54y.jpg)
 
     * Now has support for small widget size too! (**Note:** the events are not tappable in the small widget size)
+    
     ![small example](https://i.imgur.com/2s1lN6f.jpg) ![small example2](https://i.imgur.com/MRoqurH.jpg)
     
 * ### [Upcoming Calendar Indicator](Upcoming%20Calendar%20Indicator)
@@ -37,6 +39,7 @@
         Inspiration was drawn from a comment on one of the r/Scriptable subreddit posts, but I cannot find it any longer. 
     * This widget is similar to my Upcoming Calendar widget, but this now has a display for the full month view with indicators of up to five calendar colors for each day. 
     * **For more info, see the page linked above**
+    
     ![example image](https://i.imgur.com/0QVdD7s.jpg)
 
 * ### [Twitter Widget](Twitter%20Widget.js)
