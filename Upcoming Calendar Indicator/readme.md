@@ -12,3 +12,6 @@
     * Set the flag for allowDynamicSpacing to true if you want extra soacing between the events in the left side event list if there are less than 5. If you don't want the dynamic spacing, set to false. 
     * Set the flag for monWeekStart to true if you want Monday to be the start of the week in the month view. If  you rather Sunday be the start of the week, then set to false.
     * Set the useBackgroundColor flag to true to utilize the backgroundColor variable. This can be set per your liking.
+    * When updates to the code are available you will see a note in the widget
+      
+        ![uodste](https://i.imgur.com/owe3L3W.jpg)
