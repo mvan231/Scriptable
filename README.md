@@ -41,7 +41,7 @@
     * This widget is similar to my Upcoming Calendar widget, but this now has a display for the full month view with indicators of up to five calendar colors for each day. 
     * **For more info, see the page linked above**
     
-    ![example image](https://i.imgur.com/0QVdD7s.jpg)
+      ![example image](https://i.imgur.com/0QVdD7s.jpg)
 
 * ### [Twitter Widget](Twitter%20Widget.js)
     * This widget can display tweets from public profiles on your home screen and shows them to you in chronological order as well as how long ago (or on what date) the tweet was posted. This can be configured as a medium or large size widget for your own preference. Simply set the username you'd like to "follow" in the widget parameter, and you'll be all set.
