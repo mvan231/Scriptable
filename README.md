@@ -12,17 +12,18 @@
 * ### [MEE6 Leaderboard Widget](MEE6%20LeaderBoard%20Info.js)
     * This widget will show you the current stats for a given user according to the MEE6 leaderboard for that server. 
 
-    ![example](https://i.imgur.com/xzqEoue.jpg)
+      ![example](https://i.imgur.com/xzqEoue.jpg)
 
     * As of v1.5, we now have avatar display and progress to next level. Avatar image is cached so no need to download it each time the widget refreshes.
     
-    ![new v1.5](https://i.imgur.com/88TIBs3.jpg)
+      ![new v1.5](https://i.imgur.com/88TIBs3.jpg)
     
     * Big thanks to [juniorchen](https://github.com/Juniorchen2012/scriptable) for the base of the progress bar portion of the code. You can check the progress widget out [here](https://github.com/Juniorchen2012/scriptable/blob/master/progress.js)
 
 * ### [Transparent StockChange Widget](Transparent%20StockChange.js)
-    * Credit for the original code base for this widget goes to [Murdo](https://github.com/CaptainMurdo/Scriptable/blob/master/StockPrice.js). I helped him to modify it to have dynamic column creation for adding more stocks in. I have also just made an update for this so it can have a transparent background using no-background.js from Supermamon. 
-    ![example](https://i.imgur.com/4QxTrw8.jpg)
+    * Credit for the original code base for this widget goes to [Murdo](https://github.com/CaptainMurdo/Scriptable/blob/master/StockPrice.js). I helped him to modify it to have dynamic column creation for adding more stocks in. I have also just made an update for this so it can have a transparent background using no-background.js from Supermamon.
+    
+      ![example](https://i.imgur.com/4QxTrw8.jpg)
     
 * ### [Upcoming Calendar Events Widget](Upcoming%20Calendar%20Widget.js)
     * This widget was made as a request from some users on r/Scriptable. It's just a simple calendar display showing your upcoming events in a medium widget format.
