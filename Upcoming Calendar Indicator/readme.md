@@ -22,7 +22,7 @@
         1. Dynamic spacing of the event list
         2. Using Monday as the start of the week in the month view on the right side
         
-        ![Color background and no-background](
+        ![Color background and no-background](https://i.imgur.com/cdCuM29.jpg)
         3. Ability to use a different background color of the widget view than the standard white/black
         4. Utilization of the no-background.js transparency module from supermamon (link is in my main Scriptable page)
         
