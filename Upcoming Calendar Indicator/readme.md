@@ -16,9 +16,7 @@
       
         ![update](https://i.imgur.com/owe3L3W.jpg)
 
-    **New as of v1.3, there is now a set of questions on the first run to get things setup for you before displaying in a widget. The questions to be answered are for:**
-    
-    ![new example image]( https://i.imgur.com/iUci7ty.jpg)     
+    **New as of v1.3, there is now a set of questions on the first run to get things setup for you before displaying in a widget. The questions to be answered are for:**     
 
     ![Dynamic Spacing and Monday as first day of week](https://i.imgur.com/ZTMxt3g.jpg)
         
@@ -55,3 +53,6 @@
 
     ![Reset](https://i.imgur.com/w7kYZB9.jpg)
     * When you run the widget in the app, it will ask you if you want to reset. This is useful if you don't quite like your setup, you can reconfigure it easily from this method. 
+
+This is an example of what the new v1.3 could look like. 
+![new example image]( https://i.imgur.com/iUci7ty.jpg)
