@@ -16,40 +16,40 @@
       
         ![update](https://i.imgur.com/owe3L3W.jpg)
 
-    * **New as of v1.3, there is now a set of questions on the first run to get things setup for you before displaying in a widget. The questions to be answered are for:**
+    **New as of v1.3, there is now a set of questions on the first run to get things setup for you before displaying in a widget. The questions to be answered are for:**
         
-        ![Dynamic Spacing and Monday as first day of week](https://i.imgur.com/ZTMxt3g.jpg)
+    ![Dynamic Spacing and Monday as first day of week](https://i.imgur.com/ZTMxt3g.jpg)
         
-        * Dynamic spacing of the event list
+    * Dynamic spacing of the event list
 
-        * Using Monday as the start of the week in the month view on the right side
+    * Using Monday as the start of the week in the month view on the right side
         
-        ![Color background and no-background](https://i.imgur.com/cdCuM29.jpg)
-        * Ability to use a different background color of the widget view than the standard white/black
+    ![Color background and no-background](https://i.imgur.com/cdCuM29.jpg)
+    * Ability to use a different background color of the widget view than the standard white/black
 
-        * Utilization of the no-background.js transparency module from supermamon (link is in my main Scriptable page)
+    * Utilization of the no-background.js transparency module from supermamon (link is in my main Scriptable page)
         
-        ![All Day events and shadow enable](https://i.imgur.com/5JEuCHe.jpg)
-        * Ability to show "All Day" events that are occurring today or not (default behavior for this previously was to not show them)
+    ![All Day events and shadow enable](https://i.imgur.com/5JEuCHe.jpg)
+    * Ability to show "All Day" events that are occurring today or not (default behavior for this previously was to not show them)
   
-        * Ability to show a shadow color under the event name in the event list. The color of the shadow is customizable in the next step. 
+    * Ability to show a shadow color under the event name in the event list. The color of the shadow is customizable in the next step. 
 
-        ![Shadow color pick for light and dark modes](https://i.imgur.com/hYEjkmo.jpg)
-        * If you choose "Yes" to have a shadow color, you will be asked to choose the color of the shadow for the light and dark mode appearances. This extra customization helps with different background colors and photos for better readability. 
+    ![Shadow color pick for light and dark modes](https://i.imgur.com/hYEjkmo.jpg)
+    * If you choose "Yes" to have a shadow color, you will be asked to choose the color of the shadow for the light and dark mode appearances. This extra customization helps with different background colors and photos for better readability. 
 
-        ![Background color entry and event font size](https://i.imgur.com/K1cBxB9.jpg)
-        * If you chose "Yes" to utilizing a different background color for the widget, you will be asked to enter the hex color for the background to display.
+    ![Background color entry and event font size](https://i.imgur.com/K1cBxB9.jpg)
+    * If you chose "Yes" to utilizing a different background color for the widget, you will be asked to enter the hex color for the background to display.
       
-        * Event list font size choice between Normal, Small, and Large
+    * Event list font size choice between Normal, Small, and Large
  
-        ![Calendar Ignore and prompt](https://i.imgur.com/a7q2AOU.jpg)
-        * You will be asked if you would like to EXCLUDE any calendars from the widget, this is beneficial if you don't want to display something like the "Holidays" calendar on the widget. 
+    ![Calendar Ignore and prompt](https://i.imgur.com/a7q2AOU.jpg)
+    * You will be asked if you would like to EXCLUDE any calendars from the widget, this is beneficial if you don't want to display something like the "Holidays" calendar on the widget. 
         
-        ![Calendar Choose and widget preview](https://i.imgur.com/LKFvBz7.jpg)
-        ![Widget size and placement](https://i.imgur.com/HtO8kXN.jpg)
-        * If you answered "Yes" to exclude calendars, you will be prompted to choose the calendars to exclude. 
+    ![Calendar Choose and widget preview](https://i.imgur.com/LKFvBz7.jpg)
+    ![Widget size and placement](https://i.imgur.com/HtO8kXN.jpg)
+    * If you answered "Yes" to exclude calendars, you will be prompted to choose the calendars to exclude. 
         
-        * Near the end of the setup, if you chose to use the no-background module, you will be asked for what size widget you will be using and also the placement of the widget. 
+    * Near the end of the setup, if you chose to use the no-background module, you will be asked for what size widget you will be using and also the placement of the widget. 
 
-        ![Reset](https://i.imgur.com/w7kYZB9.jpg)
-        * When you run the widget in the app, it will ask you if you want to reset. This is useful if you don't quite like your setup, you can reconfigure it easily from this method. 
+    ![Reset](https://i.imgur.com/w7kYZB9.jpg)
+    * When you run the widget in the app, it will ask you if you want to reset. This is useful if you don't quite like your setup, you can reconfigure it easily from this method. 
