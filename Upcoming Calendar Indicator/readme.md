@@ -19,6 +19,7 @@
     * New as of v1.3, there is now a set of questions on the first run to get things setup for you before displaying in a widget. The questions to be answered are for:
         
         ![Dynamic Spacing and Monday as first day of week](https://i.imgur.com/ZTMxt3g.jpg)
+        
         1. Dynamic spacing of the event list
         2. Using Monday as the start of the week in the month view on the right side
         
@@ -43,6 +44,7 @@
         ![Calendar Choose and widget preview](https://i.imgur.com/LKFvBz7.jpg)
         ![Widget size and placement](https://i.imgur.com/HtO8kXN.jpg)
         11. If you answered "Yes" to exclude calendars, you will be prompted to choose the calendars to exclude. 
+        
         12. Near the end of the setup, if you chose to use the no-background module, you will be asked for what size widget you will be using and also the placement of the widget. 
 
         ![Reset](https://i.imgur.com/w7kYZB9.jpg)
