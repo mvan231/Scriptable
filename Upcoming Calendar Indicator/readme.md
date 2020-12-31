@@ -16,7 +16,7 @@
       
         ![update](https://i.imgur.com/owe3L3W.jpg)
 
-    * New as of v1.3, there is now a set of questions on the first run to get things setup for you before displaying in a widget. The questions to be answered are for:
+    * **New as of v1.3, there is now a set of questions on the first run to get things setup for you before displaying in a widget. The questions to be answered are for:**
         
         ![Dynamic Spacing and Monday as first day of week](https://i.imgur.com/ZTMxt3g.jpg)
         
