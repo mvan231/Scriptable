@@ -14,4 +14,12 @@
     * Set the useBackgroundColor flag to true to utilize the backgroundColor variable. This can be set per your liking.
     * When updates to the code are available you will see a note in the widget
       
-        ![uodste](https://i.imgur.com/owe3L3W.jpg)
+        ![update](https://i.imgur.com/owe3L3W.jpg)
+
+    * New as of v1.3, there is now a set of questions on the first run to get things setup for you before displaying in a widget. The questions to be answered are for:
+        1. Dynamic spacing of the event list
+        2. Using Monday as the start of the week in the month view on the right side
+        3. Ability to use a different background color of the widget view than the standard white/black
+        4. Utilization of the no-background.js transparency module from supermamon (link is in my main Scriptable page)
+        5. Ability to show "All Day" events that are occurring today or not (default behavior for this previously was to not show them)
+        6. Ability to show a shadow color under the event name in the event list. The color of the shadow is customizable in the next step. 
