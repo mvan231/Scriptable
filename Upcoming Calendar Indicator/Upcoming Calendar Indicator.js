@@ -6,7 +6,7 @@ let scriptPath = fm.documentsDirectory()+'/UpcomingIndicator/'
 let settingsPath = scriptPath+'settings.json'
 const reRun = URLScheme.forRunningScript()
 if(!fm.fileExists(scriptPath))fm.createDirectory(scriptPath, false)
-let needUpdated = await updateCheck(1.3)
+let needUpdated = await updateCheck(1.4)
 //log(needUpdated)
 /*--------------------------
 |------version history------
@@ -28,6 +28,10 @@ v1.3
 - new shadow under event names on the left side list of events
 - user choice of event list shadow color
 - removal of extea left over code
+
+v1.4
+- include url to open calendar app When tapping the event title as well as the event time￼
+- reduce size of date stacks' height for the calendar month view to accommodate large months
 --------------------------*/
 /*
 ####################
@@ -50,8 +54,6 @@ if(!config.runsInWidget && fm.fileExists(settingsPath) && !JSON.parse(fm.readStr
     resetQ.addAction('Yes')
     resetQ.addAction('No')
     a = await resetQ.presentSheet()
-    //log(a)
-    //log(reRun)
     if(a==0){
       fm.remove(settingsPath)
       Safari.open(reRun)
@@ -344,6 +346,9 @@ async function setup(){
   throw new Error('running again')  
 }
 
+
+
+
 async function createWidget() {  
   // opacity value for weekends and times
   const opacity = 6/10;  
@@ -376,16 +381,15 @@ async function createWidget() {
     for (let j = 0; j < month[i].length; j += 1) {
       let dateStack = weekdayStack.addStack();   
       let dateStackUp = dateStack.addStack()
-      dateStackUp.size = new Size(20, 17);
+      dateStackUp.size = new Size(20, 15);
       dateStackUp.centerAlignContent();   
-      dateStack.size = new Size(20, 20);
+      dateStack.size = new Size(20, 18);
       if (month[i][j] === date.getDate().toString()) {
         const highlightedDate = getHighlightedDate(
           date.getDate().toString(),
           currentDayColor
         );
         dateStackUp.addImage(highlightedDate);
-        //dateStack.addImage(highlightedDate);
       }else{
         let sat,sun
         if (monWeekStart){
@@ -395,7 +399,6 @@ async function createWidget() {
           sat = 6
           sun = 0
         }
-         //addWidgetTextLine(dateStack, `${month[i][j]}`,
         addWidgetTextLine(dateStackUp, `${month[i][j]}`,
         {
           color: textColor,
@@ -405,11 +408,12 @@ async function createWidget() {
         });
       }
       
-
-      const nDate = new Date(date.getFullYear(),date.getMonth(),month[i][j])
-      let diff = ((nDate-oDate)/1000)
-      diff=Number(diff)-tZOffsetSec
-      dateStack.url='calshow:'+diff
+      if (!useTransparency){   
+        const nDate = new Date(date.getFullYear(),date.getMonth(),month[i][j])
+        let diff = ((nDate-oDate)/1000)
+        diff=Number(diff)-tZOffsetSec
+        dateStack.url='calshow:'+diff
+      }
       let colorDotStack = dateStack.addStack()
       colorDotStack.size=new Size(20, 3)
       dateStack.layoutVertically() 
@@ -627,14 +631,13 @@ function f(item){
         let s = left.addStack()      
         dHolder = ddd
         let tx = left.addText(item.title)
-          tx.font=Font.boldMonospacedSystemFont(11*eventFontSize)         
+       tx.font=Font.boldMonospacedSystemFont(11*eventFontSize)         
         tx.textColor=new Color(item.calendar.color.hex)
         if(useEventShadow){
           //add a shadow
           tx.shadowRadius=4
           //shadow color for the calendar event title
           tx.shadowColor=Color.dynamic(new Color(shadowColorLight), new Color(shadowColorDark))  
-log(shadowColorDark)
         }
         dF.dateFormat='EEE'
         let eee = dF.string(dd)        
@@ -653,6 +656,7 @@ log(shadowColorDark)
         var diff = ((nDate-oDate)/1000)
         diff=Number(diff)-tZOffsetSec
         dt.url="calshow:"+diff
+        tx.url="calshow:"+diff
       }
     }
     
