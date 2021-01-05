@@ -1,1 +1,1 @@
-{"version":"1.2","notes":"- further customization options added\n- fix for API issue "}
+{"version":"1.3","notes":"- Added a fix for a user not having the Twitter Widget Settings.js script to hold the settings for the widget"}
