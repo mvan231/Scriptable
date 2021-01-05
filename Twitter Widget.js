@@ -74,9 +74,11 @@ let numT,wSize = config.widgetFamily
 let fm = FileManager.iCloud()
 let path=fm.documentsDirectory()
 let scrPath = path+'/Twitter Widget Settings.js'
-let mod = importModule(scrPath)
+
 
 if(fm.fileExists(scrPath)){
+  let mod = importModule(scrPath)
+  
   var rtsOn = mod.rtsOn
   var postFontSize = mod.postFontSize
   var postFontColor = mod.postFontColor
@@ -128,7 +130,7 @@ End Settings
 */
 
 // run the updateCheck() function to see if there are any updates available for the script 
-let needUpdate = (checkUpdates="true")?await updateCheck(1.2):false
+let needUpdate = (checkUpdates="true")?await updateCheck(1.3):false
 const twImgB64 = twit()
 let url,w = new ListWidget()
 if (args.widgetParameter){
@@ -139,8 +141,20 @@ if (args.widgetParameter){
 let json = await apiCall(url)
 log(json)
 const titleTxt = json[0].user.name
+
+
 let tMain = w.addStack()
 let tStack = tMain.addStack()
+
+symbol = SFSymbol.named("arrow.clockwise") //"battery.25")
+symbol.applyMediumWeight()
+let font = Font.systemFont(10)
+symbol.applyFont(font)
+let image = tStack.addImage(symbol.image)
+image.resizable=false
+image.tintColor = Color.blue()
+image.url='shortcuts://run-shortcut?name=Refresh%20Scriptable%20Widgets'
+
 let timeStack = tMain.addStack()
 tMain.layoutVertically()
 tStack.addSpacer()
