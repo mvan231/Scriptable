@@ -6,7 +6,7 @@ let scriptPath = fm.documentsDirectory()+'/UpcomingIndicator/'
 let settingsPath = scriptPath+'settings.json'
 const reRun = URLScheme.forRunningScript()
 if(!fm.fileExists(scriptPath))fm.createDirectory(scriptPath, false)
-let needUpdated = await updateCheck(1.4)
+let needUpdated = await updateCheck(1.5)
 //log(needUpdated)
 /*--------------------------
 |------version history------
@@ -32,6 +32,17 @@ v1.3
 v1.4
 - include url to open calendar app When tapping the event title as well as the event time￼
 - reduce size of date stacks' height for the calendar month view to accommodate large months
+
+v1.5
+- add in reminder support
+- add in setup question for reminder support
+- add option during setup for displaying the calendar color in the event list
+- reminder emoji added to reminder title
+- reminder list color added to display text color
+- adjust current date indicator font size to better align with the other dates
+- add in AM/PM indicator to the date shown in event list
+- add ability to change the base text color between for each mode (light/dark)
+- add setting for 24hr time vs 12hr for event list
 --------------------------*/
 /*
 ####################
@@ -60,7 +71,6 @@ if(!config.runsInWidget && fm.fileExists(settingsPath) && !JSON.parse(fm.readStr
       throw new Error('running again now')
     }
 }
-
 
 settings = JSON.parse(fm.readString(settingsPath))
 if(settings.quickReset)
@@ -127,6 +137,24 @@ const eventFontSize = settings.eventFontSize
 
 //showCurrentAllDayEvents enables the ability to show an event that is happening today and is set as all day
 const showCurrentAllDayEvents = settings.showCurrentAllDayEvents
+
+//showReminders is the determining factor to show reminders in the event list or not
+const showReminders = settings.showReminders
+
+//showCalendarColorEventList is to display the event name in the calendar color
+const showCalendarColorEventList = settings.showCalendarColorEventList
+
+//useBaseTextColor is setup during initialization questions. This determines if the base text should have a different color than the default (black in light mode and white in dark mode) to help for rendering depending on your setup (mainly if you use transparency and have a photo that causes the text to not be readable)
+const useBaseTextColor = settings.useBaseTextColor
+let baseTextColorLight,baseTextColorDark
+if (useBaseTextColor)
+{
+  baseTextColorLight = '#'+settings.baseTextColorLight
+  baseTextColorDark = '#'+settings.baseTextColorDark
+}
+
+//use24hrTime is a setup question which allows the user to display the event times in a 24hr format instead of 12hr format
+const use24hrTime = settings.use24hrTime
 
 //For more info see the github page.
 /*
@@ -199,7 +227,7 @@ begin function section
 
 async function setup(){
   
-  let quests = [{'key':'dynamicSpacing','q':'Do you want to enable dynamic spacing of the events in the left events view?'},{'key':'monStart','q':'Do you want the week to start on Monday in the right month view?'},{'key':'useBackgroundColor','q':'Do you want to use a backgroundColor different than the default white / black based on iOS appearance?'},{'key':'useTransparency','q':'Do you want to use the no-background.js transparency module?'},{'key':'showCurrentAllDayEvents','q':'Do you want to show "All Day" events that are happening today?'},{'key':'useEventShadow','q':'Do you want to show a shadow under the event name in the event list on the left of the widget (this helps for readability)?'}]
+  let quests = [{'key':'dynamicSpacing','q':'Do you want to enable dynamic spacing of the events in the left events view?'},{'key':'monStart','q':'Do you want the week to start on Monday in the right month view?'},{'key':'useBackgroundColor','q':'Do you want to use a backgroundColor different than the default white / black based on iOS appearance?'},{'key':'useTransparency','q':'Do you want to use the no-background.js transparency module?'},{'key':'showCurrentAllDayEvents','q':'Do you want to show "All Day" events that are happening today?'},{'key':'showReminders','q':'Do you want to display reminders with the events in the left side event list?'},{'key':'use24hrTime','q':'Do you want to show the time in a 24hr format instead of 12hr?'},{'key':'showCalendarColorEventList','q':'Do you want to display the event name in the color of the calendar for which it belongs?'},{'key':'useBaseTextColor','q':'Do you want to change the base text color (text color used for the event times and the calendar month view)?'},{'key':'useEventShadow','q':'Do you want to show a shadow under the event name in the event list on the left of the widget (this helps for readability)?'}]
 
   await quests.reduce(async (memo,i)=>{
     await memo
@@ -271,6 +299,69 @@ async function setup(){
           break
         default:
           settings.shadowColorDark=Color.black().hex
+          break
+      }
+  }
+  
+  if (settings.useBaseTextColor)
+  {
+    let baseTextColorLight = new Alert()
+    baseTextColorLight.title = 'baseTextColor Setup'
+    baseTextColorLight.message = 'What color baseText would you like to use while in light mode?'
+    baseTextColorLight.addAction('White')
+    baseTextColorLight.addAction('Black')
+    baseTextColorLight.addAction('Green')
+    baseTextColorLight.addAction('Red')
+    baseTextColorLight.addAction('Blue')
+    let fColorLight = await baseTextColorLight.presentSheet()
+    switch (fColorLight){
+      case 0:
+        settings.baseTextColorLight=Color.white().hex
+        break
+      case 1:
+        settings.baseTextColorLight=Color.black().hex
+        break
+      case 2:
+        settings.baseTextColorLight=Color.green().hex
+        break
+      case 3:
+        settings.baseTextColorLight=Color.red().hex
+        break
+      case 4:
+        settings.baseTextColorLight=Color.blue().hex
+        break
+      default:
+        settings.baseTextColorLight=Color.black().hex
+        break
+    }
+    
+    let baseTextColorDark = new Alert()
+    baseTextColorDark.title = 'baseTextColor Setup'
+    baseTextColorDark.message = 'What color baseText would you like to use while in dark mode?'
+    baseTextColorDark.addAction('White')
+    baseTextColorDark.addAction('Black')
+    baseTextColorDark.addAction('Green')
+    baseTextColorDark.addAction('Red')
+    baseTextColorDark.addAction('Blue')
+    let fColorDark = await baseTextColorDark.presentSheet()
+      switch (fColorDark){
+        case 0:
+          settings.baseTextColorDark=Color.white().hex
+          break
+        case 1:
+          settings.baseTextColorDark=Color.black().hex
+          break
+        case 2:
+          settings.baseTextColorDark=Color.green().hex
+          break
+        case 3:
+          settings.baseTextColorDark=Color.red().hex
+          break
+        case 4:
+          settings.baseTextColorDark=Color.blue().hex
+          break
+        default:
+          settings.baseTextColorDark=Color.black().hex
           break
       }
   }
@@ -514,10 +605,10 @@ function getHighlightedDate(date) {
   drawing.opaque = false;
   drawing.setFillColor(new Color('#ec534b'));
   drawing.fillEllipse(new Rect(1, 1, size - 2, size - 2));
-  drawing.setFont(Font.boldSystemFont(25));
+  drawing.setFont(Font.boldSystemFont(30));
   drawing.setTextAlignedCenter();
   drawing.setTextColor(new Color("#ffffff"));
-  drawing.drawTextInRect(date, new Rect(0, 10, size, size));
+  drawing.drawTextInRect(date, new Rect(0, 5, size, size));
   const currentDayImg = drawing.getImage();
   return currentDayImg;
 }
@@ -548,6 +639,8 @@ function addWidgetTextLine(
     textLine.font = font;
   }
   textLine.textOpacity = opacity;
+  if(useBaseTextColor)textLine.textColor=Color.dynamic(new Color(baseTextColorLight), new Color(baseTextColorDark))
+
 }
 
 async function successCallback(result) {
@@ -555,12 +648,27 @@ async function successCallback(result) {
   await CalendarEvent.nextWeek().then((res) => {
     newCalArray = res
   })
-  newCalArray = mergeArrays(calcal,newCalArray)
-
+  if(showReminders){
+    remin = await Reminder.allDueThisWeek()
+    reminNext=await Reminder.allDueNextWeek()
+    newCalArray = mergeArrays(calcal,newCalArray,remin,reminNext)
+  }else{
+    newCalArray = mergeArrays(calcal,newCalArray)
+  }
+  newCalArray=JSON.stringify(newCalArray).replace(/dueDate/g, 'startDate')
+  
+  newCalArray=JSON.parse(newCalArray)
+// Sort array by date in ASCENDING order
+  newCalArray.sort(function (a, b) {
+    if (a.startDate > b.startDate) return 1;
+    if (a.startDate < b.startDate) return -1;
+    return 0;
+  });
   newCalArray.forEach(eventCount)
 
   newCalArray.forEach(f)
 }
+
 
 function mergeArrays(...arrays) { 
   let mergedArray = []; 
@@ -576,12 +684,21 @@ async function failureCallback(error) {
 
 function eventCount(item){
   let now = new Date()
-
-  if (item.startDate.getTime() > now.getTime() || (showCurrentAllDayEvents?(item.startDate.getDate()==now.getDate() &&  item.isAllDay):false))
-  {
-    if(!calIgnore.includes(item.calendar.title)){
-      eventCounter +=1
-    }      
+  if (item.startDate > 0){
+    if (item.startDate.getTime() > now.getTime() || (showCurrentAllDayEvents?(item.startDate.getDate()==now.getDate() &&  item.isAllDay):false))  
+    {
+      if(!calIgnore.includes(item.calendar.title)){
+        eventCounter +=1
+      }      
+    }  
+  }else if (item.dueDate > 0){
+    if (item.dueDate.getTime() > now.getTime())  
+    {
+      if(!calIgnore.includes(item.calendar.title))
+      {
+        eventCounter +=1
+      }      
+    }  
   }
 }
 
@@ -589,78 +706,94 @@ function eventCount(item){
 function f(item){
   eventDisplay = (eventFontSize>1)?3 : 5
   const date = new Date(); 
-  if (item.startDate.getTime() > date.getTime() || (showCurrentAllDayEvents?(item.startDate.getDate()==date.getDate() &&  item.isAllDay):false))
-  {
-    if(!calIgnore.includes(item.calendar.title))
-    {
-      indexed+=1  
-      if(!allowDynamicSpacing)eventCounter=null
-      switch (eventCounter) {
-        case 1:
-        case 2:
-        case 3:
-          spacer = null
-          break;
-        case 4:
-          spacer = 3
-          break;
-        default:
-          spacer = 0
-          break;
-          }
-      if(indexed <= eventDisplay)
-      {      
-        const oDate = new Date(2001,00,01).getTime()
-        dF.dateFormat='MMM d'
-        let dd = item.startDate
-        let ddd=dF.string(dd)
-        if(!dHolder && dF.string(date)==ddd)         
-        {
-          let when = left.addText(' TODAY ')
-//           indexed+=1
-          when.font=Font.boldSystemFont(8*eventFontSize)
-          //when.textOpacity=0.6
-        }else if(ddd!=dHolder && !later){
-          left.addSpacer(2)
-          let when = left.addText(' LATER ')
-          //indexed+=1
-          when.font=Font.boldSystemFont(8*eventFontSize)
-          //when.textOpacity=0.6
-          later = true
-        }
-        let s = left.addStack()      
-        dHolder = ddd
-        let tx = left.addText(item.title)
-       tx.font=Font.boldMonospacedSystemFont(11*eventFontSize)         
-        tx.textColor=new Color(item.calendar.color.hex)
-        if(useEventShadow){
-          //add a shadow
-          tx.shadowRadius=4
-          //shadow color for the calendar event title
-          tx.shadowColor=Color.dynamic(new Color(shadowColorLight), new Color(shadowColorDark))  
-        }
-        dF.dateFormat='EEE'
-        let eee = dF.string(dd)        
-        let dt = eee+' '+ddd+' '
-        if(!item.isAllDay){
-          let staTime = item.startDate
-          let sep = '-'
-          let finTime = item.endDate
-          dF.dateFormat='h:mm'
-          let sAndFTimes = dF.string(staTime)+sep+dF.string(finTime)
-          dt = dt + sAndFTimes
-        }
-        dt = left.addText(dt)
-        dt.font=Font.systemFont(8*eventFontSize)
-        const nDate = item.startDate.getTime()
-        var diff = ((nDate-oDate)/1000)
-        diff=Number(diff)-tZOffsetSec
-        dt.url="calshow:"+diff
-        tx.url="calshow:"+diff
-      }
-    }
-    
+  let isCalEvent
+  if('endDate' in item){
+    isCalEvent=true
+  }else{
+    isCalEvent=false
+  }  
+//   log(item.startDate)
+  dF.dateFormat='yyyy-MM-dd HH:mm:ss.SSSZ'
+  let dateString = item.startDate.toString()
+  dateString=dateString.replace('T', ' ')
+//   log(dateString)
+  item.startDate = dF.date(dateString)
+  if(isCalEvent){
+    dateString=item.endDate.toString()
+    dateString=dateString.replace('T',' ')
+    item.endDate = dF.date(dateString)
   }
+//   log(item.startDate+'\n'+isCalEvent?item.endDate:'')
+  if (item.startDate.getTime() > date.getTime() || (isCalEvent && showCurrentAllDayEvents?(item.startDate.getDate()==date.getDate() &&  item.isAllDay):false))
+    {
+      if(!calIgnore.includes(item.calendar.title))
+      {
+        indexed+=1  
+        if(!allowDynamicSpacing)eventCounter=null
+        switch (eventCounter) {
+          case 1:
+          case 2:
+          case 3:
+            spacer = null
+            break;
+          case 4:
+            spacer = 3
+            break;
+          default:
+            spacer = 0
+            break;
+        }
+        if(indexed <= eventDisplay)
+        {      
+          const oDate = new Date(2001,00,01).getTime()
+          dF.dateFormat='MMM d'
+          let dd = item.startDate
+          let ddd=dF.string(dd)
+          if(!dHolder && dF.string(date)==ddd)         
+          {
+            let when = left.addText(' TODAY ')
+           when.font=Font.boldSystemFont(8*eventFontSize)
+if(useBaseTextColor)when.textColor=Color.dynamic(new Color(baseTextColorLight), new Color(baseTextColorDark))
+
+          }else if(ddd!=dHolder && !later){
+            left.addSpacer(2)
+            let when = left.addText(' LATER ')
+            when.font=Font.boldSystemFont(8*eventFontSize)
+if(useBaseTextColor)when.textColor=Color.dynamic(new Color(baseTextColorLight), new Color(baseTextColorDark))
+
+            later = true
+          }
+          let s = left.addStack()      
+          dHolder = ddd
+          let tx = left.addText((isCalEvent?'':'✓')+item.title)
+          tx.font= Font.boldMonospacedSystemFont(11*eventFontSize)  
+       
+          if(showCalendarColorEventList)tx.textColor= new Color(item.calendar.color.hex)
+          if(useEventShadow){
+            //add a shadow
+            tx.shadowRadius=4
+            //shadow color for the calendar event title
+            tx.shadowColor=Color.dynamic(new Color(shadowColorLight), new Color(shadowColorDark))  
+          }
+          dF.dateFormat='EEE'
+          let eee = dF.string(dd)        
+          let dt = eee+' '+ddd+' '
+          if(!item.isAllDay){
+            dF.dateFormat=use24hrTime?'HH:mm':'h:mma'
+            let sAndFTimes = isCalEvent?dF.string(item.startDate)+'-'+dF.string(item.endDate):dF.string(item.startDate)
+            dt = dt + sAndFTimes
+          }
+          dt = left.addText(dt)
+          dt.font=Font.systemFont(8*eventFontSize)
+          if(useBaseTextColor)dt.textColor=Color.dynamic(new Color(baseTextColorLight), new Color(baseTextColorDark))
+
+          const nDate = item.startDate.getTime()
+          var diff = ((nDate-oDate)/1000)
+          diff=Number(diff)-tZOffsetSec
+          tx.url=isCalEvent?"calshow:"+diff:"x-apple-reminderkit://"
+        }
+      }    
+    }
 }
 
 function colorDots(colors){
