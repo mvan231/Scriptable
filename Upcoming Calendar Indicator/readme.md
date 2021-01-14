@@ -54,6 +54,8 @@
     * The event list can be displayed with or without the color of the calendar or list for which it is from
     * Ability to set the base text color to be different from the default of black in light mode and white in dark mode (this is for the color of the calendar month and event list dates/times)
     * Added ability to set 24hr or 12hr time display for the event list
+    
+
     * Near the end of the setup, if you chose to use the no-background module, you will be asked for what size widget you will be using and also the placement of the widget. 
 
     ![Reset](https://i.imgur.com/w7kYZB9.jpg)
