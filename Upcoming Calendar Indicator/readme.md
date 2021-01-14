@@ -61,5 +61,8 @@
 ![Reset](https://i.imgur.com/w7kYZB9.jpg)
 * When you run the widget in the app, it will ask you if you want to reset. This is useful if you don't quite like your setup, you can reconfigure it easily from this method. 
 
-This is an example of what the v1.3 could look like. 
+This is an example of what v1.3 could look like. 
 ![new example image]( https://i.imgur.com/iUci7ty.jpg)
+
+This is an example of what v1.5 could look like with a base color set to red. 
+![v1.5 example](https://i.imgur.com/CORi5YL.jpg)
