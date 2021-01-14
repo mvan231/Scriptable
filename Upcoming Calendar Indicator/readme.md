@@ -64,5 +64,5 @@
 This is an example of what v1.3 could look like. 
 ![new example image]( https://i.imgur.com/iUci7ty.jpg)
 
-This is an example of what v1.5 could look like with a base color set to red. 
+This is an example of what v1.5 could look like with a base color set to red and using the 24hr time display. 
 ![v1.5 example](https://i.imgur.com/CORi5YL.jpg)
