@@ -1,7 +1,7 @@
 [Upcoming Calendar Indicator](Upcoming%20Calendar%20Indicator.js)  
 * **Credit goes to [Raigo Jerva](https://gist.github.com/rudotriton/b51d227c3d1d9cb497829ae45583224f#instructions) for the original code that I modified to create the base of the view for the right side of the widget.**
     Inspiration was drawn from a comment on one of the r/Scriptable subreddit posts, but I cannot find it any longer. 
-* This widget is similar to my Upcoming Calendar widget, but this now has a display for the full month view with indicators of up to five calendar colors for each day. Each event listed on the left side is tappable to open the calendar app to that date. 
+* This widget is similar to my Upcoming Calendar widget, but this now has a display for the full month view with indicators of up to five calendar colors for each day. Each event listed on the left side is tappable to open the calendar app to that date. **Note: the color dots next to the event name are no longer shown, updated screenshots will be added to this page to reflect the current state of the widget**
 ![example image](https://i.imgur.com/0QVdD7s.jpg)
 * Each calendar color only appears one time per date.
 * If you'd like just the left or the right side of the widget to be shown in a medium or small widget, you can use the widget parameter of 'left' or 'right' respectively.
