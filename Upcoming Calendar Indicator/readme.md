@@ -3,10 +3,8 @@
     Inspiration was drawn from a comment on one of the r/Scriptable subreddit posts, but I cannot find it any longer. 
 * This widget is similar to my Upcoming Calendar widget, but this now has a display for the full month view with indicators of up to five calendar colors for each day. Each event listed on the left side is tappable to open the calendar app to that date. 
 ![example image](https://i.imgur.com/0QVdD7s.jpg)
-* Each calendar color only appears one time per date. 
-* If you'd like certain calendars to not be included, you can add the calendar name(s) to the calIgnore array at the beginning of the script. 
-    * **Note:** each calendar to be ignored must be added inside of single or double quotes and separated by a comma (if more than one). I.e. ['Personal','Work']
-  * If you'd like just the left or the right side of the widget to be shown in a medium or small widget, you can use the widget parameter of 'left' or 'right' respectively. 
+* Each calendar color only appears one time per date.
+* If you'd like just the left or the right side of the widget to be shown in a medium or small widget, you can use the widget parameter of 'left' or 'right' respectively.
         
     ![Example](https://i.imgur.com/ri9Wzwr.jpg)
 * Set the flag for allowDynamicSpacing to true if you want extra soacing between the events in the left side event list if there are less than 5. If you don't want the dynamic spacing, set to false. 
