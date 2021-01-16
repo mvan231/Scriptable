@@ -2,8 +2,6 @@
 * **Credit goes to [Raigo Jerva](https://gist.github.com/rudotriton/b51d227c3d1d9cb497829ae45583224f#instructions) for the original code that I modified to create the base of the view for the right side of the widget.**
     Inspiration was drawn from a comment on one of the r/Scriptable subreddit posts, but I cannot find it any longer. 
 
-**Note: the color dots next to the event name are no longer shown, updated screenshots will be added to this page to reflect the current state of the widget**
-
 * This widget is similar to my Upcoming Calendar widget, but this now has a display for the full month view with indicators of up to five calendar colors for each day. Each event listed on the left side is tappable to open the calendar app to that date. 
 ![example image](https://i.imgur.com/wz6ZSCG.jpg)
 * Each calendar color dot only appears one time per date in the month view.
