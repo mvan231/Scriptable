@@ -13,11 +13,12 @@
       
 ![update](https://i.imgur.com/JBawO7v.jpg)
 ---
-This is an example of what v1.3 could look like. 
+  This is an example of what v1.3 could look like. 
 ![new example image]( https://i.imgur.com/iUci7ty.jpg)
 
-This is an example of what v1.5 could look like with a base color set to red and using the 24hr time display. 
+  This is an example of what v1.5 could look like with a base color set to red and using the 24hr time display. 
 ![v1.5 example](https://i.imgur.com/CORi5YL.jpg)
+
 ---
 Upon installing and running the script in the app, you will be asked a set of questions on the first run to get things setup for you. The questions to be answered are for:   
 ---
