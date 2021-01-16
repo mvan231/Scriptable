@@ -6,7 +6,8 @@
 
 * This widget is similar to my Upcoming Calendar widget, but this now has a display for the full month view with indicators of up to five calendar colors for each day. Each event listed on the left side is tappable to open the calendar app to that date. 
 ![example image](https://i.imgur.com/0QVdD7s.jpg)
-* Each calendar color only appears one time per date.
+* Each calendar color dot only appears one time per date in the month view.
+* The month view is tappable to open the current date in the calendar app if using transparency. If not using transparency, each date is tappable to go to that date in the calendar app. 
 * If you'd like just the left or the right side of the widget to be shown in a medium or small widget, you can use the widget parameter of 'left' or 'right' respectively.
         
     ![Example](https://i.imgur.com/ri9Wzwr.jpg)
