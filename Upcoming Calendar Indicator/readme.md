@@ -48,6 +48,9 @@ Upon installing and running the script in the app, you will be asked a set of qu
   
   * Ability to show a shadow color under the event name in the event list. The color of the shadow is customizable in the next step. 
 ---        
+  ![Sunday and Saturday Color Enable](https://i.imgur.com/97Ic5UH.png)
+  * Ability to change the colors of Sunday / Saturday in the month view
+---
   ![Shadow color pick for light and dark modes](https://i.imgur.com/hYEjkmo.jpg)
   * If you choose "Yes" to have a shadow color, you will be asked to choose the color of the shadow for the light and dark mode appearances. This extra customization helps with different background colors and photos for better readability.
 ---        
@@ -59,6 +62,9 @@ Upon installing and running the script in the app, you will be asked a set of qu
       
   * Event list font size choice between Normal, Small, and Large
 ---        
+  ![Sunday / Saturday Color Choice](https://i.imgur.com/OKDJy0A.jpg)
+  * If you chose yes to Sunday or Saturday color, you'll be prompted to choose the color for those days. 
+---
   ![Calendar Ignore and prompt](https://i.imgur.com/a7q2AOU.jpg)
   * You will be asked if you would like to EXCLUDE any calendars from the widget, this is beneficial if you don't want to display something like the "Holidays" calendar on the widget. 
 ---         
