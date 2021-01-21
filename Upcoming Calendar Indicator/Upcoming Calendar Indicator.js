@@ -6,7 +6,7 @@ let scriptPath = fm.documentsDirectory()+'/UpcomingIndicator/'
 let settingsPath = scriptPath+'settings.json'
 const reRun = URLScheme.forRunningScript()
 if(!fm.fileExists(scriptPath))fm.createDirectory(scriptPath, false)
-let needUpdated = await updateCheck(1.5)
+let needUpdated = await updateCheck(1.6)
 //log(needUpdated)
 /*--------------------------
 |------version history------
@@ -43,6 +43,13 @@ v1.5
 - add in AM/PM indicator to the date shown in event list
 - add ability to change the base text color between for each mode (light/dark)
 - add setting for 24hr time vs 12hr for event list
+
+v1.6
+- add a fix for reminders that do not have a due date which can show up in the list of items being processed
+- add in customizable sunday and saturday colors for the month view
+- change "Today" and "Later" font type to better distinguish them from the events
+- improvements to the setup
+
 --------------------------*/
 /*
 ####################
@@ -156,6 +163,16 @@ if (useBaseTextColor)
 //use24hrTime is a setup question which allows the user to display the event times in a 24hr format instead of 12hr format
 const use24hrTime = settings.use24hrTime
 
+//useSundayColor is a setup question which allows a user definable color to be used for the sunday date in the month view
+const useSundayColor = settings.useSundayColor
+let sundayColor
+if(useSundayColor)sundayColor= '#'+settings.sundayColor
+
+//useSaturdayColor is a setup question which allows a user definable color to be used for the saturday date in the month view
+const useSaturdayColor = settings.useSaturdayColor
+let saturdayColor
+if(useSaturdayColor)saturdayColor= '#'+settings.saturdayColor
+
 //For more info see the github page.
 /*
 ####################
@@ -175,7 +192,7 @@ let indexed = 0;
 var eventCounter=0
 let w = new ListWidget()
 const currentDayColor = "#000000";
-const textColor = "#ffffff";
+let textColor = "#ffffff";
 const textRed = "#ec534b";
   
 let dF = new DateFormatter()
@@ -227,7 +244,7 @@ begin function section
 
 async function setup(){
   
-  let quests = [{'key':'dynamicSpacing','q':'Do you want to enable dynamic spacing of the events in the left events view?'},{'key':'monStart','q':'Do you want the week to start on Monday in the right month view?'},{'key':'useBackgroundColor','q':'Do you want to use a backgroundColor different than the default white / black based on iOS appearance?'},{'key':'useTransparency','q':'Do you want to use the no-background.js transparency module?'},{'key':'showCurrentAllDayEvents','q':'Do you want to show "All Day" events that are happening today?'},{'key':'showReminders','q':'Do you want to display reminders with the events in the left side event list?'},{'key':'use24hrTime','q':'Do you want to show the time in a 24hr format instead of 12hr?'},{'key':'showCalendarColorEventList','q':'Do you want to display the event name in the color of the calendar for which it belongs?'},{'key':'useBaseTextColor','q':'Do you want to change the base text color (text color used for the event times and the calendar month view)?'},{'key':'useEventShadow','q':'Do you want to show a shadow under the event name in the event list on the left of the widget (this helps for readability)?'}]
+  let quests = [{'key':'dynamicSpacing','q':'Do you want to enable dynamic spacing of the events in the left events view?'},{'key':'monStart','q':'Do you want the week to start on Monday in the right month view?'},{'key':'useBackgroundColor','q':'Do you want to use a backgroundColor different than the default white / black based on iOS appearance?'},{'key':'useTransparency','q':'Do you want to use the no-background.js transparency module?'},{'key':'showCurrentAllDayEvents','q':'Do you want to show "All Day" events that are happening today?'},{'key':'showReminders','q':'Do you want to display reminders with the events in the left side event list?'},{'key':'use24hrTime','q':'Do you want to show the time in a 24hr format instead of 12hr?'},{'key':'showCalendarColorEventList','q':'Do you want to display the event name in the color of the calendar for which it belongs?'},{'key':'useBaseTextColor','q':'Do you want to change the base text color (text color used for the event times and the calendar month view)?'},{'key':'useSundayColor','q':'Do you want to change the text color for Sunday in the month view?'},{'key':'useSaturdayColor','q':'Do you want to change the text color for Saturday in the month view?'},{'key':'useEventShadow','q':'Do you want to show a shadow under the event name in the event list on the left of the widget (this helps for readability)?'}]
 
   await quests.reduce(async (memo,i)=>{
     await memo
@@ -399,6 +416,72 @@ async function setup(){
   }
   log(settings)
   
+    if (settings.useSundayColor)
+  {
+    let sundayCol = new Alert()
+    sundayCol.title = 'sundayColor Setup'
+    sundayCol.message = 'What color would you like to show for Sunday in the month view?'
+    sundayCol.addAction('White')
+    sundayCol.addAction('Black')
+    sundayCol.addAction('Green')
+    sundayCol.addAction('Red')
+    sundayCol.addAction('Blue')
+    let sunCol = await sundayCol.presentSheet()
+    switch (sunCol){
+      case 0:
+        settings.sundayColor=Color.white().hex
+        break
+      case 1:
+        settings.sundayColor=Color.black().hex
+        break
+      case 2:
+        settings.sundayColor=Color.green().hex
+        break
+      case 3:
+        settings.sundayColor=Color.red().hex
+        break
+      case 4:
+        settings.sundayColor=Color.blue().hex
+        break
+      default:
+        settings.sundayColor=Color.black().hex
+        break
+    }
+  }
+  
+      if (settings.useSaturdayColor)
+  {
+    let saturdayCol = new Alert()
+    saturdayCol.title = 'saturdayColor Setup'
+    saturdayCol.message = 'What color would you like to show for Saturday in the month view?'
+    saturdayCol.addAction('White')
+    saturdayCol.addAction('Black')
+    saturdayCol.addAction('Green')
+    saturdayCol.addAction('Red')
+    saturdayCol.addAction('Blue')
+    let sunCol = await saturdayCol.presentSheet()
+    switch (sunCol){
+      case 0:
+        settings.saturdayColor=Color.white().hex
+        break
+      case 1:
+        settings.saturdayColor=Color.black().hex
+        break
+      case 2:
+        settings.saturdayColor=Color.green().hex
+        break
+      case 3:
+        settings.saturdayColor=Color.red().hex
+        break
+      case 4:
+        settings.saturdayColor=Color.blue().hex
+        break
+      default:
+        settings.saturdayColor=Color.black().hex
+        break
+    }
+  }
+  
   settings['calsToIgnore']=[]
   log('settings is now:\n'+settings)
   //write the settings to iCloud Drive
@@ -420,21 +503,19 @@ async function setup(){
     calIgnoreP.addAction('OK')
     await calIgnoreP.present()
     await Calendar.presentPicker(true).then((cals)=>{
-      let cally =[]
       cals.forEach((f)=>{
-        cally.push(f.title)
+        calIg.push(f.title)
       })
-      calIg = cally
     })
     
   }
   
   settings['calsToIgnore'] = calIg
   settings['quickReset']=true
-  fm.writeString(settingsPath, JSON.stringify(settings))
+  await fm.writeString(settingsPath, JSON.stringify(settings))
   
-  Safari.open(reRun)
-  throw new Error('running again')  
+//   Safari.open(reRun)
+//   throw new Error('running again')  
 }
 
 
@@ -455,7 +536,7 @@ async function createWidget() {
   const monthLine = right.addStack();
   monthLine.addSpacer(4);
   addWidgetTextLine(monthLine, dF.string(date).toUpperCase() + (needUpdated? ' Update' : ''), {
-    color: textRed,
+    color:'', //textRed,
     textSize: 12,
     font: Font.boldSystemFont(12),
   });
@@ -490,6 +571,9 @@ async function createWidget() {
           sat = 6
           sun = 0
         }
+        textColor=""
+        if(i==sat)textColor=saturdayColor
+        if(i==sun)textColor=sundayColor
         addWidgetTextLine(dateStackUp, `${month[i][j]}`,
         {
           color: textColor,
@@ -624,7 +708,7 @@ function addWidgetTextLine(
   widget,
   text,
   {
-    color = "#ffffff",
+    color,
     textSize = 12,
     opacity = 1,
     align,
@@ -639,7 +723,8 @@ function addWidgetTextLine(
     textLine.font = font;
   }
   textLine.textOpacity = opacity;
-  if(useBaseTextColor)textLine.textColor=Color.dynamic(new Color(baseTextColorLight), new Color(baseTextColorDark))
+  if(color)textLine.textColor=new Color(color)
+if(useBaseTextColor)textLine.textColor=Color.dynamic(new Color(baseTextColorLight), new Color(baseTextColorDark))
 
 }
 
@@ -724,6 +809,9 @@ function f(item){
     item.endDate = dF.date(dateString)
   }
 //   log(item.startDate+'\n'+isCalEvent?item.endDate:'')
+//   log(item)
+  if(item.startDate > 0)
+  {
   if (item.startDate.getTime() > date.getTime() || (isCalEvent && showCurrentAllDayEvents?(item.startDate.getDate()==date.getDate() &&  item.isAllDay):false))
     {
       if(!calIgnore.includes(item.calendar.title))
@@ -752,13 +840,13 @@ function f(item){
           if(!dHolder && dF.string(date)==ddd)         
           {
             let when = left.addText(' TODAY ')
-           when.font=Font.boldSystemFont(8*eventFontSize)
+           when.font=Font.heavyMonospacedSystemFont(8*eventFontSize)
 if(useBaseTextColor)when.textColor=Color.dynamic(new Color(baseTextColorLight), new Color(baseTextColorDark))
 
           }else if(ddd!=dHolder && !later){
             left.addSpacer(2)
             let when = left.addText(' LATER ')
-            when.font=Font.boldSystemFont(8*eventFontSize)
+            when.font=Font.heavyMonospacedSystemFont(8*eventFontSize)
 if(useBaseTextColor)when.textColor=Color.dynamic(new Color(baseTextColorLight), new Color(baseTextColorDark))
 
             later = true
@@ -794,6 +882,7 @@ if(useBaseTextColor)when.textColor=Color.dynamic(new Color(baseTextColorLight), 
         }
       }    
     }
+  }
 }
 
 function colorDots(colors){
