@@ -7,7 +7,6 @@
 * Each calendar color dot only appears one time per date in the month view.
 * The month view is tappable to open the current date in the calendar app if using transparency. If not using transparency, each date is tappable to go to that date in the calendar app. 
 * If you'd like just the left or the right side of the widget to be shown in a medium or small widget, you can use the widget parameter of 'left' or 'right' respectively.
-* *As a helping tool, you can get the app [Jayson](https://apps.apple.com/gb/app/jayson/id1447750768) to help with modifying the settings file manually if you only want to change one or two settings without going through the entire setup process.*
         
     ![Example](https://i.imgur.com/1uZ3wzZ.jpg)
 * When updates to the code are available you will see a note in the widget
@@ -22,6 +21,7 @@
 
 ---
 Upon installing and running the script in the app, you will be asked a set of questions on the first run to get things setup for you. The questions to be answered are for:   
+*As a helping tool, you can get the app [Jayson](https://apps.apple.com/gb/app/jayson/id1447750768) to help with modifying the settings file manually if you only want to change one or two settings without going through the entire setup process.*
 ---
   ![Dynamic Spacing and Monday as first day of week](https://i.imgur.com/ZTMxt3g.jpg)
         
