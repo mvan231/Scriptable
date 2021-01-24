@@ -21,7 +21,7 @@
 
 ---
 Upon installing and running the script in the app, you will be asked a set of questions on the first run to get things setup for you. The questions to be answered are for:   
-
+---
 *As a helping tool, you can get the app [Jayson](https://apps.apple.com/gb/app/jayson/id1447750768) to help with modifying the settings file manually if you only want to change one or two settings without going through the entire setup process.*
 
 ---
