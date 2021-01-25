@@ -13,8 +13,11 @@ $$$$$
 Version History
 $$$$$
 
-v1.1 - Update to include the proper month number due to month being 0 indexed
 v1.0 - Initial Release
+
+v1.1 - Update to include the proper month number due to month being 0 indexed
+
+v1.2 - Improvements to the alert at the end to specify how many scripts were backed uo and where to\n- Modified the code to use variables directly in the strings aa templates\n- Script backup folders are now labeled with the hour and minute of the backup so multiple backuos can be kep from a given day (i.e. a backup oerformed at 0940 on January 5, 2025 would be labeled as 2025_1_5__0940)
 
 ##########
 */
@@ -24,25 +27,36 @@ dir=ab.documentsDirectory()
 
 const now = new Date()
 const bDirName = "ScriptBackup"
-const newDirName = dir+"/"+bDirName+"/"+now.getFullYear()+"_"+(now.getMonth() + 1)+"_"+now.getDate()
+const backupTo = `/${bDirName}/${now.getFullYear()}_${(now.getMonth() + 1)}_${now.getDate()}__${(now.getHours()<10)?'0'+now.getHours():now.getHours()}${now.getMinutes()}`
+const newDirName = `${dir}${backupTo}`
 
 ab.createDirectory(newDirName,true)
 
-log(dir)
 let a = ab.listContents(dir)
+
+//provide a container for the script count
+let count = 0
+//for each item found in the directory, perform myFunction
 a.forEach(myFunction)
+
+let aa = new Alert()
+aa.addAction("OK")
+aa.title = "Script Backup"
+aa.message = `All Done!\n${count} scripts backed up to\n${backupTo}`
+aa.present()
+//end of script
+Script.complete()
+
+/*
+Begin Functions
+*/
 
 function myFunction(item, index){
   var ext = (ab.fileExtension(dir+"/"+item))
   if (ext == "js")
   {
-    log(item)
     let file = ab.read(dir+"/"+item)
     ab.write(newDirName+"/"+item, file)
+    count++
   }
 }
-
-let aa = new Alert()
-aa.addAction("OK")
-aa.message = "All Done"
-aa.present()
