@@ -1,4 +1,6 @@
 # [Scriptable.app](https://scriptable.app)
+    #### [Widgets](https://github.com/mvan231/Scriptable#widgets)
+    #### [Scripts](https://github.com/mvan231/Scriptable#scripts)
 
 ## Widgets
 
