@@ -2,7 +2,7 @@
    #### [Widgets](https://github.com/mvan231/Scriptable#widgets)
    #### [Scripts](https://github.com/mvan231/Scriptable#scripts-1)
    #### [Utilities made by others](https://github.com/mvan231/Scriptable/blob/main/README.md#utilites-from-others)
-   #### [
+   #### [First time adding a widget?](https://github.com/mvan231/Scriptable/blob/main/README.md#first-time-adding-a-widget)
 
 ## Widgets
 
