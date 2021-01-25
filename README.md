@@ -1,8 +1,8 @@
 # [Scriptable.app](https://scriptable.app)
-   * [Widgets](https://github.com/mvan231/Scriptable#widgets)
+   * [Widgets](#widgets)
    * [Scripts](#scripts)
-   * [Utilities made by others](https://github.com/mvan231/Scriptable/blob/main/README.md#utilites-from-others)
-   * [First time adding a widget?](https://github.com/mvan231/Scriptable/blob/main/README.md#first-time-adding-a-widget)
+   * [Utilities made by others](#utilites-from-others)
+   * [First time adding a widget?](#first-time-adding-a-widget)
 
 ## Widgets
 
