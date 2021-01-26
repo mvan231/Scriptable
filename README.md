@@ -81,9 +81,11 @@
 
 * ### [Canada Covid Light](Canada%20Covid%20Light.js)
     * See Covid stats for Canada in light color
+    * *based on the [script](https://reddit.com/r/Scriptable/comments/l4kypx/_/gkp6svd/?context=1) from u/Mr-H-E-Ron on reddit*
 
 * ### [Canada Covid Dark](Canada%20Covid%20Dark.js)
     * See Covid stats for Canada in dark color
+    * *based on the [script](https://reddit.com/r/Scriptable/comments/l4kypx/_/gkp6svd/?context=1) from u/Mr-H-E-Ron on reddit*
 
 ## Scripts
 
