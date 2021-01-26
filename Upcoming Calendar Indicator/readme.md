@@ -54,13 +54,13 @@ Upon installing and running the script in the app, you will be asked a set of qu
   ![Sunday and Saturday Color Enable](https://i.imgur.com/97Ic5UH.png)
   * Ability to change the colors of Sunday / Saturday in the month view
 ---
-  ![Shadow color pick for light and dark modes](https://i.imgur.com/hYEjkmo..jpg)
+  ![Shadow color pick for light and dark modes](https://i.imgur.com/hYEjkmo.jpg)
   * If you choose "Yes" to have a shadow color, you will be asked to choose the color of the shadow for the light and dark mode appearances. This extra customization helps with different background colors and photos for better readability.
 ---
   ![Base Text Color Pick](https://i.imgur.com/1sZ281Q.jpg)
   * If you choose "Yes" to change the base text color, you will be asked to choose the colors to be used for light and dark mode appearances. This can be purely for personalization preference or if you noticed that the default black in light mode and white in dark mode do not allow the widget to be read properly with your wallpaper setting (if utilizing the transparency module).
 ---
-  ![Background color entry and event font size](https://i.imgur.com/K1cBxB9..jpg)
+  ![Background color entry and event font size](https://i.imgur.com/K1cBxB9.jpg)
   * If you chose "Yes" to utilizing a different background color for the widget, you will be asked to enter the hex color for the background to display.
 
   * Event list font size choice between Normal, Small, and Large
