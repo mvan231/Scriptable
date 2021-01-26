@@ -79,6 +79,12 @@
     
     ![example](https://i.imgur.com/52X0MaC.jpg)
 
+* ### [Canada Covid Light](Canada%20Covid%20Light.js)
+    * See Covid stats for Canada in light color
+
+* ### [Canada Covid Dark](Canada%20Covid%20Dark.js)
+    * See Covid stats for Canada in dark color
+
 ## Scripts
 
 * ### [ScriptBackup.js](ScriptBackup.js)
