@@ -19,3 +19,7 @@ To setup the widget enter the country name in the widget parameter.
 ![Example1 - with colors](https://i.imgur.com/ISs6Hgi.jpg)
 
 ![Example2 - without colors](https://i.imgur.com/2zE7Mqu.jpg)
+
+##### Update Image #####
+If an update is made to the code, you'll be shown in the widget and can run the widget in app to be taken to the GitHub page.
+![update](https://i.imgur.com/buO15NQ.jpg)
