@@ -32,7 +32,7 @@ let req = new Request(API_URL)
 let json = await req.loadJSON()
 
 //check if update is available
-let needUpdate = await updateCheck(1.1)
+let needUpdate = await updateCheck(1.0)
 
 //get the data from the JSON
 let todayCases = json['todayCases'].toString() 
