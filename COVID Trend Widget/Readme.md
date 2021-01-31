@@ -10,7 +10,7 @@ This widget caches data in the Scriptable iCloud Drive folder for comparison to 
 
 To setup the widget enter the country name in the widget parameter.
 
-**Note:** If the country name doesn't work, make sure it is a valid country name by visiting [this page](https://coronavirus-19-api.herokuapp.com/tabs/tab2) and find the country by name and use that in the parameter.
+**Note:** If the country name doesn't work, make sure it is a valid country name by visiting [this page](https://coronavirus-19-api.herokuapp.com) and find the country by name and use that in the parameter.
 
 ##### Setup Image #####
 ![setup](https://i.imgur.com/wCGFY0d.png)
