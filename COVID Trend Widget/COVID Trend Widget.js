@@ -10,6 +10,13 @@ The default setting has colored arrows enabled (green for good and red for bad).
 */
 const colorArrows = true
 
+/*--------------------------
+
+Version History:
+v1.0 initial release
+v1.1 - added a fix for items returned from API with 'null' value
+
+--------------------------*/
 
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@
 
@@ -20,7 +27,7 @@ Begin Script
 
 let widget = new ListWidget()
 
-const country = args.widgetParameter?args.widgetParameter:'Guatemala'
+const country = args.widgetParameter?args.widgetParameter:'Sweden'
 
 const API_URL = "https://coronavirus-19-api.herokuapp.com/countries/"+country;
 
@@ -30,17 +37,20 @@ const cacheFile = fileManager.joinPath(cacheDirectory, country+'_data.json');
 
 let req = new Request(API_URL) 
 let json = await req.loadJSON()
-
+log(json)
 //check if update is available
-let needUpdate = await updateCheck(1.0)
+let needUpdate = await updateCheck(1.1)
 
 //get the data from the JSON
-let todayCases = json['todayCases'].toString() 
-let todayDeaths = json['todayDeaths'].toString()
-let recovered = json['recovered'].toString()
-let active = json['active'].toString()
-let deaths = json['deaths'].toString()
-let cases = json['cases'].toString()
+let todayCases = checkForValueInJSON('todayCases')
+let todayDeaths = checkForValueInJSON('todayDeaths')
+let recovered = checkForValueInJSON('recovered')
+let active = checkForValueInJSON('active')
+let deaths = checkForValueInJSON('deaths')
+let cases = checkForValueInJSON('cases')
+
+
+
 const date = new Date()
 let dF = new DateFormatter()
 dF.dateFormat='dd MMM yyyy'
@@ -190,6 +200,12 @@ function createSymbol(symbolName) {
   return symbol.image;
 }
 
+function checkForValueInJSON(item){
+  //log(json[item])
+  let out = (json[item]==null)?'0':json[item].toString()
+  //log(out)
+  return out
+}
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 End Functions
