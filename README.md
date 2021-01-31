@@ -87,6 +87,10 @@
     * See Covid stats for Canada in dark color
     * *based on the [script](https://reddit.com/r/Scriptable/comments/l4kypx/_/gkp6svd/?context=1) from u/Mr-H-E-Ron on reddit*
 
+* ### [COVID Trend Widget](COVID%20Trend%20Widget)
+    * ![Example1 - with colors](https://i.imgur.com/ISs6Hgi.jpg)
+    * This widget will display country level stats for COVID-19 and also display a trending indicator whether the given item is trending up, down, or steady. 
+
 ## Scripts
 
 * ### [ScriptBackup.js](ScriptBackup.js)
