@@ -15,6 +15,7 @@ const colorArrows = true
 Version History:
 v1.0 initial release
 v1.1 - added a fix for items returned from API with 'null' value
+v1.2 - add new Intl.NumberFormat().format(itemValue) so the item values are formatted for better readability
 
 --------------------------*/
 
@@ -39,7 +40,7 @@ let req = new Request(API_URL)
 let json = await req.loadJSON()
 log(json)
 //check if update is available
-let needUpdate = await updateCheck(1.1)
+let needUpdate = await updateCheck(1.2)
 
 //get the data from the JSON
 let todayCases = checkForValueInJSON('todayCases')
@@ -58,7 +59,7 @@ const countryTx = widget.addText(country)
 countryTx.font = Font.systemFont(15) 
 countryTx.textColor=Color.white()
 countryTx.centerAlignText()
-//if update is available, disolay it in thr widget
+//if update is available, disolay it in the widget
 if(needUpdate)
 {  
   const upDText = widget.addText('Update Available')
@@ -83,7 +84,6 @@ widget.backgroundColor=Color.black()
 Script.setWidget(widget) 
 Script.complete()
 widget.presentSmall()
-// widget.presentLarge()
 
 /*
 @@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -101,7 +101,7 @@ function addItem(item,itemValue){
   textStack.layoutVertically()
   symbolStack.layoutVertically()
   
-  let val = textStack.addText(itemValue) 
+  let val = textStack.addText(new Intl.NumberFormat().format(itemValue))
   val.font=Font.mediumRoundedSystemFont(12)
   val.textColor=Color.lightGray()
   const subt1 = textStack.addText(item) 
