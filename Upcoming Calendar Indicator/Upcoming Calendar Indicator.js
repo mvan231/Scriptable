@@ -6,7 +6,7 @@ let scriptPath = fm.documentsDirectory()+'/UpcomingIndicator/'
 let settingsPath = scriptPath+'settings.json'
 const reRun = URLScheme.forRunningScript()
 if(!fm.fileExists(scriptPath))fm.createDirectory(scriptPath, false)
-let needUpdated = await updateCheck(1.6)
+let needUpdated = await updateCheck(1.7)
 //log(needUpdated)
 /*--------------------------
 |------version history------
@@ -49,6 +49,13 @@ v1.6
 - add in customizable sunday and saturday colors for the month view
 - change "Today" and "Later" font type to better distinguish them from the events
 - improvements to the setup
+
+1.7
+- add a fix for the day items being tappable in the month view
+- enabled date URLs for each day in month view when using transparency
+- reminders now indicated in the list view with an empty box or a checked box depending on completion status
+- reverse logic on calendae picker to set the calendars to include instead if the calendars to exclude
+- added large widget size functionality
 
 --------------------------*/
 /*
@@ -107,9 +114,9 @@ start of user definition - no longer needed as manuak entry as it is handled in 
 ####################
 */
 
-//calendar names can be added to the calIgnore array below if you do not want them to be shown in either the list of calendar events or the indicators on the month view. These must be enclosed in single or double quotes.  
+//calendar names are included in thr cal variable belowto display them in the list of calendar events and the indicators on the month view. These must be enclosed in single or double quotes. (this is handled by the setup questions)
 
-const calIgnore = settings.calsToIgnore
+const cal = settings.cals
 
 //set the flag for allowDynamicSpacing to true if you want extra soacing between the events in the left side event list if there are less than 5. If you don't want the dynamic spacing, set to false. 
 
@@ -188,7 +195,10 @@ if(args.widgetParameter){
   r=true
   l=true
 }
-let indexed = 0;
+let indexed = 0
+
+var widgFam = config.widgetFamily
+
 var eventCounter=0
 let w = new ListWidget()
 const currentDayColor = "#000000";
@@ -206,22 +216,23 @@ if (widg=='right')r=true
 if (widg=='left')l=true
 if(l){
   var left = main.addStack()
-  left.size=new Size(0, 135) 
+  if(widgFam!='large')left.size=new Size(0, 135) 
   left.layoutVertically()  
-  await CalendarEvent.thisWeek().then(successCallback, failureCallback)
 }
 if(r && l)main.addSpacer()
 if(r)
 {  
   var right = main.addStack()  
-  right.size=new Size(0, 135)
+  if(widgFam!='large')right.size=new Size(0, 135)
   right.layoutVertically()
-
-  await createWidget();
+  var mthStack = right.addStack()
+  mthStack.layoutVertically()
 }
+if (l)  await CalendarEvent.thisWeek().then(successCallback, failureCallback)
+if (r) await createWidget();
 if(useBackgroundColor)w.backgroundColor=new Color(settings.backgroundColor)
 
-if(useTransparency){
+if(useTransparency && widgFam!='large'){
 const RESET_BACKGROUND = !config.runsInWidget
 const { transparent } = importModule('no-background')
 w.backgroundImage = await transparent(Script.name(), RESET_BACKGROUND)
@@ -229,7 +240,11 @@ w.backgroundImage = await transparent(Script.name(), RESET_BACKGROUND)
 
 Script.setWidget(w)
 Script.complete()
-w.presentMedium()
+if(widgFam=='large'){
+  w.presentLarge()
+}else{
+  w.presentMedium()
+}
 
 
 /*
@@ -482,40 +497,30 @@ async function setup(){
     }
   }
   
-  settings['calsToIgnore']=[]
+  settings['cal']=[]
   log('settings is now:\n'+settings)
   //write the settings to iCloud Drive
   fm.writeString(settingsPath, JSON.stringify(settings))
-    
-  let calIgnoreP = new Alert()
-  calIgnoreP.title='calIgnore Setup'
-  calIgnoreP.message='Do you want to prevent specific calendars from being displayed?'
-  calIgnoreP.addAction('Yes')
-  calIgnoreP.addAction('No')
-  a= await calIgnoreP.presentSheet()
   
-  settings['calIgnore']=(a==0)?true:false
   log(settings)
-  let calIg = []
-  if(settings.calIgnore){
-    calIgnoreP=new Alert()
-    calIgnoreP.message='In the next screen, please select the calendars to prevent from displaying'
-    calIgnoreP.addAction('OK')
-    await calIgnoreP.present()
-    await Calendar.presentPicker(true).then((cals)=>{
-      cals.forEach((f)=>{
-        calIg.push(f.title)
-      })
+  let cal = []
+  calP=new Alert()
+  calP.message='In the next screen, please select the calendars to display in the widget'
+  calP.addAction('OK')
+  await calP.present()
+  await Calendar.presentPicker(true).then((cals)=>{
+    cals.forEach((f)=>{
+      cal.push(f.title)
     })
-    
-  }
+  })
   
-  settings['calsToIgnore'] = calIg
+  settings['cals'] = cal
   settings['quickReset']=true
   await fm.writeString(settingsPath, JSON.stringify(settings))
   
 //   Safari.open(reRun)
-//   throw new Error('running again')  
+//   throw new Error('running again')    
+  return
 }
 
 
@@ -525,15 +530,18 @@ async function createWidget() {
   // opacity value for weekends and times
   const opacity = 6/10;  
   const oDate = new Date(2001,00,01).getTime(),date = new Date();   
-  if(useTransparency) {
-     let diff = ((new Date(date.getFullYear(),date.getMonth(),date.getDate())-oDate)/1000)
-     diff=Number(diff)-tZOffsetSec
-     right.url='calshow:'+diff
-  }
+//   if(useTransparency) {
+//      let diff = ((new Date(date.getFullYear(),date.getMonth(),date.getDate())-oDate)/1000)
+//      diff=Number(diff)-tZOffsetSec
+//      right.url='calshow:'+diff
+//   }
   dF.dateFormat = "MMMM";
-
   // Current month line
-  const monthLine = right.addStack();
+  const monthLine = mthStack.addStack();
+//   monthLine.borderColor=Color.black()
+//   monthLine.borderWidth=1
+//   mthStack.borderColor=Color.black()
+//   mthStack.borderWidth=1
   monthLine.addSpacer(4);
   addWidgetTextLine(monthLine, dF.string(date).toUpperCase() + (needUpdated? ' Update' : ''), {
     color:'', //textRed,
@@ -541,7 +549,7 @@ async function createWidget() {
     font: Font.boldSystemFont(12),
   });
 
-  const calendarStack = right.addStack();
+  const calendarStack = mthStack.addStack();
   calendarStack.spacing = 3;
 
   const month = buildMonthVertical();
@@ -583,8 +591,9 @@ async function createWidget() {
         });
       }
       
-      if (!useTransparency){   
-        const nDate = new Date(date.getFullYear(),date.getMonth(),month[i][j])
+      //if (!useTransparency && !isNaN(month[i][j])){   
+      if (!isNaN(month[i][j])){   
+          const nDate = new Date(date.getFullYear(),date.getMonth(),month[i][j])
         let diff = ((nDate-oDate)/1000)
         diff=Number(diff)-tZOffsetSec
         dateStack.url='calshow:'+diff
@@ -603,7 +612,7 @@ async function createWidget() {
         let events = await CalendarEvent.between(st, fn)
         if (events.length>0){       
           events.forEach((kk,index)=>{ 
-           if(!calIgnore.includes(kk.calendar.title)){
+           if(cal.includes(kk.calendar.title)){
             if(index<=5){
               if(!colors.includes(kk.calendar.color.hex)){
                colors.push(kk.calendar.color.hex)
@@ -772,14 +781,14 @@ function eventCount(item){
   if (item.startDate > 0){
     if (item.startDate.getTime() > now.getTime() || (showCurrentAllDayEvents?(item.startDate.getDate()==now.getDate() &&  item.isAllDay):false))  
     {
-      if(!calIgnore.includes(item.calendar.title)){
+      if(cal.includes(item.calendar.title)){
         eventCounter +=1
       }      
     }  
   }else if (item.dueDate > 0){
     if (item.dueDate.getTime() > now.getTime())  
     {
-      if(!calIgnore.includes(item.calendar.title))
+      if(cal.includes(item.calendar.title))
       {
         eventCounter +=1
       }      
@@ -790,6 +799,7 @@ function eventCount(item){
 
 function f(item){
   eventDisplay = (eventFontSize>1)?3 : 5
+  if(widgFam=='large')eventDisplay=eventDisplay*3
   const date = new Date(); 
   let isCalEvent
   if('endDate' in item){
@@ -814,7 +824,7 @@ function f(item){
   {
   if (item.startDate.getTime() > date.getTime() || (isCalEvent && showCurrentAllDayEvents?(item.startDate.getDate()==date.getDate() &&  item.isAllDay):false))
     {
-      if(!calIgnore.includes(item.calendar.title))
+      if(cal.includes(item.calendar.title) || !isCalEvent)
       {
         indexed+=1  
         if(!allowDynamicSpacing)eventCounter=null
@@ -837,6 +847,7 @@ function f(item){
           dF.dateFormat='MMM d'
           let dd = item.startDate
           let ddd=dF.string(dd)
+        if((widgFam=='large' && indexed<=(eventDisplay*(2/3)))|| widgFam!='large'){
           if(!dHolder && dF.string(date)==ddd)         
           {
             let when = left.addText(' TODAY ')
@@ -851,11 +862,16 @@ if(useBaseTextColor)when.textColor=Color.dynamic(new Color(baseTextColorLight), 
 
             later = true
           }
-          let s = left.addStack()      
+          var stack = left
+        }else{
+          var stack = right
+        }
+          //let s = stack.addStack()
+          
           dHolder = ddd
-          let tx = left.addText((isCalEvent?'':'✓')+item.title)
-          tx.font= Font.boldMonospacedSystemFont(11*eventFontSize)  
-       
+          let tx = stack.addText((isCalEvent?'':item.isCompleted?'☑':'☐')+item.title)
+          tx.font= Font.boldMonospacedSystemFont(11*eventFontSize)
+          tx.lineLimit=2
           if(showCalendarColorEventList)tx.textColor= new Color(item.calendar.color.hex)
           if(useEventShadow){
             //add a shadow
@@ -871,7 +887,7 @@ if(useBaseTextColor)when.textColor=Color.dynamic(new Color(baseTextColorLight), 
             let sAndFTimes = isCalEvent?dF.string(item.startDate)+'-'+dF.string(item.endDate):dF.string(item.startDate)
             dt = dt + sAndFTimes
           }
-          dt = left.addText(dt)
+          dt = stack.addText(dt)
           dt.font=Font.systemFont(8*eventFontSize)
           if(useBaseTextColor)dt.textColor=Color.dynamic(new Color(baseTextColorLight), new Color(baseTextColorDark))
 
@@ -916,7 +932,6 @@ async function updateCheck(version){
   */   
   let uC   
   try{let updateCheck = new Request('https://raw.githubusercontent.com/mvan231/Scriptable/main/Upcoming%20Calendar%20Indicator/Upcoming%20Calendar%20Indicator.json')
-  
   uC = await updateCheck.loadJSON()
   }catch(e){return log(e)}
   log(uC)
