@@ -3,7 +3,7 @@
    * [Scripts](#scripts)
    * [Utilities made by others](#utilites-from-others)
    * [First time adding a widget?](#first-time-adding-a-widget)
-   * [Buy me a coffee?](#coffee)
+   * [Buy me a ☕️ or 🍺?](#buy-me-a-coffee)
 ## Widgets
 
 * ### [RH-Downloads.js](RH-Downloads.js)
