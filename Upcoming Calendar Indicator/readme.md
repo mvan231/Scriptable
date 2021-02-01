@@ -5,7 +5,7 @@
 * This widget is similar to my Upcoming Calendar widget, but this now has a display for the full month view with indicators of up to five calendar colors for each day. Each event listed on the left side is tappable to open the calendar app to that date.
 ![example image](https://i.imgur.com/wz6ZSCG.jpg)
 * Each calendar color dot only appears one time per date in the month view.
-* The month view is tappable to open the current date in the calendar app if using transparency. If not using transparency, each date is tappable to go to that date in the calendar app.
+* In the month view, each date is tappable to go to that date in the calendar app.
 * If you'd like just the left or the right side of the widget to be shown in a medium or small widget, you can use the widget parameter of 'left' or 'right' respectively.
 
     ![Example](https://i.imgur.com/1uZ3wzZ.jpg)
@@ -19,6 +19,8 @@
   This is an example of what v1.5 could look like with a base color set to red and using the 24hr time display.
 ![v1.5 example](https://i.imgur.com/CORi5YL.jpg)
 
+  In v1.7 the large size widget is now an option. When using the large widget, transparency is automatically disabled due to issues with displaying the content.
+  ![1.7 example](https://i.imgur.com/K30Ehrf.jpg)
 ---
 Upon installing and running the script in the app, you will be asked a set of questions on the first run to get things setup for you. The questions to be answered are for:
 ---
