@@ -3,7 +3,7 @@
    * [Scripts](#scripts)
    * [Utilities made by others](#utilites-from-others)
    * [First time adding a widget?](#first-time-adding-a-widget)
-   * [Buy me a ☕️ or 🍺?](#buy-me-a-%EF%B8%8F-or-)https://github.com/mvan231/Scriptable/blob/main/README.md#buy-me-a-%EF%B8%8F-or-
+   * [Buy me a ☕️ or 🍺?](#buy-me-a-%EF%B8%8F-or-)
 ## Widgets
 
 * ### [RH-Downloads.js](RH-Downloads.js)
