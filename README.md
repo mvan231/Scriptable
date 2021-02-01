@@ -3,7 +3,7 @@
    * [Scripts](#scripts)
    * [Utilities made by others](#utilites-from-others)
    * [First time adding a widget?](#first-time-adding-a-widget)
-
+   * [Buy me a coffee?](#coffee)
 ## Widgets
 
 * ### [RH-Downloads.js](RH-Downloads.js)
@@ -118,3 +118,6 @@
 * Tap and hold on the widget now, and tap "Edit Widget"
 * Tap the "Script" option, and select the script name to run
 * Tap outside the edit widget window and you should be all set
+
+## Buy me a coffee?
+  If you like my work and want to buy me a coffee or a beer, you can do so with [Venmo](https://venmo.com/code?user_id=1967077766201344976) or [Cash app](https://cash.app/$Mvan231).
