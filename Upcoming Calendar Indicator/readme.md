@@ -72,6 +72,7 @@ Upon installing and running the script in the app, you will be asked a set of qu
 ---
   ![Calendar Ignore and prompt](https://i.imgur.com/a7q2AOU.jpg)
   * You will be asked if you would like to EXCLUDE any calendars from the widget, this is beneficial if you don't want to display something like the "Holidays" calendar on the widget.
+  * **Note:** as of v1.7, you are not asked if you want to exclude calendars and are now prompted for which calendars to display. 
 ---
   ![Calendar Choose and widget preview](https://i.imgur.com/LKFvBz7.jpg)
   ![Widget size and placement](https://i.imgur.com/HtO8kXN.jpg)
