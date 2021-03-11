@@ -37,6 +37,9 @@
     * Now has support for small widget size too! (**Note:** the events are not tappable in the small widget size)
     
       ![small example](https://i.imgur.com/2s1lN6f.jpg) ![small example2](https://i.imgur.com/MRoqurH.jpg)
+
+    * In the latest version, I have added support for reminders utilizing the code from the Upcoming Calendar Indicator widget and also utilizing the title color being the calendar/list color
+      ![updated example with reminders](https://i.imgur.com/jIB32gB.jpg)
     
 * ### [Upcoming Calendar Indicator](Upcoming%20Calendar%20Indicator)
      
