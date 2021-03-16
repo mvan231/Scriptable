@@ -2,6 +2,12 @@
 // These must be at the very top of the file. Do not edit.
 // icon-color: light-gray; icon-glyph: calendar-alt;
 /*
+
+version:3
+
+*/
+
+/*
 ####################
 ####################
 begin configuration
@@ -14,11 +20,70 @@ const eventsToShow = 10
 
 //sets whether or not to display reminders in the widget
 const showReminders = false
+
+//sets whether ir not to use the no-background.js module
+const useTransparency = true
+
+/*
+####################
+####################
+begin settings file info
+####################
+####################
+*/
+let fm = FileManager.iCloud()
+let scriptPath = fm.documentsDirectory()+'/UpcomingCalendarWidget/'
+let settingsPath = scriptPath+'settings.json'
+const reRun = URLScheme.forRunningScript()
+
+if(!fm.fileExists(scriptPath))fm.createDirectory(scriptPath, false)
+
+let a,settings = {}
+
+if(fm.fileExists(settingsPath)){
+  settings = JSON.parse(fm.readString(settingsPath))
+//   await setup(false)
+}else{
+  await setup(true)
+}
+
+settings = JSON.parse(fm.readString(settingsPath))
+
+if(!config.runsInWidget && fm.fileExists(settingsPath) && !settings.quickReset){
+    let resetQ = new Alert()
+    resetQ.title='Want to reset?'
+    resetQ.message='If you tap "Yes" below, the settings for this widget will be reset and setup will run again'  
+    resetQ.addAction('Yes')
+    resetQ.addAction('No')
+    a = await resetQ.presentSheet()
+    if(a==0){
+      await fm.remove(settingsPath)
+      let ttyn = await setup(true)
+      log(`ttyn is ${ttyn}`)
+      //Safari.open(reRun)
+      //throw new Error('running again now')
+    }
+}
+
+settings = JSON.parse(fm.readString(settingsPath))
+
+if(settings.quickReset)
+{  
+  settings.quickReset=false  
+  log(settings)
+  fm.writeString(settingsPath, JSON.stringify(settings))
+}
+
+
+//calendar names are included in thr cal variable belowto display them in the list of calendar events and the indicators on the month view. These must be enclosed in single or double quotes. (this is handled by the setup questions)
+
+const cal = settings.cals
+
+
 /*
 ####################
 ####################
 begin building widget
-and start of script
 ####################
 ####################
 */
@@ -30,11 +95,11 @@ w.setPadding(5,20,5,5)
 let main = w.addStack()
 main.addSpacer()
 let right,left = main.addStack()
-left.size=new Size(170, 135)
+left.size=new Size(170, 0)//135)
 if (!widgSizeSmall){
 main.addSpacer(0)
 right = main.addStack()
-right.size=new Size(170, 135)
+right.size=new Size(170, 0)//135)
 right.layoutVertically()
 }
 main.layoutHorizontally()
@@ -44,6 +109,13 @@ let dF = new DateFormatter()
 dF.dateFormat='ZZ'
 let tZOffsetSec = (dF.string(new Date())/100)*60*60
 await CalendarEvent.thisWeek().then(successCallback, failureCallback)
+
+if(useTransparency){
+const RESET_BACKGROUND = !config.runsInWidget
+const { transparent } = importModule('no-background')
+w.backgroundImage = await transparent(Script.name(), RESET_BACKGROUND)
+}
+
 Script.setWidget(w)
 Script.complete()
 w.presentMedium()
@@ -58,6 +130,26 @@ begin functuon section
 ####################
 ####################
 */
+async function setup(full){
+    let cal = []
+    calP=new Alert()
+    calP.message='In the next screen, please select the calendars to display in the widget'
+    calP.addAction('OK')
+    await calP.present()
+    await Calendar.presentPicker(true).then((cals)=>{
+      cals.forEach((f)=>{
+        cal.push(f.title)
+      })
+    })
+    
+    settings['cals'] = cal
+    settings['quickReset']=true
+    await fm.writeString(settingsPath, JSON.stringify(settings))
+  
+    return true
+}
+
+
 async function successCallback(result) {
   calcal=result
   await CalendarEvent.nextWeek().then((res) => {
@@ -110,7 +202,7 @@ function getColorDot(colorHex){
 }
 
 function f(item){
-  const date = new Date(); 
+  //const date = new Date(); 
   let isCalEvent
   if('endDate' in item){
     isCalEvent=true
@@ -133,7 +225,7 @@ function f(item){
   log('now '+now.getTime())  
   log('startTime '+item.startDate.getTime())
 
-  if (item.startDate.getTime() > now.getTime())
+  if ((item.startDate.getTime() > now.getTime()) && (cal.includes(item.calendar.title) || !isCalEvent))
   {
     ind+=1
     log(ind)
