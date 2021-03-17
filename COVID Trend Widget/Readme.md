@@ -2,7 +2,7 @@
 
 This widget will display country level stats for COVID-19 and also display a trending indicator whether the given item is trending up, down, or steady. 
 
-The default setting has colored arrows enabled (green for good and red for bad). You can disable this by setting the colorArrows variabke, to false.
+The default setting has colored arrows enabled (green for good and red for bad). You can disable this by setting the colorArrows variable, to false.
 
 The API used comes from Javier Aviles at [this link](https://github.com/javieraviles/covidAPI) which was formed from the [disease.sh repo](https://github.com/disease-sh/API). 
 
