@@ -1,1 +1,1 @@
-{"version":"1.3","notes":"- Added a fix for a user not having the Twitter Widget Settings.js script to hold the settings for the widget"}
+{"version":"1.4","notes":"- Implemented new method for API calls to address the changes to the Twitter API\n- Implemented an API error check for rate limiting and also for API return errors (this will help reduce the chance for an API error to cause the widget not to load)"}
