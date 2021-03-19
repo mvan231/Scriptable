@@ -51,6 +51,7 @@
       ![example image](https://i.imgur.com/0QVdD7s.jpg)
 
 * ### [Twitter Widget](Twitter%20Widget.js)
+    * ##### As of v1.4 there are new error messages available. Unfortunately, the Twitter API changed some things and this broke the widget code. This is now accounted for.
     * This widget can display tweets from public profiles on your home screen and shows them to you in chronological order as well as how long ago (or on what date) the tweet was posted. This can be configured as a medium or large size widget for your own preference. Simply set the username you'd like to "follow" in the widget parameter, and you'll be all set.
     * Customization options have been added as of version 1.1
     ![customization](https://i.imgur.com/8YpoQmJ.jpg)
@@ -76,7 +77,7 @@
     
     ![example](https://i.imgur.com/pWPL10j.jpg) ![example2](https://i.imgur.com/Vsqwoyz.jpg)
 
-
+    
 * ### [COD Warzone Stats Widget](COD%20Warzone%20Stats.js)
     * Setting your PSN username as the widget parameter will show you the user stats for COD Warzone. This can be adjusted for other COD games as well.
     
