@@ -130,7 +130,7 @@ End Settings
 */
 
 // run the updateCheck() function to see if there are any updates available for the script 
-let needUpdate = (checkUpdates="true")?await updateCheck(1.3):false
+let needUpdate = (checkUpdates="true")?await updateCheck(1.4):false
 const twImgB64 = twit()
 let url,w = new ListWidget()
 if (args.widgetParameter){
@@ -139,9 +139,15 @@ if (args.widgetParameter){
   url = 'scriptableapp'//'ps5uknews'
 }
 let json = await apiCall(url)
-log(json)
-const titleTxt = json[0].user.name
+log(`json.length is ${json.length}`)
 
+if (json.length == undefined){  
+  let out1 = '\nThere is an issue with the script!'
+  let out2 = checkUpdates? needUpdate?'\nAn update is available to address it!':'\nA fix should be available soon!':'\nCheck GitHub for a new fixed version'
+
+  throw new Error(out1+out2)
+}
+const titleTxt = json[0].user.name
 
 let tMain = w.addStack()
 let tStack = tMain.addStack()
@@ -179,6 +185,11 @@ let lineImg = lineSep()
 json.forEach(f)
 w.setPadding(10,10,10,10)
 w.backgroundColor=widgBackgroundColor
+let dated=new Date()
+dated=dated.getTime()+900000
+dated=new Date(dated)
+w.refreshAfterDate=dated
+log(w.refreshAfterDate)
 Script.setWidget(w)
 Script.complete()
 w.presentLarge()
@@ -191,29 +202,20 @@ Begin Functions
 $$$$$$$$$$$$$$$
 */
 async function apiCall(handle){
-  
-  //twitter api using fifi's method
-  const firstUrl='https://twitter.com/'
+  let toke = Data.fromBase64String('QUFBQUFBQUFBQUFBQUFBQUFBQUFBTUdhS1FFQUFBQUExcDh0UmthNHJVdkF1a3VGRHJBNGxyU2dJNkklM0R5eHBsRnBoSFMxY2hOcTJXT1BzckNjWEFGRU5DbmtmMmZ6RE5reWtGdFBqZkpLSkFKRg==')  
+  let bearer = toke.toRawString()/*old twitter bearer token -- no longer works*///'AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA'
+  let firstUrl = 'https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name='+handle+'&count=50&exclude_replies=true&include_rts='+rtsOn
   let r = new Request(firstUrl)
-//   let b = await r.loadString()
-//   let matched = b.match(/https:\/\/abs\.twimg\.com\/responsive-web\/client-web-legacy\/main\.[^\"]+\.js/)
-//   log(matched)
-//   r.url=matched[0]
-//   b=await r.loadString()
-//   matched = b.match(/\"(AAAAAAAA[^\"]+)\"/)
-//   log(matched[1])
-  let secondUrl = 'https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name='+handle+'&count='+50+'&exclude_replies=true&include_rts='+rtsOn
-//   let bearer = matched[1]
-let bearer = 'AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA'
-  log(bearer)
-  r.url=secondUrl
   r.method='GET'
   r.headers={'Authorization': 'Bearer '+bearer}
   let res = await r.loadJSON()
-//   log(res)
+  if (JSON.stringify(res).indexOf('Rate limit exceeded')>-1){
+    log(res)
+    throw new Error("\nUnfortunately the API limit has been exceeded.\nPlease check back later!")
+  }
   return res
-  
 }
+
 
 function dateDelt(dateString){
   let dt=dateString
@@ -270,11 +272,9 @@ function lineSep(){
 }
 
 function f(item,index){
-
   let out = item
 //   log('index:'+index+' contains:\n'+ out.text)
   if (index <= (numT-1)) {
-
     let tx = w.addStack()
     lineS = tx.addStack()
     lineS.addSpacer()
@@ -291,11 +291,9 @@ function f(item,index){
       let twImg = tx1.addImage(Image.fromData(Data.fromBase64String(twImgB64)))
       twImg.tintColor=widgAccentColor
       twImg.imageSize=new Size(12,12)
-      
     }
     let symbol = SFSymbol.named("clock.fill")
     symbol.applyMediumWeight()
-
     symbol.applyFont(font)
     if (clockIcon){
       let image = tx1.addImage(symbol.image)
