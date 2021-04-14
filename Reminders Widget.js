@@ -3,6 +3,8 @@
 // icon-color: light-brown; icon-glyph: list-ul;
 let useTransparency = false
 let showSymbol = true
+let symColor = Color.white()
+let sym = "list.bullet"
 
 let baseColor
 if (useTransparency)baseColor=Color.dynamic(/*lightColor*/Color.white(), /*darkColor*/Color.white())
@@ -85,6 +87,18 @@ function createWidget(){
   dot.resizable = true
   dot.imageSize = new Size(35,35)
   
+  let symbol = SFSymbol.named(sym)
+  symbol.applyMediumWeight()
+  let font = Font.systemFont(50)
+  symbol.applyFont(font)
+  
+  let symStack = topLeft.addStack()
+  symStack.setPadding(7,7,10,10)
+  let symIm = symStack.addImage(symbol.image)
+  symIm.imageSize = new Size(20,20)
+  topLeft.spacing =-35
+  symIm.tintColor = symColor
+  
   let countText = topRight.addText(String(remindersCount))
   countText.font = Font.boldRoundedSystemFont(28) 
   baseColor?countText.textColor = baseColor:
@@ -112,7 +126,9 @@ function colorDot(){
     context.setFillColor(cal.color)
     context.fillEllipse(new Rect(0, 0,s,s))
 
+    /*
     if (showSymbol) context.drawImageInRect(symbol.image, new Rect(12.5,12.5,25,25))
+*/
     return context.getImage()  
 }
 
