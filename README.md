@@ -96,6 +96,10 @@
     * This widget will display country level stats for COVID-19 and also display a trending indicator whether the given item is trending up, down, or steady. 
     * **See more info at the link**
 
+* ### [Exchange Rate Widget](exchangeRate.js)
+    * This widget is based on the version by juniorchen. It has been adapted to work with the free version of the exchangerateapi. 
+    * Inputing a currency code will use that as the base for the widget. The default base is EUR.
+
 ## Scripts
 
 * ### [ScriptBackup.js](ScriptBackup.js)
