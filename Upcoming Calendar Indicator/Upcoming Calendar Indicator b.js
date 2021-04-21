@@ -62,6 +62,7 @@ v1.6
 - add optional line separator between calendar day name and the rest of the calendar
 - slight adjustment of color dot size and spacing
 - add option for heatmap style
+- modified the heat map to be based on completed reminders for a soecific list as defined in the widget parameter (i.e. "|Reminders") or if you just want to see the right side (e.g. "right|Reminders")
 --------------------------*/
 /*
 ####################
@@ -207,9 +208,20 @@ end of user definition
 ####################
 ####################
 */
-let widg,l,r, h = 5
+let widg,l,r,remList,widg1,h = 5
+
 if(args.widgetParameter){
-  widg=args.widgetParameter
+  widg1=args.widgetParameter
+  widg1='|Reminders'
+  let reg = /(right|left)/
+  if(reg.test(widg1)) {
+    widg = widg1.match(reg)[1]
+  }else{
+    r=true
+    l=true
+  }
+  reg = /\|(.*)/
+  if(reg.test(widg1))remList = widg1.match(reg)[1]
 }else{
   r=true
   l=true
@@ -713,12 +725,23 @@ if(useBaseTextColor)tColor=Color.dynamic(new Color(baseTextColorLight), new Colo
         let fn = new Date(yr,mth,month[i][j],23,59)
 
         let events = await CalendarEvent.between(st, fn)
+        //start reminder list check
+
+        if (remList){
+          let list = await Calendar.forRemindersByTitle(remList)
+          let rem = await Reminder.completedBetween(st, fn, [list])
+          let ratio = rem.length/heatMapMax
+          if (ratio > 1)ratio=1
+          dateStackUp.backgroundColor= new Color(heatMapColor, ratio)
+        }
+        //end reminder list check
+
         if (events.length>0){       
-          if (heatMapEnabled){
-            let ratio = events.length/heatMapMax
-            if (ratio > 1)ratio=1
-            dateStackUp.backgroundColor= new Color(heatMapColor, ratio)
-          }
+//           if (heatMapEnabled){
+//             let ratio = events.length/heatMapMax
+//             if (ratio > 1)ratio=1
+//             dateStackUp.backgroundColor= new Color(heatMapColor, ratio)
+//           }
           events.forEach((kk,index)=>{ 
            if(cal.includes(kk.calendar.title)){
             if(index<=5){
@@ -1003,7 +1026,7 @@ if(useBaseTextColor)when.textColor=Color.dynamic(new Color(baseTextColorLight), 
           var diff = ((nDate-oDate)/1000)
           diff=Number(diff)-tZOffsetSec
           tx.url=isCalEvent?"calshow:"+diff:"x-apple-reminder://"+item.identifier
-if (!isCalEvent)log(item.calendar.identifier)
+//if (!isCalEvent)log(item.calendar.identifier)
         }
       }    
     }
