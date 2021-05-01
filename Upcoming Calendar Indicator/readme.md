@@ -70,9 +70,11 @@ Upon installing and running the script in the app, you will be asked a set of qu
   ![Sunday / Saturday Color Choice](https://i.imgur.com/OKDJy0A.jpg)
   * If you chose yes to Sunday or Saturday color, you'll be prompted to choose the color for those days.
 ---
-  ![Calendar Ignore and prompt](https://i.imgur.com/a7q2AOU.jpg)
-  * You will be asked if you would like to EXCLUDE any calendars from the widget, this is beneficial if you don't want to display something like the "Holidays" calendar on the widget.
-  * **Note:** as of v1.7, you are not asked if you want to exclude calendars and are now prompted for which calendars to display. 
+  * New Heat Map feature for reminders completed allows you to choose the heat map maximum (full color) and heat map color to display. These are based on the reminders list entered in the widget parameter.
+  * To use the heat map, either specify in the widgetparameter a pipe character followed by the name of the reminders list (i.e. |Reminders) or you can just use the right side of the widget with the heat map enabled (i.e. right|Reminders). During the setup, make sure to select the color and the value you want as the max to show the full color when above or at this value of completed reminders for a given day
+---
+  ![Calendar Select and prompt](https://i.imgur.com/a7q2AOU.jpg)
+  * You will be asked which calendars you would like to include in the widget.
 ---
   ![Calendar Choose and widget preview](https://i.imgur.com/LKFvBz7.jpg)
   ![Widget size and placement](https://i.imgur.com/HtO8kXN.jpg)
