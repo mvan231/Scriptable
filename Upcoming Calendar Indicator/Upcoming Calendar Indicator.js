@@ -15,9 +15,9 @@ let needUpdated = await updateCheck(1.8)
 - add optional line separator between calendar day name and the rest of the calendar
 - slight adjustment of color dot size and spacing
 - add option for heatmap style
-- modified the heat map to be based on completed reminders for a soecific list as defined in the widget parameter (i.e. "|Reminders") or if you just want to see the right side (e.g. "right|Reminders")
+- modified the heat map to be based on completed reminders for a specific list as defined in the widget parameter (i.e. "|Reminders") or if you just want to see the right side (e.g. "right|Reminders")
 - update the reminder URL to be x-apple-reminderkit:// instead of x-apple-reminder:// (this was a recent change Apple made)
-- needed to make adjustments for the calendar date alignment dus to some unforeseen differences in monday vs sunday start of the week
+- needed to make adjustments for the calendar date alignment due to some unforeseen differences in Monday vs Sunday start of the week
 --------------------------*/
 /*
 ####################
@@ -72,20 +72,20 @@ pref file
 /*
 ####################
 ####################
-start of user definition - no longer needed as manuak entry as it is handled in setup questions
+start of user definition - no longer needed as manual entry as it is handled in setup questions
 ####################
 ####################
 */
 
-//calendar names are included in thr cal variable belowto display them in the list of calendar events and the indicators on the month view. These must be enclosed in single or double quotes. (this is handled by the setup questions)
+//calendar names are included in the cal variable below to display them in the list of calendar events and the indicators on the month view. These must be enclosed in single or double quotes. (this is handled by the setup questions)
 
 const cal = settings.cals
 
-//set the flag for allowDynamicSpacing to true if you want extra soacing between the events in the left side event list if there are less than 5. If you don't want the dynamic spacing, set to false. 
+//set the flag for allowDynamicSpacing to true if you want extra spacing between the events in the left side event list if there are less than 5. If you don't want the dynamic spacing, set to false. 
 
 const allowDynamicSpacing = settings.dynamicSpacing
 
-//set the flag for monWeekStart to true if you want Monday to be the start of the week in the month view. If  you rather Sunday be the start of the week, then set to false.
+//set the flag for monWeekStart to true if you want Monday to be the start of the week in the month view. If  you would rather Sunday be the start of the week, then set to false.
 
 const monWeekStart = settings.monStart
 
@@ -93,7 +93,7 @@ const monWeekStart = settings.monStart
 
 const useBackgroundColor = settings.useBackgroundColor
 
-//backgroundColor below is setup as darkGray ny default but can be changed to hex as well
+//backgroundColor below is setup as darkGray by default but can be changed to hex as well
 
 if(settings.useBackgroundColor){const backgroundColor = new Color(settings.backgroundColor)}
 
@@ -132,23 +132,23 @@ if (useBaseTextColor)
 //use24hrTime is a setup question which allows the user to display the event times in a 24hr format instead of 12hr format
 const use24hrTime = settings.use24hrTime
 
-//useSundayColor is a setup question which allows a user definable color to be used for the sunday date in the month view
+//useSundayColor is a setup question which allows a user definable color to be used for the Sunday date in the month view
 const useSundayColor = settings.useSundayColor
 let sundayColor
 if(useSundayColor)sundayColor= '#'+settings.sundayColor
 
-//useSaturdayColor is a setup question which allows a user definable color to be used for the saturday date in the month view
+//useSaturdayColor is a setup question which allows a user definable color to be used for the Saturday date in the month view
 const useSaturdayColor = settings.useSaturdayColor
 let saturdayColor
 if(useSaturdayColor)saturdayColor= '#'+settings.saturdayColor
 
-//useLineSeparator is a setup question which allows the user to choose whether or not to display a line separating the day names with the rest of the calendar
+//useLineSeparator is a setup question which allows the user to choose whether or not to display a line separating the day names and the rest of the calendar
 const useLineSeparator = settings.useLineSeparator
 
-//heatMapEnabled is a bit self explanitory, but this flag enables the heat map feature
+//heatMapEnabled is a bit self-explanatory, but this flag enables the heat map feature
 let heatMapEnabled = settings.heatMapEnabled
 
-//heatMapColor determines the base comor to use as the heat map color
+//heatMapColor determines the base color to use as the heat map color
 let heatMapColor = settings.heatMapColor
 
 //heatMapMax determines the number of events in a given day to show as the full color
