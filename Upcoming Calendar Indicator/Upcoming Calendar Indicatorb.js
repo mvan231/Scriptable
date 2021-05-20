@@ -657,7 +657,7 @@ async function createWidget() {
         addWidgetTextLine(dateStackUp, `${month[i][j]}`,
         {
           color: '',//textColor,
-          opacity: (prevMonth||nextMonth) ? (2/10) : (i == sat || i == sun) ? opacity : 1,
+          opacity: (prevMonth||nextMonth) ? (3/10) : (i == sat || i == sun) ? opacity : 1,
           font: Font.boldSystemFont(10),
           align: "left",
         });
