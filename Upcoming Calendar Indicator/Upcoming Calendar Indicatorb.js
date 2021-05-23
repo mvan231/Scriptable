@@ -1,6 +1,9 @@
 // Variables used by Scriptable.
 // These must be at the very top of the file. Do not edit.
 // icon-color: light-gray; icon-glyph: calendar-alt;
+﻿// Variables used by Scriptable.
+// These must be at the very top of the file. Do not edit.
+// icon-color: light-gray; icon-glyph: calendar-alt;
 let fm = FileManager.iCloud()
 let scriptPath = fm.documentsDirectory()+'/UpcomingIndicator/'
 let settingsPath = scriptPath+'settings.json'
@@ -10,13 +13,18 @@ let needUpdated = await updateCheck(1.8)
 //log(needUpdated)
 /*--------------------------
 |------version notes------
-1.9 beta
+1.9 beta 3
+- removed some extra stacks that werent needed to help with RAM usage
+1.9 beta 2
+- add optimized method for array handling
+1.9 beta 1
 - Added prevMonth and nextMonth flags to allow display of dates from the previous and next months if the start and end week have available slots
 - Added setup question for the showDatesBeforeAfter
 - Made transparency disabled when using showDatesBeforeAfter due to memory issues with loading the widget.
 - Optimized the URL used for each date in the right side calendar view so they open the proper date in the calendar app
 - Modified size of the date stacks on the right side to better accomodate larger months like May 2021
 - Modified event list view so tapping an event goes to the proper day if the event is allDay
+- Adjustment of before and after dates opacity
 --------------------------*/
 /*
 ####################
@@ -100,7 +108,7 @@ if(settings.useBackgroundColor){const backgroundColor = new Color(settings.backg
 let showDatesBeforeAfter = settings.showDatesBeforeAfter
 
 //useTransparency is setup during initialization questions. This determines if the transparency setting should be used or not
-const useTransparency = showDatesBeforeAfter?false: settings.useTransparency
+const useTransparency = settings.useTransparency//showDatesBeforeAfter?false: settings.useTransparency
 
 //useEventShadow is setup during initialization questions. This determines if the event name should have a shadow behind it to help with readability in some situations
 const useEventShadow = settings.useEventShadow
@@ -598,18 +606,11 @@ async function createWidget() {
   // opacity value for weekends and times
   const opacity = 6/10;  
   const oDate = new Date(2001,00,01).getTime(),date = new Date();   
-//   if(useTransparency) {
-//      let diff = ((new Date(date.getFullYear(),date.getMonth(),date.getDate())-oDate)/1000)
-//      diff=Number(diff)-tZOffsetSec
-//      right.url='calshow:'+diff
-//   }
+
   dF.dateFormat = "MMMM";
   // Current month line
   const monthLine = mthStack.addStack();
-//   monthLine.borderColor=Color.black()
-//   monthLine.borderWidth=1
-//   mthStack.borderColor=Color.black()
-//   mthStack.borderWidth=1
+
   monthLine.addSpacer(4);
   addWidgetTextLine(monthLine, dF.string(date).toUpperCase() + (needUpdated? ' Update' : ''), {
     color:'', //textRed,
@@ -659,7 +660,7 @@ async function createWidget() {
           color: '',//textColor,
           opacity: (prevMonth||nextMonth) ? (3/10) : (i == sat || i == sun) ? opacity : 1,
           font: Font.boldSystemFont(10),
-          align: "left",
+          align: "center",
         });
       }
       
@@ -671,15 +672,16 @@ async function createWidget() {
 //         log(`date is ${nDate.getMonth()} ${nDate.getDate()} diff is ${diff}`)
         dateStack.url='calshow:'+diff
       }
-      let colorDotStack = dateStack.addStack()
-      colorDotStack.size=new Size(22, 5)
       dateStack.layoutVertically() 
+      /*let colorDotStack = dateStack.addStack()
+      colorDotStack.size=new Size(22, 5)
       colorDotStack.layoutHorizontally() 
+      */
       let yr = date.getFullYear()
       let mth = date.getMonth()
       let dots = [],colors=[]
       if(j==0 && useLineSeparator){
-        let lineImg = colorDotStack.addImage(lineSep())
+        let lineImg = dateStack.addImage(lineSep())
         lineImg.size = new Size(22, 1)
         let tColor=Color.dynamic(Color.black(), Color.white())
 if(useBaseTextColor)tColor=Color.dynamic(new Color(baseTextColorLight), new Color(baseTextColorDark))
@@ -689,7 +691,6 @@ if(useBaseTextColor)tColor=Color.dynamic(new Color(baseTextColorLight), new Colo
         let st = new Date(yr,prevMonth?mth-1: nextMonth?mth+1:mth,month[i][j],0,0)
         let fn = new Date(yr,prevMonth?mth-1: nextMonth?mth+1:mth,month[i][j],23,59)
 
-        let events = await CalendarEvent.between(st, fn)
         //start reminder list check
 
         if (remList && (!prevMonth && !nextMonth)){
@@ -697,17 +698,31 @@ if(useBaseTextColor)tColor=Color.dynamic(new Color(baseTextColorLight), new Colo
           let rem = await Reminder.completedBetween(st, fn, [list])
           let ratio = rem.length/heatMapMax
           if (ratio > 1)ratio=1
-          dateStackUp.backgroundColor= new Color(heatMapColor, ratio)
+          dateStack.backgroundColor= new Color(heatMapColor, ratio)
         }
         //end reminder list check
-
-        if (events.length>0){       
-//           if (heatMapEnabled){
-//             let ratio = events.length/heatMapMax
-//             if (ratio > 1)ratio=1
-//             dateStackUp.backgroundColor= new Color(heatMapColor, ratio)
-//           }
-          events.forEach((kk,index)=>{ 
+        
+        
+        let events = await CalendarEvent.between(st, fn)  
+//log(colors) 
+//log(events.length) 
+        events = events.filter((event) => {
+          if(cal.includes(event.calendar.title))return true
+return false
+          })
+          //log(events.length)
+        events = events.map(item => {
+          return item.calendar.color.hex
+        })
+        //colors = events
+        //log(`events colors is ${events}`)
+        //log(`colors are ${colors}`)
+        colors = [...new Set(events)]
+        colors = colors.slice(0, 5)
+        //log(`colors set is ${colors}`)
+        //if (events.length>0){       
+          /*
+            events.forEach((kk,index)=>{ 
            if(cal.includes(kk.calendar.title)){
             if(index<=5){
               if(!colors.includes(kk.calendar.color.hex)){
@@ -716,22 +731,26 @@ if(useBaseTextColor)tColor=Color.dynamic(new Color(baseTextColorLight), new Colo
             }
            }
           })
+          */
           if(colors.length>0){
             let colorDotsImg=colorDots(colors)
-            colorDotStack.addSpacer()  
-            let colDotsImg = colorDotStack.addImage(colorDotsImg)  
+            //colorDotStack.addSpacer()  
+            let colDotsImg = dateStack.addImage(colorDotsImg)
+            if(prevMonth||nextMonth)colDotsImg.imageOpacity=3/10
             colDotsImg.resizable=true
             colDotsImg.imageSize=new Size(22,3)
             colDotsImg.centerAlignImage()
-            colorDotStack.addSpacer()
+            
+            //colorDotStack.addSpacer()
           }
-        }
+        //}
       }
     }
   }
 }
 
-/**
+/*
+ *
  * Creates an array of arrays, where the inner arrays include the same weekdays
  * along with an identifier in 0 position
  * [
@@ -780,7 +799,7 @@ function buildMonthVertical() {
     idx+=1
     month[i].push(showDatesBeforeAfter?`${dateee.getDate()}`:" ")
   }
-/*
+/*//this is the old method to store blanks in the days of the month 
   const length = month.reduce(
     (acc, dayStacks) => (dayStacks.length > acc ? dayStacks.length : acc),
     0
@@ -795,6 +814,9 @@ function buildMonthVertical() {
   //throw new Error("dead")
   return month;
 }
+
+
+
 
 /**
  * Draws a circle with a date on it for highlighting in calendar view
@@ -866,14 +888,31 @@ async function successCallback(result) {
   newCalArray=JSON.stringify(newCalArray).replace(/dueDate/g, 'startDate')
   
   newCalArray=JSON.parse(newCalArray)
+  
+  //newCalArray.forEach(eventCount)//filter method below is replacing the event count function
+  log(newCalArray.length)
+  let now = new Date()
+  newCalArray = newCalArray.filter(item => {
+    //log(new Date(item.startDate).getTime())
+    //log(item.calendar.title)
+    //log(new Date(item.startDate).getDate())
+    //log(`it is now ${now.getTime()}`)
+      if (((new Date(item.startDate).getTime() > now.getTime()) || (showCurrentAllDayEvents?(new Date(item.startDate).getDate()==now.getDate() && item.isAllDay):false)) && cal.includes(item.calendar.title)) return true
+      return false
+  })
+  log(newCalArray.length)
+  
 // Sort array by date in ASCENDING order
   newCalArray.sort(function (a, b) {
     if (a.startDate > b.startDate) return 1;
     if (a.startDate < b.startDate) return -1;
     return 0;
   });
-  newCalArray.forEach(eventCount)
-
+  
+  //log(newCalArray.length)
+  newCalArray = newCalArray.slice(0, 5)
+  //log(newCalArray.length)
+  //throw new Error("done")
   newCalArray.forEach(f)
 }
 
@@ -899,7 +938,7 @@ function eventCount(item){
         eventCounter +=1
       }      
     }  
-  }else if (item.dueDate > 0){
+  }/*else if (item.dueDate > 0){//this is no longer needed due to dueDate being replaced by startDate in earlier section of code
     if (item.dueDate.getTime() > now.getTime())  
     {
       if(cal.includes(item.calendar.title))
@@ -908,6 +947,7 @@ function eventCount(item){
       }      
     }  
   }
+  */
 }
 
 
@@ -934,11 +974,7 @@ function f(item){
   }
 //   log(item.startDate+'\n'+isCalEvent?item.endDate:'')
 //   log(item)
-  if(item.startDate > 0)
-  {
-  if (item.startDate.getTime() > date.getTime() || (isCalEvent && showCurrentAllDayEvents?(item.startDate.getDate()==date.getDate() &&  item.isAllDay):false))
-    {
-      if(cal.includes(item.calendar.title) || !isCalEvent)
+  if(cal.includes(item.calendar.title) || !isCalEvent)
       {
         indexed+=1  
         if(!allowDynamicSpacing)eventCounter=null
@@ -1011,8 +1047,6 @@ if(useBaseTextColor)when.textColor=Color.dynamic(new Color(baseTextColorLight), 
           tx.url=isCalEvent?"calshow:"+diff:"x-apple-reminderkit://"+item.identifier
 //if (!isCalEvent)log(item.calendar.identifier)
         }
-      }    
-    }
   }
 }
 
