@@ -742,6 +742,8 @@ return false
             colDotsImg.centerAlignImage()
             
             //colorDotStack.addSpacer()
+          }else{
+            dateStack.addSpacer(3)
           }
         //}
       }
