@@ -13,6 +13,8 @@ let needUpdated = await updateCheck(1.8)
 //log(needUpdated)
 /*--------------------------
 |------version notes------
+1.9 beta 4
+- better alignment of dates with single event dots
 1.9 beta 3
 - removed some extra stacks that werent needed to help with RAM usage
 1.9 beta 2
@@ -1060,7 +1062,9 @@ function colorDots(colors){
   
   function colDot(numE){  
     const context =new DrawContext()
-    context.size=new Size(10*numE+5,10)
+    let modif = 5
+    if(numE < 2)modif=0
+    context.size=new Size(10*numE+modif,10)
     context.opaque=false
     context.respectScreenScale=true
     const path = new Path()
