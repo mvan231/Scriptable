@@ -86,3 +86,7 @@ Upon installing and running the script in the app, you will be asked a set of qu
 ![Reset](https://i.imgur.com/w7kYZB9.jpg)
 * When you run the widget in the app, it will ask you if you want to reset. This is useful if you don't quite like your setup, you can reconfigure it easily from this method.
 ---
+
+https://i.imgur.com/8Sxj5ZK.jpg
+
+https://i.imgur.com/0CQm6Wv.jpg
