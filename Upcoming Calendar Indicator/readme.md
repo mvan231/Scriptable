@@ -21,6 +21,14 @@
 
   In v1.7 the large size widget is now an option. When using the large widget, transparency is automatically disabled due to issues with displaying the content.
   ![1.7 example](https://i.imgur.com/K30Ehrf.jpg)
+  
+  v1.9 introduces some new features:
+  - Color highlight of Saturday and Sunday (instead of just the text color opacity being different)
+  - Text color change of just the day initials in the calendar view
+  - Ability to show previous month and next month dates that are visible in the calendar view
+
+  ![1.9example1](https://i.imgur.com/8Sxj5ZK.jpg)
+  ![1.9example2](https://i.imgur.com/0CQm6Wv.jpg)
 ---
 Upon installing and running the script in the app, you will be asked a set of questions on the first run to get things setup for you. The questions to be answered are for:
 ---
@@ -87,6 +95,4 @@ Upon installing and running the script in the app, you will be asked a set of qu
 * When you run the widget in the app, it will ask you if you want to reset. This is useful if you don't quite like your setup, you can reconfigure it easily from this method.
 ---
 
-https://i.imgur.com/8Sxj5ZK.jpg
 
-https://i.imgur.com/0CQm6Wv.jpg
