@@ -1,12 +1,1 @@
-{"version":"1.8","notes":"- removed (commented out) size restriction in the code for the left and right widget stack (main level)\n- add optional line separator between calendar day name and the rest of the calendar\n- slight adjustment of color dot size and spacing\n- add option for heatmap style\n- modified the heat map to be based on completed reminders for a soecific list as defined in the widget parameter (i.e. '|Reminders') or if you just want to see the right side (e.g. 'right|Reminders')\n- update the reminder URL to be x-apple-reminderkit:// instead of x-apple-reminder:// (this was a recent change Apple made)\n- needed to make adjustments for the calendar date alignment dus to some unforeseen differences in monday vs sunday start of the week"}
-
-- Add color highlight of saturday and sunday
-- Add option to color the text of the day initials
-- Better alignment of dates with single event dots
-- Removed some extra stacks that werent needed to help with RAM usage
-- Added optimized method for array handling
-- Added prevMonth and nextMonth flags to allow display of dates from the previous and next months if the start and end week have available slots
-- Added setup question for the showDatesBeforeAfter
-- Optimized the URL used for each date in the right side calendar view so they open the proper date in the calendar app
-- Modified size of the date stacks on the right side to better accomodate larger months like May 2021
-- Modified event list view so tapping an event goes to the proper day if the event is allDay
+{"version":"1.8","notes":"- Add color highlight option of Saturday and Sunday\n- Add option to color the text of the day initials\n- Better alignment of dates with single event dots\n- Removed some extra stacks that werent needed to help with RAM usage\n- Added optimized method for array handling\n- Added prevMonth and nextMonth flags to allow display of dates from the previous and next months if the start and end week have available slots\n- Added setup question for the showDatesBeforeAfter\n- Optimized the URL used for each date in the right side calendar view so they open the proper date in the calendar app\n- Modified size of the date stacks on the right side to better accomodate larger months like May 2021\n- Modified event list view so tapping an event goes to the proper day if the event is allDay"}
