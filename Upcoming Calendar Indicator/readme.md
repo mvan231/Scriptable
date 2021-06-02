@@ -14,12 +14,15 @@
 ![update](https://i.imgur.com/JBawO7v.jpg)
 ---
   This is an example of what v1.3 could look like.
-![new example image]( https://i.imgur.com/iUci7ty.jpg)
+  
+  ![new example image]( https://i.imgur.com/iUci7ty.jpg)
 
   This is an example of what v1.5 could look like with a base color set to red and using the 24hr time display.
-![v1.5 example](https://i.imgur.com/CORi5YL.jpg)
+  
+  ![v1.5 example](https://i.imgur.com/CORi5YL.jpg)
 
   In v1.7 the large size widget is now an option. When using the large widget, transparency is automatically disabled due to issues with displaying the content.
+  
   ![1.7 example](https://i.imgur.com/K30Ehrf.jpg)
   
   v1.9 introduces some new features:
