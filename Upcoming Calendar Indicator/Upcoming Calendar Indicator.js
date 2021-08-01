@@ -9,21 +9,12 @@ let scriptPath = fm.documentsDirectory()+'/UpcomingIndicator/'
 let settingsPath = scriptPath+'settings.json'
 const reRun = URLScheme.forRunningScript()
 if(!fm.fileExists(scriptPath))fm.createDirectory(scriptPath, false)
-let needUpdated = await updateCheck(1.9)
+let needUpdated = await updateCheck(2.0)
 //log(needUpdated)
 /*--------------------------
 |------version notes------
-1.9
-- Add color highlight of saturday and sunday
-- Add option to color the text of the day initials
-- Better alignment of dates with single event dots
-- Removed some extra stacks that werent needed to help with RAM usage
-- Added optimized method for array handling
-- Added prevMonth and nextMonth flags to allow display of dates from the previous and next months if the start and end week have available slots
-- Added setup question for the showDatesBeforeAfter
-- Optimized the URL used for each date in the right side calendar view so they open the proper date in the calendar app
-- Modified size of the date stacks on the right side to better accomodate larger months like May 2021
-- Modified event list view so tapping an event goes to the proper day if the event is allDay
+2.0
+- fixed an issue with months that start on Sunday when using Monday as the start of the week
 --------------------------*/
 /*
 ####################
@@ -852,6 +843,8 @@ function buildMonthVertical() {
     forLoopFirstDay=firstDayStack.getDay()-1
     forLoopLastDay = lastDayStack.getDay()-1
     
+    if(forLoopFirstDay<0)forLoopFirstDay=6
+    if(forLoopLastDay<0)forLoopLastDay=6
   }
   let dayStackCounter = 0;
 
