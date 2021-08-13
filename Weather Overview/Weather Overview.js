@@ -22,7 +22,7 @@ const showWindArrow = true
 const showPrecipitation = true
 const showAlerts = true
 
-const API_KEY = "23a34c5bc88f572c71be71122e96c725"
+const API_KEY = ""
 
 let param = args.widgetParameter
 //param='daily'
