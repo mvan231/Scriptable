@@ -1,1 +1,1 @@
-{"version":"2.0","notes":"- fixed an issue with months that start on Sunday when using Monday as the start of the week"}
+{"version":"2.1","notes":"- added a fix for duplicate events showing in the event list\n- made current events show in the event list, which are allDay and started before today but are extendeding to today or beyond"}
