@@ -293,6 +293,7 @@ if(showPrecipitation){
 	  drawPOP(spaceBetweenDays * i,precipBarH, precipAmountColor,0.6)//draw the amount of precipitation
     }
   }
+  drawText(`pScale = ${(maxPrecip/2)}`, 18, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 72,30)
 }
   
 //end adding pop by mvan231
