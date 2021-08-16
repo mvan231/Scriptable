@@ -290,7 +290,7 @@ if(showPrecipitation){
 	  precipAmountColor = (precipType == 'snow')?'FFFFFF':'6495ED'
 	  let precipBarH = 0.8*(100*(precipAmount/maxPrecip))
 	  let precipBarYPos = 220 - precipBarH
-	  drawPOP(precipBarH, spaceBetweenDays * i,precipAmountColor,0.6)//draw the amount of precipitation
+	  drawPOP(spaceBetweenDays * i,precipBarH, precipAmountColor,0.6)//draw the amount of precipitation
     }
   }
 }
