@@ -9,12 +9,13 @@ let scriptPath = fm.documentsDirectory()+'/UpcomingIndicator/'
 let settingsPath = scriptPath+'settings.json'
 const reRun = URLScheme.forRunningScript()
 if(!fm.fileExists(scriptPath))fm.createDirectory(scriptPath, false)
-let needUpdated = await updateCheck(2.0)
+let needUpdated = await updateCheck(2.1)
 //log(needUpdated)
 /*--------------------------
 |------version notes------
-2.0
-- fixed an issue with months that start on Sunday when using Monday as the start of the week
+2.1
+- added a fix for duplicate events showing in the event list
+- made current events show in the event list, which are allDay and started before today but are extendeding to today or beyond
 --------------------------*/
 /*
 ####################
@@ -958,12 +959,23 @@ async function successCallback(result) {
   //newCalArray.forEach(eventCount)//filter method below is replacing the event count function
   log(newCalArray.length)
   let now = new Date()
+  let ids = []
   newCalArray = newCalArray.filter(item => {
     //log(new Date(item.startDate).getTime())
     //log(item.calendar.title)
     //log(new Date(item.startDate).getDate())
     //log(`it is now ${now.getTime()}`)
-      if (((new Date(item.startDate).getTime() > now.getTime()) || (showCurrentAllDayEvents?(new Date(item.startDate).getDate()==now.getDate() && item.isAllDay):false)) && cal.includes(item.calendar.title)) return true
+    //log(ids)
+
+    
+    //if(!(ids.includes(item.identifier))){  
+
+      //ids.push(item.title)
+      if (((new Date(item.startDate).getTime() > now.getTime()) || (showCurrentAllDayEvents?((new Date(item.startDate).getDate()==now.getDate() || (new Date(item.startDate).getTime()<now.getTime() && new Date(item.endDate).getTime()>now.getTime())) && item.isAllDay):false)) && cal.includes(item.calendar.title) && !(ids.includes(item.identifier))) {  
+        ids.push(item.identifier)
+        return true    
+      }
+    //}
       return false
   })
   log(newCalArray.length)
@@ -1018,6 +1030,7 @@ function eventCount(item){
 
 
 function f(item){
+//   log(item)
   eventDisplay = (eventFontSize>1)?3 : 5
   if(widgFam=='large')eventDisplay=eventDisplay*3
   const date = new Date(); 
@@ -1098,6 +1111,13 @@ if(useBaseTextColor)when.textColor=Color.dynamic(new Color(baseTextColorLight), 
           dF.dateFormat='EEE'
           let eee = dF.string(dd)        
           let dt = eee+' '+ddd+' '
+          let multipleAllDay = (item.isAllDay && (new Date(item.startDate).getDate() != new Date(item.endDate.getDate())))
+  
+          if(multipleAllDay){
+            dF.dateFormat='EEE MMM d'
+            dt = dt + '- ' + dF.string(item.endDate)
+          }
+
           if(!item.isAllDay){
             dF.dateFormat=use24hrTime?'HH:mm':'h:mma'
             let sAndFTimes = isCalEvent?dF.string(item.startDate)+'-'+dF.string(item.endDate):dF.string(item.startDate)
