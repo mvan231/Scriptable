@@ -276,7 +276,7 @@ if(showPrecipitation){
     }
     let pop = hourData[i].pop * 100
 	let barH = ((220-60)/100) * pop
-    drawPOP(barH, spaceBetweenDays * i,'1fb2b7',0.85)//draw the percentage of precipitation bar with the cyan blue color
+    drawPOP(spaceBetweenDays * i,barH, '1fb2b7',0.85)//draw the percentage of precipitation bar with the cyan blue color
 
     let precipAmount,precipType,precipAmountColor
 	
