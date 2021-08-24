@@ -19,7 +19,7 @@ Weather Overview is a widget for Scriptable on iOS. It provides a general overvi
   * Cloud Cover (percentage - white line)
   * Precipitation Probability Bar (left side or full bar if no precipitation amount available)
   * Precipitation Amount Bar (right side and using the right y-axis)
-  * Weather Alerts (shown as ⚠️ for each present alert. Tapping the widget will take you to OpenWeatherMap.org so you can see what they are.
+  * Weather Alerts (shown as ⚠️ for each present alert) Tapping the widget will take you to OpenWeatherMap.org so you can see what they are.
 
 ### Configuration Items
 ![image](https://user-images.githubusercontent.com/50910610/130572584-c17ecf06-87bd-484b-8b8c-7526a249daa1.png)
