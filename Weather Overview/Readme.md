@@ -29,7 +29,7 @@ Weather Overview is a widget for Scriptable on iOS. It provides a general overvi
   * showWindArrow set to true will show a wind direction arrow. Set to false, and the cardinal direction will be displayed instead
     * default is showWindArrow = true
 
-  * showPrecipitation will enable / disable the ability to display the percentage of precipitation
+  * showPrecipitation will enable / disable the ability to display the precipitation information
     * default is showPrecipitation = true
 
   * showCloudCover will enable / disable the line display of the cloud cover forecast
