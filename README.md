@@ -101,7 +101,8 @@
     * Inputing a currency code will use that as the base for the widget. The default base is EUR.
 
 * ### [Weather Overview Widget](Weather%20Overview)
-  
+  This widget displays an overview of the weather in your location. Click/Tap the link to see more about it.
+  ![image](https://user-images.githubusercontent.com/50910610/130523342-a5e88a5e-28b6-4fee-a70f-036f8cd5c728.jpeg)
 
 ## Scripts
 
