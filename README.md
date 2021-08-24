@@ -100,6 +100,9 @@
     * This widget is based on the version by juniorchen. It has been adapted to work with the free version of the exchangerateapi. 
     * Inputing a currency code will use that as the base for the widget. The default base is EUR.
 
+* ### [Weather Overview Widget](Weather%20Overview)
+  
+
 ## Scripts
 
 * ### [ScriptBackup.js](ScriptBackup.js)
