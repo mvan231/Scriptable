@@ -12,7 +12,7 @@ Weather Overview is a widget for Scriptable on iOS. It provides a general overvi
 ### Items Displayed
   * Location and Date
   * Legend for enabled and present items
-  * Date and Time of graphed data points (x-axis)
+  * Date and Time of graphed data points (x-axis) with color depending on day (orange) or night (white)
   * Temperature and Condition
   * Humidity (percentage - magenta line)
   * Wind Speed and Direction (shown above the chart with a numeric value according to your units preference)
