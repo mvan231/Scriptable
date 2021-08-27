@@ -1,14 +1,17 @@
 # ![image](https://user-images.githubusercontent.com/50910610/130548611-ba07482a-f557-4fe6-9b6c-3cde56603625.png)
 
-Weather Overview is a widget for Scriptable on iOS. It provides a general overview of the weather in your current area.
+### Weather Overview is a widget for Scriptable on iOS. It provides a general overview of the weather in your current area.
+
+
+###### Weather data provided by [Open Weather Map](https://openweathermap.org/). You'll need an API key in order to use the widget. You can get one [here!](https://openweathermap.org/api)
 
 
 #### Normal Examples (Hourly)
   ![image](https://user-images.githubusercontent.com/50910610/130523342-a5e88a5e-28b6-4fee-a70f-036f8cd5c728.jpeg)
-  <img src="https://i.imgur.com/yWAMcku.jpg" alt="drawing" width="200"/>
+  <img src="https://i.imgur.com/yWAMcku.jpg" alt="normalSmall" width="200"/>
 #### Daily Examples ("daily" widget parameter)
   ![image](https://user-images.githubusercontent.com/50910610/130523310-941f784a-9aa6-4d17-8e6a-a511d1f035d6.jpeg)
-  <img src="https://i.imgur.com/r5CnQ4O.jpg" alt="drawing" width="200"/>
+  <img src="https://i.imgur.com/r5CnQ4O.jpg" alt="dailySmall" width="200"/>
 ### Items Displayed
   * Location and Date
   * Legend for enabled and present items
