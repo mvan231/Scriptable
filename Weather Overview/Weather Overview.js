@@ -105,8 +105,6 @@ if(!locFound){
   }
 }
 log(latLong)
-//latLong.latitude = 35.952176
-//latLong.longitude = -114.735334
 const LAT = latLong.latitude
 const LON = latLong.longitude
 
@@ -138,12 +136,6 @@ const accentColor = new Color(Color.green().hex/*"#ffa300""#B8B8B8"*/, 1)
 const backgroundColor = new Color("#000000", 1)
 
 const locationNameCoords = new Point(30, showWindspeed?5:25)//25)
-
-//const weatherDescriptionCoords = new Point(30, 52)
-//const weatherDescriptionFontSize = 18
-//const footerFontSize = 18
-//const feelsLikeCoords = new Point(28, 230)
-//const lastUpdateTimePosAndSize = new Rect((config.widgetFamily == "small") ? 150 : 450, 230, 100, footerFontSize + 1)
 
 const xStart = /*(config.widgetFamily=='small')? 35 :*/ 30
 const barWidth = spaceBetweenDays - (config.widgetFamily == 'small'?8:4)
@@ -177,25 +169,10 @@ let widget = new ListWidget();
 widget.setPadding(0, 0, 0, 0);
 widget.backgroundColor = backgroundColor;
 
-/*
-><><><><><><><><><><><
 
-Begin of date Modification by mvan231
-
-><><><><><><><><><><><
-*/
 let mvDate = new Date()
 let mvDf = new DateFormatter
 mvDf.dateFormat = 'MMM d'
-
-
-/*
-><><><><><><><><><><><
-
-End of date Modification by mvan231
-
-><><><><><><><><><><><
-*/
 
 //check for alerts, if present and if enabled, show them
 let wAlerts=''
@@ -210,7 +187,6 @@ drawText(LOCATION_NAME+', '+mvDf.string(mvDate)+wAlerts+(needUpdated?' Update!':
 let min, max, diff;
 for (let i = 0; i <= hoursToShow; i++) {
   let temp = shouldRound(roundedGraph, (param=='daily'?weatherData.daily[i].temp.max : weatherData.hourly[i].temp));
-  //log(temp)
   min = (temp < min || min == undefined ? temp : min)
   max = (temp > max || max == undefined ? temp : max)
 }
@@ -232,13 +208,9 @@ if(showCloudCover){
     let cloudCoverNext = hourData[i+1].clouds
 	  let yPos = 220-(((220-60)/100) * cloudCover)
     let yPosNext = 220-(((220-60)/100) * cloudCoverNext)
-    //drawLine(x1, y1, x2, y2, width, color)
     drawLine(spaceBetweenDays * (i) + xStart + (barWidth/2), yPos/*175 - (50 * delta)*/,spaceBetweenDays * (i + 1) + xStart + (barWidth/2), yPosNext/*175 - (50 * nextDelta)*/, 1,new Color(Color.white().hex,0.9))
-
-  	//log(`cloudCover is ${cloudCover} on date ${(param!='daily'&&i==0)?weatherData.current.dt : hourData[i].dt}`)
   }
   if(showLegend)drawTextC("cld", 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 405,showWindspeed?5:25,180,20,new Color(Color.white().hex,0.9))
-  //drawTextC("Clouds", 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 300,showWindspeed?5:25,180,20,new Color(Color.white().hex,0.9))
 }
 //end cloud cover line
 
@@ -255,10 +227,8 @@ if(showHumidity){
     let humidityNext = hourData[i+1].humidity
     let yPos = 220-(((220-60)/100) * humidity)
     let yPosNext = 220-(((220-60)/100) * humidityNext)
-    //drawLine(x1, y1, x2, y2, width, color)
     drawLine(spaceBetweenDays * (i) + xStart + (barWidth/2), yPos/*175 - (50 * delta)*/,spaceBetweenDays * (i + 1) + xStart + (barWidth/2), yPosNext/*175 - (50 * nextDelta)*/, 1,new Color(Color.magenta().hex,0.9))
 
-  	//log(`humidity is ${humidity} on date ${(param!='daily'&&i==0)?weatherData.current.dt : hourData[i].dt}`)
   }
   if(showLegend)drawTextC("hum", 16, mediumWidgetWidth - 360,showWindspeed?5:25,180,20,new Color(Color.magenta().hex,0.9))
 }
@@ -283,75 +253,38 @@ if(showPrecipitation){
 
   hourData = (param=='daily')?weatherData.daily:weatherData.hourly;
   hourData.map(function(item,index){
-    //log(hoursToShow)
-    //log(index)
     if(index <= hoursToShow){
       let itemT = ('rain' in item)?'rain':('snow' in item)?'snow':false
       if(itemT){
-        //log(item[itemT])
-        //item=item[itemT]
-        //log(item)
         if (typeof item[itemT] === 'object' && '1h' in item[itemT])
         {
-          //log(item)
           let amount = item[itemT]
-          //log(amount)
-          //log(JSON.parse(amount))
-          // amount = amount['1h']
-          //log(amount['1h'])
-          //log(weatherData.hourly[index])
           item[itemT]=amount['1h']
     
           weatherData.hourly[index]=item
-          //log(weatherData.hourly[index])
-          //log(item)
         }
         if(itemT) precips.push((item[itemT]*mmToInch).toFixed(2))
       }
     }
   })
-  //log(precips)
-  //maxPrecip = Math.max(...precips)
-
-  //log(`max is ${maxPrecip}`)
-  //log(`min is ${minPrecip}`)
-  //log(Math.max(...numbs))
-  
 
   for (let i = 0; i <= hoursToShow; i++) {
-    //hourData = (param=='daily')?weatherData.daily[i]:weatherData.hourly[i];
     //mm to inch factor = 394/10000 //factor is 0.0394 mm to 1 inch
-    //let keys = Object.keys(hourData)
-    //log(keys.includes())
     let rain = 'rain' in hourData[i]
-    if(rain){
-      rain = Number(hourData[i].rain * mmToInch).toFixed(2)
-      //log(`rain amount is ${hourData.rain}, imp units ${rain}`)
-    }
+    if(rain)rain = Number(hourData[i].rain * mmToInch).toFixed(2)
     let snow = ('snow' in hourData[i])
-    if(snow){
-      //snow = 
-      snow = Number(hourData[i].snow * mmToInch).toFixed(2)
-      //log(`snow amount is ${hourData.snow}, imp units = ${snow}`)
-    }
+    if(snow)snow = Number(hourData[i].snow * mmToInch).toFixed(2)
     let pop = hourData[i].pop * 100
-	  let barH = ((220-60)/100) * pop
-
-
+    let barH = ((220-60)/100) * pop
     let precipAmount,precipType
     var precipAmountColor
 	
     //if there is amount of snow or rain, plot them with bars. 
     if(snow>0|rain>0){
-       //log(hourData.dt)8
-      
        precipAmount = snow?snow:rain
        if(precipAmount>maxPrecip)precipAmount=maxPrecip
        precipType = snow?'snow':'rain'
-       //log(`precipAmount is ${precipAmount}. precipType is ${precipType}`)
 	  precipAmountColor = (precipType == 'snow')?'FFFFFF':'6495ED'
-      //let precipBarH = 0.8*(100*(precipAmount/maxPrecip))
-      //if(precipAmount>(units=="imperial"?2:50))
       let precipBarH = ((220-60)/100)*(100*(precipAmount/maxPrecip))
       //draw the amount of precipitation with the bar info calculated above 
 	 drawPOP((spaceBetweenDays * i)+(barWidth*0.5),precipBarH, barWidth*0.5, precipAmountColor,0.8)
@@ -363,10 +296,7 @@ if(showPrecipitation){
     //draw the percentage of precipitation bar with the cyan blue color. If there is precipitation amount for the current timeframe, then use halfwidth, if not, use fullwidth
     drawPOP(spaceBetweenDays * i,barH, barWidth*(precipAmount?0.5:1), '1fb2b7',0.8)
   }
-  //log(`maxPrecip is ${maxPrecip}, precips.length is ${precips.length}`)
-  
-  //if precipitation data available for the displayed days/times, then show the scaling in the top right
-  //if(precips.length > 0) drawTextC("pScale = "+(maxPrecip/2)+(units=='imperial'?'"':'mm'), 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 220,showWindspeed?5:25,180,20,Color.white())
+
   //add label for percentage
   if(showLegend)drawTextC("precPrb", 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 170,showWindspeed?5:25,180,20,new Color('1fb2b7',0.9))
 
@@ -380,10 +310,7 @@ drawContext.setTextAlignedCenter()
   
 for (let i = 0; i <= hoursToShow; i++) {
   let hourData = (param=='daily')?weatherData.daily[i]:weatherData.hourly[i];
-  //log(hourData)
-  //log(weatherData.current.sunset)
   let nextHourTemp = shouldRound(roundedGraph, (param=='daily')?weatherData.daily[i+1]['temp']['max']:  weatherData.hourly[i + 1].temp);
-//log(nextHourTemp)
   let dF = new DateFormatter()
   dF.dateFormat = 'eee'
   let hour = (param=='daily')?dF.string(epochToDate(hourData.dt))+' '+epochToDate(hourData.dt).getDate():epochToDate(hourData.dt).getHours();
@@ -406,11 +333,8 @@ for (let i = 0; i <= hoursToShow; i++) {
   
     //check if it is day / night
     now = new Date()
-    //log(`hour day is ${JSON.stringify(hourDay)}`)
     var night = (hourData.dt > hourDay.sunset || hourData.dt < hourDay.sunrise || (i == 0 && (now.getTime > weatherData.current.sunset || now.getTime < weatherData.current.sunrise)))
-    //log(`night is ${night}. now is ${now}. sunrise is ${weatherData.current.sunrise}. sunset is ${weatherData.current.sunset}`)
 
-    
     let freezing = (units=='imperial'?32:0)
     var tempColor = (temp>freezing)?Color.red():Color.blue()
 
@@ -440,8 +364,6 @@ for (let i = 0; i <= hoursToShow; i++) {
       //place wind cardinal direction
       drawTextC(dir, 14, spaceBetweenDays * i + 30, 44/*220 - 18*/, barWidth /*50*/, 20)//, Color.white())  
     }
-    //place wind unit(no longer in use)
-    //let windUnit = (units=='imperial')?'mph':'kph'
     //place wind speed
     drawTextC(windSpeed, 14, spaceBetweenDays * i + 30, 29/*220 - 32*/, barWidth /*50*/, 20,Color.white())
   }
@@ -459,13 +381,6 @@ for (let i = 0; i <= hoursToShow; i++) {
 	}
   previousDelta = delta;
 }
-
-//drawContext.setTextAlignedRight();
-
-/*
-if (usingCachedData)
-  drawText("⚠️", 32, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 72,30)
-*/
 
 widget.backgroundImage = (drawContext.getImage())
 widget.url = 'https://openweathermap.org'
@@ -495,33 +410,26 @@ function drawPercentageLines() {
     drawContext.setTextAlignedRight()
     drawContext.setTextColor(Color.lightGray())
     tex = String(100-(i*25))+'%'
-    //log(tex)
     drawContext.setFont(Font.boldSystemFont(10))
     drawContext.drawTextInRect(String(tex), new Rect(0, yPt-6, 30, 10))
 
   }  
-  //pa.addLine(new Point((spaceBetweenDays*hoursToShow)+xStart+barWidth, 220))  
   drawContext.addPath(pa)
   drawContext.setStrokeColor(Color.lightGray())
   drawContext.strokePath()
 }
 
 function drawAmountLabels() {
-  //draw lines and labels at 100% (xStart, 60) and 0% (xStart, 220). additional 25, 50, and 75 also added.
+  //draw lines and labels at precipitation amount positions.
   let pa = new Path()
   for (let i = 0; i<=4; i++){
     yPt = (((220-60)/4)*i)+60
-    // pa.move(new Point(xStart, yPt))
-    // pa.addLine(new Point((spaceBetweenDays*hoursToShow)+xStart+barWidth, yPt))
     drawContext.setTextAlignedLeft()
     drawContext.setTextColor(Color.lightGray())
-    tex = String(maxPrecip-(i*(maxPrecip/4)))//+(units=='imperial'?'"':'mm')
-    //log(tex)
+    tex = String(maxPrecip-(i*(maxPrecip/4)))
     drawContext.setFont(Font.boldSystemFont(10))
     drawContext.drawTextInRect(String(tex), new Rect((spaceBetweenDays*hoursToShow)+xStart+barWidth, yPt-6, 30, 10))
-
   }  
-  //pa.addLine(new Point((spaceBetweenDays*hoursToShow)+xStart+barWidth, 220))  
   drawContext.addPath(pa)
   drawContext.setStrokeColor(Color.lightGray())
   drawContext.strokePath()
@@ -538,15 +446,8 @@ function drawImage(image, x, y) {
 }
 
 function drawPOP(/*POP,*/ x, barH, barW,color,alpha=1){
-  //log(`pop is ${POP}`)
-  //log(`x is ${x}`)
-  //throw new Error(JSON.stringify(Color.blue()))
   drawContext.setFillColor(new Color(color,alpha))//'1fb2b7''0A84FF',0.85 0.45))
-
-  //let barH =  ((220-60)/100) * POP
   let y = 220 - barH
-  //log(`bar height is ${barH}`)
-  //log(`y start point is ${y}`)
   if(barH > 0)drawContext.fillRect(new Rect(x+xStart,y,barW, barH))
 }
 
@@ -568,8 +469,6 @@ function drawLine(x1, y1, x2, y2, width, color) {
   drawContext.setStrokeColor(color)
   drawContext.setLineWidth(width)
   drawContext.strokePath()
-  
-  //log(`x1 is ${x1}, x2 is ${x2}, y1 is ${y1}, y2 is ${y2}. color is ${color.hex }`)
 }
 
 function shouldRound(should, value) {
