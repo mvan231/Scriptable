@@ -18,7 +18,7 @@ Start of Setup
 
 //Insert your API key below
 //***critical for widget to work***
-const API_KEY = ""
+const API_KEY = "23a34c5bc88f572c71be71122e96c725"
 
 //showWindspeed will enable/disable the windsoeed display on the widget
 const showWindspeed = true
@@ -145,8 +145,8 @@ const locationNameCoords = new Point(30, showWindspeed?5:25)//25)
 //const feelsLikeCoords = new Point(28, 230)
 //const lastUpdateTimePosAndSize = new Rect((config.widgetFamily == "small") ? 150 : 450, 230, 100, footerFontSize + 1)
 
-const xStart = (config.widgetFamily=='small')? 35 : 30
-const barWidth = spaceBetweenDays-4
+const xStart = /*(config.widgetFamily=='small')? 35 :*/ 30
+const barWidth = spaceBetweenDays - (config.widgetFamily == 'small'?8:4)
 
 let weatherData,percentageLinesDrawn;
 let usingCachedData = false;
@@ -431,11 +431,11 @@ for (let i = 0; i <= hoursToShow; i++) {
     if(showWindArrow){
       //add wind directional arrow
       drawContext.setFillColor(accentColor)
-      drawContext.fillEllipse(new Rect(spaceBetweenDays * i + ((config.widgetFamily=='small')? 50 : (param=='daily'?58:42)), 44/*220 - 16*/,16,16))
+      drawContext.fillEllipse(new Rect(spaceBetweenDays * i + ((config.widgetFamily=='small')? 48 : (param=='daily'?58:42)), 44/*220 - 16*/,16,16))
       let symb = SFSymbol.named(windArrows[dir])
       symb.applyFont(Font.systemFont(14))
       symb=symb.image
-      drawImage(symb, spaceBetweenDays * i + (config.widgetFamily=='small'? 51 : param=='daily'?59:43), 45/*220 - 15*/)
+      drawImage(symb, spaceBetweenDays * i + (config.widgetFamily=='small'? 49 : param=='daily'?59:43), 45/*220 - 15*/)
     }else{
       //place wind cardinal direction
       drawTextC(dir, 14, spaceBetweenDays * i + 30, 44/*220 - 18*/, barWidth /*50*/, 20)//, Color.white())  
