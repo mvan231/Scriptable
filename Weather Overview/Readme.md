@@ -18,11 +18,11 @@
   * Legend for enabled and present items
   * Date and Time of graphed data points (x-axis) with color depending on day (orange) or night (white)
   * Temperature and Condition
-  * Humidity (percentage - magenta line)
+  * Humidity (percentage - magenta line; Abbreviated as hum in legend)
   * Wind Speed and Direction (shown above the chart with a numeric value according to your units preference)
-  * Cloud Cover (percentage - white line)
-  * Precipitation Probability Bar (left side or full bar if no precipitation amount available)
-  * Precipitation Amount Bar (right side and using the right y-axis)
+  * Cloud Cover (percentage - white line; Abbreviated as cld in legend)
+  * Precipitation Probability Bar (left side or full bar if no precipitation amount available; Abbreviated as precPrb in legend)
+  * Precipitation Amount Bar (right side and using the right y-axis; Abbreviated as precAmt in legend)
   * Weather Alerts (shown as ⚠️ for each present alert) Tapping the widget will take you to OpenWeatherMap.org so you can see what they are.
 
 ### Configuration Items
