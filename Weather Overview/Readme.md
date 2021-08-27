@@ -4,6 +4,7 @@
 
 
 ###### Weather data provided by [Open Weather Map](https://openweathermap.org/). You'll need an API key in order to use the widget. You can get one [here!](https://openweathermap.org/api)
+***Note: if you don't already have an API key with OpenWeatherMap, [it can take up to a few hours for the key to activate](https://openweathermap.org/faq#error401)
 
 
 #### Normal Examples (Hourly)
