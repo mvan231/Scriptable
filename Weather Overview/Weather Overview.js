@@ -18,7 +18,7 @@ Start of Setup
 
 //Insert your API key below
 //***critical for widget to work***
-const API_KEY = "23a34c5bc88f572c71be71122e96c725"
+const API_KEY = ""
 
 //showWindspeed will enable/disable the windsoeed display on the widget
 const showWindspeed = true
