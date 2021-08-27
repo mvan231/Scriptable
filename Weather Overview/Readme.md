@@ -5,10 +5,10 @@ Weather Overview is a widget for Scriptable on iOS. It provides a general overvi
 
 #### Normal Examples (Hourly)
   ![image](https://user-images.githubusercontent.com/50910610/130523342-a5e88a5e-28b6-4fee-a70f-036f8cd5c728.jpeg)
-  
-#### Daily Example ("daily" widget parameter)
+  <img src="https://i.imgur.com/yWAMcku.jpg" alt="drawing" width="200"/>
+#### Daily Examples ("daily" widget parameter)
   ![image](https://user-images.githubusercontent.com/50910610/130523310-941f784a-9aa6-4d17-8e6a-a511d1f035d6.jpeg)
-
+  <img src="https://i.imgur.com/r5CnQ4O.jpg" alt="drawing" width="200"/>
 ### Items Displayed
   * Location and Date
   * Legend for enabled and present items
