@@ -22,7 +22,7 @@
   * Wind Speed and Direction (shown above the chart with a numeric value according to your units preference)
   * Cloud Cover (percentage - white line; Abbreviated as cld in legend)
   * Precipitation Probability Bar (left side or full bar if no precipitation amount available; Abbreviated as precPrb in legend)
-  * Precipitation Amount Bar (right side and using the right y-axis; Abbreviated as precAmt in legend)
+  * Precipitation Amount Bar (right side and using the right y-axis, color changes depending on snow/rain; Abbreviated as precAmt in legend)
   * Weather Alerts (shown as ⚠️ for each present alert) Tapping the widget will take you to OpenWeatherMap.org so you can see what they are.
 
 ### Configuration Items
