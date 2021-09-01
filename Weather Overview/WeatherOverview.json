@@ -1,1 +1,1 @@
-{"version":"1.0","notes":"- Initial Release"}
+{"version":"1.0","notes":"- added a missing item in the windDurs JSON for when windDeg is 360°"}
