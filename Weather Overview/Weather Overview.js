@@ -66,7 +66,7 @@ v1.1
 
 ><><><><><><><><><><><*/
 //check for an update quick before building the widget
-let needUpdated = await updateCheck(1.0)
+let needUpdated = await updateCheck(1.1)
 
 //param must be == 'daily' for the daily forecast to be shown. Below, thr variable 'param' is set to the widgetParameter, which can be modified when choosing the script from thr widget configurator screen. 
 let param = args.widgetParameter
