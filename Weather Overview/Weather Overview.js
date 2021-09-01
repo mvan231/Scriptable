@@ -61,8 +61,8 @@ End of Setup
 ---
 version info
 ---
-v1.0
-- Initial Release with updater included
+v1.1
+- added a missing item in the windDurs JSON for when windDeg is 360°
 
 ><><><><><><><><><><><*/
 //check for an update quick before building the widget
@@ -76,7 +76,7 @@ let param = args.widgetParameter
 
 if(config.widgetFamily=='small')showLegend=false
 
-let windDirs = {"9":"ESE","25":"WNW","18":"SSW","10":"ESE","26":"WNW","19":"SW","11":"SE","27":"NW","0":"N","12":"SE","1":"NNE","28":"NW","20":"SW","2":"NNE","13":"SSE","3":"NE","21":"WSW","14":"SSE","4":"NE","29":"NNW","5":"ENE","15":"S","22":"WSW","6":"ENE","30":"NNW","23":"W","7":"E","16":"S","31":"N","8":"E","17":"SSW","24":"W"}
+let windDirs = {"9":"ESE","25":"WNW","18":"SSW","10":"ESE","26":"WNW","19":"SW","11":"SE","27":"NW","0":"N","12":"SE","1":"NNE","28":"NW","20":"SW","2":"NNE","13":"SSE","3":"NE","21":"WSW","14":"SSE","4":"NE","29":"NNW","5":"ENE","15":"S","22":"WSW","6":"ENE","30":"NNW","23":"W","7":"E","16":"S","31":"N","8":"E","17":"SSW","24":"W","32":"N"}
 
 let windArrows = {"ESE":"arrow.up.left","SSE":"arrow.up","S":"arrow.up","WSW":"arrow.up.right","W":"arrow.right","WNW":"arrow.down.right","SSW":"arrow.up","SW":"arrow.up.right","SE":"arrow.up.left","NW":"arrow.down.right","N":"arrow.down","NNE":"arrow.down","NNW":"arrow.down","NE":"arrow.down.left","ENE":"arrow.down.left","E":"arrow.left"}
 
@@ -356,6 +356,7 @@ for (let i = 0; i <= hoursToShow; i++) {
       //add wind directional arrow
       drawContext.setFillColor(accentColor)
       drawContext.fillEllipse(new Rect(spaceBetweenDays * i + ((config.widgetFamily=='small')? 48 : (param=='daily'?58:42)), 44/*220 - 16*/,16,16))
+
       let symb = SFSymbol.named(windArrows[dir])
       symb.applyFont(Font.systemFont(14))
       symb=symb.image
