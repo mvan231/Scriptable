@@ -1,1 +1,1 @@
-{"version":"2.1","notes":"- added a fix for duplicate events showing in the event list\n- made current events show in the event list, which are allDay and started before today but are extendeding to today or beyond"}
+{"version":"2.2","notes":"- Small fix for displaying end date on all-day events that are just one day (silly parenthases)"}
