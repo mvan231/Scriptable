@@ -1,18 +1,20 @@
 // Variables used by Scriptable.
 // These must be at the very top of the file. Do not edit.
 // icon-color: light-gray; icon-glyph: calendar-alt;
+﻿// Variables used by Scriptable.
+// These must be at the very top of the file. Do not edit.
+// icon-color: light-gray; icon-glyph: calendar-alt;
 let fm = FileManager.iCloud()
 let scriptPath = fm.documentsDirectory()+'/UpcomingIndicator/'
 let settingsPath = scriptPath+'settings.json'
 const reRun = URLScheme.forRunningScript()
 if(!fm.fileExists(scriptPath))fm.createDirectory(scriptPath, false)
-let needUpdated = await updateCheck(2.1)
+let needUpdated = await updateCheck(2.2)
 //log(needUpdated)
 /*--------------------------
 |------version notes------
-2.1
-- added a fix for duplicate events showing in the event list
-- made current events show in the event list, which are allDay and started before today but are extendeding to today or beyond
+2.2
+- Small fix for displaying end date on all-day events that are just one day (silly parenthases)
 --------------------------*/
 /*
 ####################
@@ -1038,6 +1040,7 @@ function f(item){
     isCalEvent=false
   }  
 //   log(item.startDate)
+log(item.identifier)
   dF.dateFormat='yyyy-MM-dd HH:mm:ss.SSSZ'
   let dateString = item.startDate.toString()
   dateString=dateString.replace('T', ' ')
@@ -1108,7 +1111,7 @@ if(useBaseTextColor)when.textColor=Color.dynamic(new Color(baseTextColorLight), 
           dF.dateFormat='EEE'
           let eee = dF.string(dd)        
           let dt = eee+' '+ddd+' '
-          let multipleAllDay = (item.isAllDay && (new Date(item.startDate).getDate() != new Date(item.endDate.getDate())))
+          let multipleAllDay = (item.isAllDay && (new Date(item.startDate).getDate() != new Date(item.endDate).getDate()))
   
           if(multipleAllDay){
             dF.dateFormat='EEE MMM d'
