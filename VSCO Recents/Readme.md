@@ -31,3 +31,8 @@ As always, it's your choice to update or not.
 Of course it is recommended :)
 
 ![Update Available](https://i.imgur.com/A13rJSj.jpg)
+
+#### Credits
+  Thanks to:
+  * Reddit user u/gluebyte for the [Screenshot Framer](https://routinehub.co/shortcut/8067/) Shortcut used to generate the images on this page.
+  * Reddit user u/ROPit for the [MediaKit Banners](https://routinehub.co/shortcut/1910/) used to create the banner at the top of this page.
