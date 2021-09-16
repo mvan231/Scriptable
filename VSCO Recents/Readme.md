@@ -18,6 +18,6 @@ Example below highlights the difference between normal mode and when the "|lates
 ![Example of Latest vs Normal](https://i.imgur.com/CEKd1Dx.png)
 
 #### Updates
-The widget has an update function included. This is for if anything in the code/script is incorrect not. 
+The widget has an update function included. This is just in case the widget code needs to be updated.
 
 ![Update Available](https://i.imgur.com/A13rJSj.jpg)
