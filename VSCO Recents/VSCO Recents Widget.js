@@ -23,6 +23,7 @@ v:1.0
 let needUpdated = await updateCheck(1.0)
 
 let url = args.widgetParameter
+url='https://vs.co/53863314'
 if(!url)throw new Error('Please input a profile url in the widget parameter, optionally you can set a secondary input to always show the latest post.\nExample: url|latest')
 
 url=url.split('|')
@@ -83,7 +84,7 @@ w.backgroundImage = img
 
 let tStack = w.addStack()
 let dtStack = tStack.addStack()
-let date = dtStack.addText(` ${capDate(needUpdated)?' Update!':''} `)
+let date = dtStack.addText(` ${capDate}${needUpdated?'\n UpdateAvailable!':''} `)
 tStack.addSpacer()
 date.font = Font.lightRoundedSystemFont(config.widgetFamily=='small'?8: 10)
 date.shadowColor = Color.dynamic(Color.black(), Color.white())
@@ -147,7 +148,7 @@ async function updateCheck(version){
     upd.addDestructiveAction("Later")
     upd.message="Changes:\n"+uC.notes+"\n\nPress OK to get the update from GitHub"
       if (await upd.present()==0){
-      Safari.open("https://github.com/mvan231/Scriptable/blob/main/Weather%20Overview/Weather%20Overview.js")
+      Safari.open("https://github.com/mvan231/Scriptable/blob/main/VSCO%20Recents/VSCO%20Recents%20Widget.js")
       throw new Error("Update Time!")
       }
     } 
