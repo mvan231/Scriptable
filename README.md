@@ -104,6 +104,11 @@
   This widget displays an overview of the weather in your location. Click/Tap the link to see more about it.
   ![image](https://user-images.githubusercontent.com/50910610/130523342-a5e88a5e-28b6-4fee-a70f-036f8cd5c728.jpeg)
 
+* ### [VSCO Recents Widget](VSCO%20Recents)
+    This widget displays a random recent photo or the most recent photo of a specified user of VSCO
+    
+  
+
 ## Scripts
 
 * ### [ScriptBackup.js](ScriptBackup.js)
