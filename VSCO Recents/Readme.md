@@ -23,7 +23,7 @@ Example of what it could look like is below.
 Example below highlights the difference between normal mode and when the "|latest" flag is used.
 ![Example of Latest vs Normal](https://i.imgur.com/CEKd1Dx.png)
 
-#### Updates
+### Future Updates
 The widget has a built-in update function included. This is just in case the widget code needs to be updated. If you see this "Update Available!" text under the date, you can simply run the script in the Scriptable app, then you'll be prompted with the changes.
 
 As always, it's your choice to update or not. 
