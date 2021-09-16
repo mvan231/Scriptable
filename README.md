@@ -106,7 +106,8 @@
 
 * ### [VSCO Recents Widget](VSCO%20Recents)
     This widget displays a random recent photo or the most recent photo of a specified user of VSCO
-    
+    ![Example](https://i.imgur.com/z8CNRmx.png)
+
   
 
 ## Scripts
