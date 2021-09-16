@@ -23,7 +23,6 @@ v:1.0
 let needUpdated = await updateCheck(1.0)
 
 let url = args.widgetParameter
-url='https://vs.co/53863314'
 if(!url)throw new Error('Please input a profile url in the widget parameter, optionally you can set a secondary input to always show the latest post.\nExample: url|latest')
 
 url=url.split('|')
@@ -148,8 +147,13 @@ async function updateCheck(version){
     upd.addDestructiveAction("Later")
     upd.message="Changes:\n"+uC.notes+"\n\nPress OK to get the update from GitHub"
       if (await upd.present()==0){
-      Safari.open("https://github.com/mvan231/Scriptable/blob/main/VSCO%20Recents/VSCO%20Recents%20Widget.js")
-      throw new Error("Update Time!")
+        let r = new Request('https://raw.githubusercontent.com/mvan231/Scriptable/main/VSCO%20Recents/VSCO%20Recents%20Widget.js')
+        let updatedCode = await r.loadString()
+        let fm = FileManager.iCloud()
+        let path = fm.joinPath(fm.documentsDirectory(), `${Script.name()}.js`)
+        log(path)
+        fm.writeString(path, updatedCode)
+        throw new Error("Update Complete!")
       }
     } 
   }else{
