@@ -1,10 +1,11 @@
 ![VSCO Widget](https://i.imgur.com/GnRezQJ.png)
 
-[Setup](#Setup)
-[Displayed Items](#Displayed%20Items)
-[Examples](#Examples)
-[Credits](#Credits)
-[Future Updates](#Future%20Updates)
+Content
+* [Setup](#Setup)
+* [Displayed Items](#Displayed-Items)
+* [Examples](#Examples)
+* [Credits](#Credits)
+* [Future Updates](#Future-Updates)
 
 This widget can display a random recent VSCO post from a specified user (URL passed as a widget parameter). 
 
