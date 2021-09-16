@@ -18,6 +18,8 @@ Example below highlights the difference between normal mode and when the "|lates
 ![Example of Latest vs Normal](https://i.imgur.com/CEKd1Dx.png)
 
 #### Updates
-The widget has an update function included. This is just in case the widget code needs to be updated.
+The widget has a built-in update function included. This is just in case the widget code needs to be updated. If you see this "Update Available!" text under the date, you can simply run the script in the Scriptable app, then you'll be prompted with the changes.
+
+As always, it's your choice to update or not, of course it is recommended :)
 
 ![Update Available](https://i.imgur.com/A13rJSj.jpg)
