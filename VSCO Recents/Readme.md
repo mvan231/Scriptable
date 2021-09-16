@@ -9,6 +9,12 @@ Setup the widget parameter with the profile URL you want to see posts from.
 A feature exists to show only the latest photo, so you know if the photo changes, the user has posted something new. To set this up, include "|latest" at the end of the profile URL passed as the widget parameter. 
 ![Widget Parameter Latest](https://i.imgur.com/TrEZfmo.png)
 
+### Displayed Items
+  * Photo capture date
+  * User's profile name
+  * User's handle
+  * Random recent or most recent photo as the widget background
+
 ### Examples
 Example of what it could look like is below.
 ![Example](https://i.imgur.com/z8CNRmx.png)
