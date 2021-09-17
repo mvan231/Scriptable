@@ -15,34 +15,65 @@ modifications and new features added by mvan231
 Start of Setup
 
 ><><><><><><><><><><><*/
+let fm = FileManager.iCloud()
+let settingsPath = fm.documentsDirectory()+'/weatherOverviewSettings.json'
+const reRun = URLScheme.forRunningScript()
+
+let a,settings = {}
+
+if(fm.fileExists(settingsPath))settings = JSON.parse(fm.readString(settingsPath))
+let set = await setup()
+if(fm.fileExists(settingsPath))settings = JSON.parse(fm.readString(settingsPath))
+
+if(!config.runsInWidget && fm.fileExists(settingsPath) /*&& !JSON.parse(fm.readString(settingsPath)).quickReset*/){
+    let resetQ = new Alert()
+    resetQ.title='Want to reset?'
+    resetQ.message='If you tap "Yes" below, the settings for this widget will be reset and setup will run again'  
+    resetQ.addAction('Yes')
+    resetQ.addAction('No')
+    a = await resetQ.presentSheet()
+    if(a==0){
+      fm.remove(settingsPath)
+      Safari.open(reRun)
+      throw new Error('running again now')
+    }
+}
+
+settings = JSON.parse(fm.readString(settingsPath))
+if(settings.quickReset)
+{  
+  settings.quickReset=false  
+  log(settings)
+  fm.writeString(settingsPath, JSON.stringify(settings))
+}
 
 //Insert your API key below
 //***critical for widget to work***
-const API_KEY = ""
+const API_KEY = settings.apiKey
 
-//showWindspeed will enable/disable the windsoeed display on the widget
-const showWindspeed = true
+//showWindspeed will enable/disable the windspeed display on the widget
+const showWindspeed = settings.showWindspeed
 
 //showWindArrow set to true will show a wind direction arrow. Set to false, and the cardinal direction will be displayed instead
-const showWindArrow = true
+const showWindArrow = settings.showWindArrow
 
 //showPrecipitation will enable / disable the ability to display the precipitation information
-const showPrecipitation = true
+const showPrecipitation = settings.showPrecipitation
 
 //showCloudCover will enable / disable the line display of the cloud cover forecast
-const showCloudCover = true
+const showCloudCover = settings.showCloudCover
 
 //showHumidity will enable/disable the line display of the humidity level
-const showHumidity = true
+const showHumidity = settings.showHumidity
 
 //showLegend will enable/disable the legend display at the top of the widget
-let showLegend = true
+let showLegend = settings.showLegend
 
 //showAlerts will enable / disable the display of alerts in your area. A yellow warning triagle for each weather alert in your area will be displayed. Tapping the widget will take you to the OpenWeather page in Safari. 
-const showAlerts = true
+const showAlerts = settings.showAlerts
 
 //units can be set to imperial or metric for your preference
-const units = "imperial"//"metric"
+const units = settings.units//"imperial"//"metric"
 
 //locationNameFontSize determines the size of the location name at the top of the widget
 const locationNameFontSize = 18
@@ -61,12 +92,18 @@ End of Setup
 ---
 version info
 ---
-v1.1
-- added a missing item in the windDurs JSON for when windDeg is 360°
+v1.2
+- Small tweaks to positioning
+- Color change from red to orange
+- Reduce alpha for precipProbability
+- precipAmount max dependent on hourly or daily. Amounts reduced for better granularity
+- Change color of temps above freezing from red to orange
+- Change color of hours shown: Day = White; Night = Gray;
+- Settings are now retained in iCloud Drive so updates won't require full reconfiguration
 
 ><><><><><><><><><><><*/
 //check for an update quick before building the widget
-let needUpdated = await updateCheck(1.1)
+let needUpdated = await updateCheck(1.2)
 
 //param must be == 'daily' for the daily forecast to be shown. Below, thr variable 'param' is set to the widgetParameter, which can be modified when choosing the script from thr widget configurator screen. 
 let param = args.widgetParameter
@@ -80,8 +117,8 @@ let windDirs = {"9":"ESE","25":"WNW","18":"SSW","10":"ESE","26":"WNW","19":"SW",
 
 let windArrows = {"ESE":"arrow.up.left","SSE":"arrow.up","S":"arrow.up","WSW":"arrow.up.right","W":"arrow.right","WNW":"arrow.down.right","SSW":"arrow.up","SW":"arrow.up.right","SE":"arrow.up.left","NW":"arrow.down.right","N":"arrow.down","NNE":"arrow.down","NNW":"arrow.down","NE":"arrow.down.left","ENE":"arrow.down.left","E":"arrow.left"}
 
-let fm = FileManager.local()
-let cachePath = fm.documentsDirectory()
+let localFm = FileManager.local()
+let cachePath = localFm.documentsDirectory()
 
 var latLong = {},locFound = false
 try {
@@ -89,7 +126,7 @@ try {
   //throw new Error('hi')
   Location.setAccuracyToKilometer()
   latLong = await Location.current()  
-  fm.writeString(cachePath+'/locCache.json', JSON.stringify(latLong))   
+  localFm.writeString(cachePath+'/locCache.json', JSON.stringify(latLong))   
   log('location cached...')
   locFound=true  
 } catch(e) {
@@ -97,7 +134,7 @@ try {
 }
 if(!locFound){
   try{
-      latLong = JSON.parse(await fm.readString(cachePath+'/locCache.json'))
+      latLong = JSON.parse(await localFm.readString(cachePath+'/locCache.json'))
       log('using cached location')
   }catch(e2){    
       log(e2+" could not get location")
@@ -116,7 +153,6 @@ const nowstring = (param=='daily')?"Today" : "Now"
 const feelsstring = ""
 const relHumidity = ""
 const pressure = ""
-
 
 const twelveHours = false
 const roundedGraph = false
@@ -247,7 +283,7 @@ if(showPrecipitation){
   //gather precipitation data
   var maxPrecip,precips = []
 
-  maxPrecip = units=='imperial'?2:50
+  maxPrecip = units=='imperial'? param=='daily'?0.8:0.2:param=='daily'?20:5
 
   drawAmountLabels()
 
@@ -280,7 +316,7 @@ if(showPrecipitation){
     var precipAmountColor
 	
     //if there is amount of snow or rain, plot them with bars. 
-    if(snow>0|rain>0){
+    //if(snow>0|rain>0){//always drawing amount column
        precipAmount = snow?snow:rain
        if(precipAmount>maxPrecip)precipAmount=maxPrecip
        precipType = snow?'snow':'rain'
@@ -292,9 +328,9 @@ if(showPrecipitation){
       //add label for amount
       if(showLegend)drawTextC("precAmt", 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 100,showWindspeed?5:25,180,20,new Color(precipAmountColor,0.8))
 
-    }
+    //}
     //draw the percentage of precipitation bar with the cyan blue color. If there is precipitation amount for the current timeframe, then use halfwidth, if not, use fullwidth
-    drawPOP(spaceBetweenDays * i,barH, barWidth*(precipAmount?0.5:1), '1fb2b7',0.8)
+    drawPOP(spaceBetweenDays * i,barH, barWidth*0.5/**(precipAmount?0.5:1)*/, '1fb2b7',0.6)//0.8)//value reduced
   }
 
   //add label for percentage
@@ -336,12 +372,12 @@ for (let i = 0; i <= hoursToShow; i++) {
     var night = (hourData.dt > hourDay.sunset || hourData.dt < hourDay.sunrise || (i == 0 && (now.getTime > weatherData.current.sunset || now.getTime < weatherData.current.sunrise)))
 
     let freezing = (units=='imperial'?32:0)
-    var tempColor = (temp>freezing)?Color.red():Color.blue()
+    var tempColor = (temp>freezing)?Color.orange():Color.blue()
 
     drawLine(spaceBetweenDays * (i) + xStart + (barWidth/2)/*spaceBetweenDays * (i) + barWidth*/, 175 - (50 * delta),spaceBetweenDays * (i + 1) + barWidth, 175 - (50 * nextDelta), 2,tempColor) //Color.gray())// (night ? Color.gray() : accentColor))
   }
 
-  drawTextC(temp + "°", 20, spaceBetweenDays * i + (config.widgetFamily == 'small'?32:30), 130 - (50 * delta), barWidth /*50*/, 21, tempColor)
+  drawTextC(temp + "°", 18, spaceBetweenDays * i + xStart, 130 - (50 * delta), barWidth /*50*/, 18, tempColor)
   
   //if showWindSpeed is enabled, get the wind data and display it
   if(showWindspeed){
@@ -368,17 +404,17 @@ for (let i = 0; i <= hoursToShow; i++) {
     //place wind speed
     drawTextC(windSpeed, 14, spaceBetweenDays * i + 30, 29/*220 - 32*/, barWidth /*50*/, 20,Color.white())
   }
-  let imageSpace = config.widgetFamily == 'small'? 42 : (param =='daily')?48:32
+  let imageSpace = config.widgetFamily == 'small'? 42 : (param =='daily')?48:34
   const condition = i == 0 ? weatherData.current.weather[0].id : hourData.weather[0].id
   
   //addSymbol
   drawImage(symbolForCondition(condition), spaceBetweenDays * i + imageSpace, 160 - (50 * delta));
   
-  let dayHourColor = (param=='daily')?Color.white():night?Color.white():Color.orange()
+  let dayHourColor = (param=='daily')?Color.white():night?Color.gray():Color.white()
   if (hour >= 0 && hour <= 9) {
-		drawTextC((i == 0 ? nowstring : "0" + hour), 18, spaceBetweenDays * i + 32, 234, barWidth, 21, dayHourColor)
+		drawTextC((i == 0 ? nowstring : "0" + hour), 18, spaceBetweenDays * i + xStart, 234, barWidth, 21, dayHourColor)
 	} else {
-		drawTextC((i == 0 ? nowstring : hour), 18, spaceBetweenDays * i + 32, 234, barWidth, 21,dayHourColor)
+		drawTextC((i == 0 ? nowstring : hour), 18, spaceBetweenDays * i + xStart, 234, barWidth, 21,dayHourColor)
 	}
   previousDelta = delta;
 }
@@ -427,7 +463,7 @@ function drawAmountLabels() {
     yPt = (((220-60)/4)*i)+60
     drawContext.setTextAlignedLeft()
     drawContext.setTextColor(Color.lightGray())
-    tex = String(maxPrecip-(i*(maxPrecip/4)))
+    tex = String((maxPrecip-(i*(maxPrecip/4))).toFixed(2))
     drawContext.setFont(Font.boldSystemFont(10))
     drawContext.drawTextInRect(String(tex), new Rect((spaceBetweenDays*hoursToShow)+xStart+barWidth, yPt-6, 30, 10))
   }  
@@ -511,7 +547,6 @@ function symbolForCondition(cond) {
   return sfs.image
 }
 
-
 async function updateCheck(version){
   /*
   #####
@@ -537,8 +572,13 @@ async function updateCheck(version){
     upd.addDestructiveAction("Later")
     upd.message="Changes:\n"+uC.notes+"\n\nPress OK to get the update from GitHub"
       if (await upd.present()==0){
-      Safari.open("https://github.com/mvan231/Scriptable/blob/main/Weather%20Overview/Weather%20Overview.js")
-      throw new Error("Update Time!")
+        let r = new Request('https://raw.githubusercontent.com/mvan231/Scriptable/main/Weather%20Overview/Weather%20Overview.js')
+        let updatedCode = await r.loadString()
+        let fm = FileManager.iCloud()
+        let path = fm.joinPath(fm.documentsDirectory(), `${Script.name()}.js`)
+        log(path)
+        fm.writeString(path, updatedCode)
+        throw new Error("Update Complete!")
       }
     } 
   }else{
@@ -551,4 +591,80 @@ async function updateCheck(version){
   End Update Check
   #####g
   */
+}
+
+async function setup(full){
+  /*
+    //showWindspeed will enable/disable the windsoeed display on the widget
+    const showWindspeed = true
+
+    //showWindArrow set to true will show a wind direction arrow. Set to false, and the cardinal direction will be displayed instead
+    const showWindArrow = true
+
+    //showPrecipitation will enable / disable the ability to display the precipitation information
+    const showPrecipitation = true
+
+    //showCloudCover will enable / disable the line display of the cloud cover forecast
+    const showCloudCover = true
+
+    //showHumidity will enable/disable the line display of the humidity level
+    const showHumidity = true
+
+    //showLegend will enable/disable the legend display at the top of the widget
+    let showLegend = true
+
+    //showAlerts will enable / disable the display of alerts in your area. A yellow warning triagle for each weather alert in your area will be displayed. Tapping the widget will take you to the OpenWeather page in Safari. 
+    const showAlerts = true
+
+    //units can be set to imperial or metric for your preference
+    const units = "imperial"//"metric"
+  */
+  if (!('apiKey' in settings) || settings.apiKey == ""){
+    let q = new Alert()
+    q.title='API Key'
+    q.message='Please paste in your OpenWeatherMap API Key'   
+    q.addTextField('API Key',Pasteboard.paste())
+    q.addAction("Done")
+    await q.present()
+    if(q.textFieldValue(0).length < 1)throw new Error("You must enter an API Key, please copy to clipboard and try again")
+    settings.apiKey = q.textFieldValue(0)
+    //write the settings to iCloud Drive  
+    fm.writeString(settingsPath, JSON.stringify(settings))    
+  }
+
+  if (!('units' in settings)){
+    let q = new Alert()
+    q.title="Units"
+    q.addAction("Imperial")
+    q.addAction("Metric")
+    a=await q.presentSheet()
+    settings['units'] = (a==0)?'imperial':'metric'
+  }
+
+  let quests = [{'key':'showWindspeed',
+  'q':'Do you want display the windspeed on the widget?'},
+  {'key':'showWindArrow','q':'If using windspeed, do you want to display the wind direction as an arrow?'},
+  {'key':'showPrecipitation','q':'Do you want to display precipitation information?'},
+  {'key':'showCloudCover','q':'Do you want to show the line display of the cloud cover?'},
+  {'key':'showHumidity','q':'Do you want to show the line display of the humidity level?'},
+  {'key':'showLegend','q':'Do you want to display the legend at the top of the widget?'},
+  {'key':'showAlerts','q':'Do you want to show alerts in your area? A yellow warning triagle for each weather alert in your area will be displayed. Tapping the widget will take you to the OpenWeather page in Safari.'}]
+
+  await quests.reduce(async (memo,i)=>{
+    await memo
+
+    if(!(i.key in settings)){
+      let q = new Alert()
+      q.message=String(i.q)
+      q.title='Setup'
+      q.addAction('Yes')
+      q.addAction('No')
+      a=await q.presentSheet()
+      settings[i.key]=(a==0)?true:false
+    }
+  },undefined)  
+
+  //settings['quickReset']=true
+  fm.writeString(settingsPath, JSON.stringify(settings))
+  return true
 }
