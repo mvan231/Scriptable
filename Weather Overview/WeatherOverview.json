@@ -1,1 +1,1 @@
-{"version":"1.1","notes":"- added a missing item in the windDurs JSON for when windDeg is 360°"}
+{"version":"1.2","notes":"- Small tweaks to positioning\n- Color change from red to orange\n- Reduce alpha for precipProbability\n- precipAmount max dependent on hourly or daily. Amounts reduced for better granularity\n- Change color of temps above freezing from red to orange\n- Change color of hours shown: Day = White; Night = Gray;\n- Settings are now retained in iCloud Drive so updates won't require full reconfiguration"}
