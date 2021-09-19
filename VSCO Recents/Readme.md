@@ -9,6 +9,8 @@ Content
 
 This widget can display a random recent VSCO post from a specified user (URL passed as a widget parameter). 
 
+Tap the widget, and you'll be directed to tbe post page.
+
 -----
 
 ### Setup
