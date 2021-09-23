@@ -9,12 +9,13 @@ let scriptPath = fm.documentsDirectory()+'/UpcomingIndicator/'
 let settingsPath = scriptPath+'settings.json'
 const reRun = URLScheme.forRunningScript()
 if(!fm.fileExists(scriptPath))fm.createDirectory(scriptPath, false)
-let needUpdated = await updateCheck(2.2)
+let needUpdated = await updateCheck(2.3)
 //log(needUpdated)
 /*--------------------------
 |------version notes------
-2.2
-- Small fix for displaying end date on all-day events that are just one day (silly parenthases)
+2.3
+- Fix for all day events that are on-going showing as "LATER" in the left event list
+- Fix for events after an extended all day event showing up as "LATER" even though they are today
 --------------------------*/
 /*
 ####################
@@ -1077,13 +1078,13 @@ log(item.identifier)
           let dd = item.startDate
           let ddd=dF.string(dd)
         if((widgFam=='large' && indexed<=(eventDisplay*(2/3)))|| widgFam!='large'){
-          if(!dHolder && dF.string(date)==ddd)         
+          if(!dHolder && (dF.string(date)==ddd || (dd<date && item.endDate>date)))         
           {
             let when = left.addText(' TODAY ')
            when.font=Font.heavyMonospacedSystemFont(8*eventFontSize)
 if(useBaseTextColor)when.textColor=Color.dynamic(new Color(baseTextColorLight), new Color(baseTextColorDark))
 
-          }else if(ddd!=dHolder && !later){
+          }else if(ddd!=dF.string(date)/*ddd!=dHolder*/ && !later){
             left.addSpacer(2)
             let when = left.addText(' LATER ')
             when.font = Font.heavyMonospacedSystemFont(8*eventFontSize)
