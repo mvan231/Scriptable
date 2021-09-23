@@ -1,1 +1,1 @@
-{"version":"2.2","notes":"- Small fix for displaying end date on all-day events that are just one day (silly parenthases)"}
+{"version":"2.2","notes":"- Fix for all day events that are on-going showing as 'LATER' in the left event list\n- Fix for events after an extended all day event showing up as 'LATER' even though they are today"}
