@@ -3,12 +3,24 @@
 // icon-color: yellow; icon-glyph: bolt;
 /*><><><><><><><><><><><><><><><><
 Source of this script was originally from:
-
-https://www.notion.so/Weather-Script-a5b503ffcd684b719e16f47cd82f7622
-note:the script at the link above has been removed from Notion (not sure why or when)
+https://www.notion.so/Weather-Script-a5b503ffcd684b719e16f47cd82f7622 note:the linked script has been removed from Notion (not sure why or when)
 
 modifications and new features added by mvan231
 ><><><><><><><><><><><><><><><><*/
+
+/*><><><><><><><><><><><
+---
+version info
+---
+v1.3
+- Fixes for spelling in the script (minor)
+- Adjustments for smoother settings reset
+- Tweaks for placement of legend labels, temperature lines, and temperatures
+- iOS 15 SF Symbol workaround
+
+><><><><><><><><><><><*/
+//check for an update quick before building the widget
+let needUpdated = await updateCheck(1.3)
 
 /*><><><><><><><><><><><
 
@@ -16,39 +28,28 @@ Start of Setup
 
 ><><><><><><><><><><><*/
 let fm = FileManager.iCloud()
-let settingsPath = fm.documentsDirectory()+'/weatherOverviewSettings.json'
-const reRun = URLScheme.forRunningScript()
+let settingsPath = fm.documentsDirectory()+'/weatherOverviewSettings.JSON'
 
-let a,settings = {}
+let a, settings ={}
 
-if(fm.fileExists(settingsPath))settings = JSON.parse(fm.readString(settingsPath))
-let set = await setup()
-if(fm.fileExists(settingsPath))settings = JSON.parse(fm.readString(settingsPath))
-
-if(!config.runsInWidget && fm.fileExists(settingsPath) /*&& !JSON.parse(fm.readString(settingsPath)).quickReset*/){
+if(!config.runsInWidget && fm.fileExists(settingsPath)){
     let resetQ = new Alert()
     resetQ.title='Want to reset?'
     resetQ.message='If you tap "Yes" below, the settings for this widget will be reset and setup will run again'  
     resetQ.addAction('Yes')
     resetQ.addAction('No')
     a = await resetQ.presentSheet()
-    if(a==0){
-      fm.remove(settingsPath)
-      Safari.open(reRun)
-      throw new Error('running again now')
+    if(a=='0'){
+      await fm.remove(settingsPath)
     }
 }
+if(fm.fileExists(settingsPath))settings = JSON.parse(fm.readString(settingsPath))
+let set = await setup()
 
-settings = JSON.parse(fm.readString(settingsPath))
-if(settings.quickReset)
-{  
-  settings.quickReset=false  
-  log(settings)
-  fm.writeString(settingsPath, JSON.stringify(settings))
-}
 
-//Insert your API key below
-//***critical for widget to work***
+//settings variables initialization
+
+//API key initialize
 const API_KEY = settings.apiKey
 
 //showWindspeed will enable/disable the windspeed display on the widget
@@ -69,7 +70,7 @@ const showHumidity = settings.showHumidity
 //showLegend will enable/disable the legend display at the top of the widget
 let showLegend = settings.showLegend
 
-//showAlerts will enable / disable the display of alerts in your area. A yellow warning triagle for each weather alert in your area will be displayed. Tapping the widget will take you to the OpenWeather page in Safari. 
+//showAlerts will enable / disable the display of alerts in your area. A yellow warning triangle for each weather alert in your area will be displayed. Tapping the widget will take you to the OpenWeather page in Safari. 
 const showAlerts = settings.showAlerts
 
 //units can be set to imperial or metric for your preference
@@ -77,8 +78,6 @@ const units = settings.units//"imperial"//"metric"
 
 //locationNameFontSize determines the size of the location name at the top of the widget
 const locationNameFontSize = 18
-
-
 
 /*
 ><><><><><><><><><><><
@@ -88,22 +87,6 @@ End of Setup
 ><><><><><><><><><><><
 */
 
-/*><><><><><><><><><><><
----
-version info
----
-v1.2
-- Small tweaks to positioning
-- Color change from red to orange
-- Reduce alpha for precipProbability
-- precipAmount max dependent on hourly or daily. Amounts reduced for better granularity
-- Change color of temps above freezing from red to orange
-- Change color of hours shown: Day = White; Night = Gray;
-- Settings are now retained in iCloud Drive so updates won't require full reconfiguration
-
-><><><><><><><><><><><*/
-//check for an update quick before building the widget
-let needUpdated = await updateCheck(1.2)
 
 //param must be == 'daily' for the daily forecast to be shown. Below, thr variable 'param' is set to the widgetParameter, which can be modified when choosing the script from thr widget configurator screen. 
 let param = args.widgetParameter
@@ -123,11 +106,10 @@ let cachePath = localFm.documentsDirectory()
 var latLong = {},locFound = false
 try {
   log('getting location...')
-  //throw new Error('hi')
   Location.setAccuracyToKilometer()
   latLong = await Location.current()  
   localFm.writeString(cachePath+'/locCache.json', JSON.stringify(latLong))   
-  log('location cached...')
+  log('new location cached...')
   locFound=true  
 } catch(e) {
     log("couldn't get live location, trying to read from file")
@@ -242,15 +224,15 @@ if(showCloudCover){
 
     let cloudCover = (param!='daily' && i==0)?weatherData.current.clouds : hourData[i].clouds
     let cloudCoverNext = hourData[i+1].clouds
-	  let yPos = 220-(((220-60)/100) * cloudCover)
+    let yPos = 220-(((220-60)/100) * cloudCover)
     let yPosNext = 220-(((220-60)/100) * cloudCoverNext)
-    drawLine(spaceBetweenDays * (i) + xStart + (barWidth/2), yPos/*175 - (50 * delta)*/,spaceBetweenDays * (i + 1) + xStart + (barWidth/2), yPosNext/*175 - (50 * nextDelta)*/, 1,new Color(Color.white().hex,0.9))
+    drawLine(spaceBetweenDays * (i) + xStart + (barWidth/2), yPos/*175 - (50 * delta)*/,(spaceBetweenDays * (i + 1)) + xStart + (barWidth/2), yPosNext/*175 - (50 * nextDelta)*/, 1,new Color(Color.white().hex,0.9))
   }
-  if(showLegend)drawTextC("cld", 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 405,showWindspeed?5:25,180,20,new Color(Color.white().hex,0.9))
+  if(showLegend)drawTextC("cld", 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 310,showWindspeed?5:25,180,20,new Color(Color.white().hex,0.9))
 }
 //end cloud cover line
 
-//start hunidity line
+//start humidity line
 if(showHumidity){
   if(!percentageLinesDrawn){
     drawPercentageLines()
@@ -266,7 +248,7 @@ if(showHumidity){
     drawLine(spaceBetweenDays * (i) + xStart + (barWidth/2), yPos/*175 - (50 * delta)*/,spaceBetweenDays * (i + 1) + xStart + (barWidth/2), yPosNext/*175 - (50 * nextDelta)*/, 1,new Color(Color.magenta().hex,0.9))
 
   }
-  if(showLegend)drawTextC("hum", 16, mediumWidgetWidth - 360,showWindspeed?5:25,180,20,new Color(Color.magenta().hex,0.9))
+  if(showLegend)drawTextC("hum", 16, mediumWidgetWidth - 275,showWindspeed?5:25,180,20,new Color(Color.magenta().hex,0.9))
 }
 //end humidity line
 
@@ -326,7 +308,7 @@ if(showPrecipitation){
 	 drawPOP((spaceBetweenDays * i)+(barWidth*0.5),precipBarH, barWidth*0.5, precipAmountColor,0.8)
      
       //add label for amount
-      if(showLegend)drawTextC("precAmt", 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 100,showWindspeed?5:25,180,20,new Color(precipAmountColor,0.8))
+      if(showLegend)drawTextC("precAmt", 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 150,showWindspeed?5:25,180,20,new Color(precipAmountColor,0.8))
 
     //}
     //draw the percentage of precipitation bar with the cyan blue color. If there is precipitation amount for the current timeframe, then use halfwidth, if not, use fullwidth
@@ -334,7 +316,7 @@ if(showPrecipitation){
   }
 
   //add label for percentage
-  if(showLegend)drawTextC("precPrb", 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 170,showWindspeed?5:25,180,20,new Color('1fb2b7',0.9))
+  if(showLegend)drawTextC("precPrb", 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 220,showWindspeed?5:25,180,20,new Color('1fb2b7',0.9))
 
 }
 //end adding precipitation POP and amount
@@ -374,11 +356,12 @@ for (let i = 0; i <= hoursToShow; i++) {
     let freezing = (units=='imperial'?32:0)
     var tempColor = (temp>freezing)?Color.orange():Color.blue()
 
-    drawLine(spaceBetweenDays * (i) + xStart + (barWidth/2)/*spaceBetweenDays * (i) + barWidth*/, 175 - (50 * delta),spaceBetweenDays * (i + 1) + barWidth, 175 - (50 * nextDelta), 2,tempColor) //Color.gray())// (night ? Color.gray() : accentColor))
+    drawLine(spaceBetweenDays * (i) + xStart + (barWidth/2)/*spaceBetweenDays * (i) + barWidth*/, 175 - (50 * delta),spaceBetweenDays * (i + 1) + xStart + (barWidth/2), 175 - (50 * nextDelta), 2,tempColor) //Color.gray())// (night ? Color.gray() : accentColor))
   }
 
   drawTextC(temp + "°", 18, spaceBetweenDays * i + xStart, 130 - (50 * delta), barWidth /*50*/, 18, tempColor)
   
+  let imageSpace = config.widgetFamily == 'small'? 42 : (param =='daily')?48:34
   //if showWindSpeed is enabled, get the wind data and display it
   if(showWindspeed){
     let hourWindDir = hourData.wind_deg
@@ -391,7 +374,7 @@ for (let i = 0; i <= hoursToShow; i++) {
     if(showWindArrow){
       //add wind directional arrow
       drawContext.setFillColor(accentColor)
-      drawContext.fillEllipse(new Rect(spaceBetweenDays * i + ((config.widgetFamily=='small')? 48 : (param=='daily'?58:42)), 44/*220 - 16*/,16,16))
+      drawContext.fillEllipse(new Rect(spaceBetweenDays * i + (xStart + (barWidth/2))/*imageSpace*/- (16/2)/*((config.widgetFamily=='small')? 48 : (param=='daily'?58:42))*/, 44/*220 - 16*/,16,16))
 
       let symb = SFSymbol.named(windArrows[dir])
       symb.applyFont(Font.systemFont(14))
@@ -404,18 +387,21 @@ for (let i = 0; i <= hoursToShow; i++) {
     //place wind speed
     drawTextC(windSpeed, 14, spaceBetweenDays * i + 30, 29/*220 - 32*/, barWidth /*50*/, 20,Color.white())
   }
-  let imageSpace = config.widgetFamily == 'small'? 42 : (param =='daily')?48:34
+
   const condition = i == 0 ? weatherData.current.weather[0].id : hourData.weather[0].id
+  if(Device.systemVersion().match(/^../)==15){
+    drawContext.setFillColor(new Color(Color.white().hex,0.9))
+    drawContext.fillEllipse(new Rect(spaceBetweenDays * i + (xStart + (barWidth/2)) - (36 / 2), 158 - (50 * delta),36,36))  
+  }
   
   //addSymbol
-  drawImage(symbolForCondition(condition), spaceBetweenDays * i + imageSpace, 160 - (50 * delta));
+  drawImage(symbolForCondition(condition), (spaceBetweenDays * i) + xStart + (barWidth/2) - (32/2)/*spaceBetweenDays * i + imageSpace*/, 160 - (50 * delta));
   
   let dayHourColor = (param=='daily')?Color.white():night?Color.gray():Color.white()
-  if (hour >= 0 && hour <= 9) {
-		drawTextC((i == 0 ? nowstring : "0" + hour), 18, spaceBetweenDays * i + xStart, 234, barWidth, 21, dayHourColor)
-	} else {
-		drawTextC((i == 0 ? nowstring : hour), 18, spaceBetweenDays * i + xStart, 234, barWidth, 21,dayHourColor)
-	}
+  
+  let hourText = (hour >= 0 && hour <= 9)?`0${hour}`:hour
+
+  drawTextC((i == 0 ? nowstring : hourText), 18, spaceBetweenDays * i + xStart, 234, barWidth, 20,dayHourColor)
   previousDelta = delta;
 }
 
@@ -489,6 +475,7 @@ function drawPOP(/*POP,*/ x, barH, barW,color,alpha=1){
 }
 
 function drawTextC(text, fontSize, x, y, w, h, color = Color.black()) {
+  drawContext.setTextAlignedCenter()
   drawContext.setFont(Font.boldSystemFont(fontSize))
   if (text == "Now") {
      drawContext.setTextColor(color)
@@ -594,31 +581,7 @@ async function updateCheck(version){
 }
 
 async function setup(full){
-  /*
-    //showWindspeed will enable/disable the windsoeed display on the widget
-    const showWindspeed = true
 
-    //showWindArrow set to true will show a wind direction arrow. Set to false, and the cardinal direction will be displayed instead
-    const showWindArrow = true
-
-    //showPrecipitation will enable / disable the ability to display the precipitation information
-    const showPrecipitation = true
-
-    //showCloudCover will enable / disable the line display of the cloud cover forecast
-    const showCloudCover = true
-
-    //showHumidity will enable/disable the line display of the humidity level
-    const showHumidity = true
-
-    //showLegend will enable/disable the legend display at the top of the widget
-    let showLegend = true
-
-    //showAlerts will enable / disable the display of alerts in your area. A yellow warning triagle for each weather alert in your area will be displayed. Tapping the widget will take you to the OpenWeather page in Safari. 
-    const showAlerts = true
-
-    //units can be set to imperial or metric for your preference
-    const units = "imperial"//"metric"
-  */
   if (!('apiKey' in settings) || settings.apiKey == ""){
     let q = new Alert()
     q.title='API Key'
@@ -648,7 +611,7 @@ async function setup(full){
   {'key':'showCloudCover','q':'Do you want to show the line display of the cloud cover?'},
   {'key':'showHumidity','q':'Do you want to show the line display of the humidity level?'},
   {'key':'showLegend','q':'Do you want to display the legend at the top of the widget?'},
-  {'key':'showAlerts','q':'Do you want to show alerts in your area? A yellow warning triagle for each weather alert in your area will be displayed. Tapping the widget will take you to the OpenWeather page in Safari.'}]
+  {'key':'showAlerts','q':'Do you want to show alerts in your area? A yellow warning triangle for each weather alert in your area will be displayed. Tapping the widget will take you to the OpenWeather page in Safari.'}]
 
   await quests.reduce(async (memo,i)=>{
     await memo
@@ -664,7 +627,6 @@ async function setup(full){
     }
   },undefined)  
 
-  //settings['quickReset']=true
   fm.writeString(settingsPath, JSON.stringify(settings))
   return true
 }
