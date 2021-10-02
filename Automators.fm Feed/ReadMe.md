@@ -11,11 +11,11 @@ This widget shows the recent posts of an Automators.fm Feed of your choosing (de
 -----
 
 ### Setup
-Setup the widget parameter with an Automators.fm category of your choosing. For example, if you want to see the `Shortcuts` category, you can copy the section of the URL from Safari and use that as the parameter (see below). The default is `Scriptable`.
-![Widget Parameter Input](https://i.imgur.com/DEuKmj6.jpg)
-![Widget Parameter Set](https://i.imgur.com/fli7Efx.jpg)
+  * Setup the widget parameter with an Automators.fm category of your choosing. For example, if you want to see the `Shortcuts` category, you can copy the section of the URL from Safari and use that as the parameter (see below). The default is `Scriptable`.
+  ![Widget Parameter Input](https://i.imgur.com/DEuKmj6.jpg)
+  ![Widget Parameter Set](https://i.imgur.com/fli7Efx.jpg)
 
-The display of the thread posts number can be disabled at the top of the script by setting the boolean to false `let showThreadPostNum = true`
+  * The display of the thread posts number can be disabled at the top of the script by setting the boolean to false `let showThreadPostNum = true`
 
 ### Displayed Items
   * Thread starter's avatar
