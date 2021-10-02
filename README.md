@@ -108,6 +108,7 @@
     This widget displays a random recent photo or the most recent photo of a specified user of VSCO
     ![Example](https://i.imgur.com/z8CNRmx.png)
 
+* ### [Automators.fm Feed Widget](Automators.fm%20Feed)
   
 
 ## Scripts
