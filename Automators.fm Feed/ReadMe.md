@@ -15,6 +15,8 @@ Setup the widget parameter with an Automators.fm category of your choosing. For 
 ![Widget Parameter Input](https://i.imgur.com/DEuKmj6.jpg)
 ![Widget Parameter Set](https://i.imgur.com/fli7Efx.jpg)
 
+The display of the thread posts number can be disabled at the top of the script by setting the boolean to false `let showThreadPostNum = true`
+
 ### Displayed Items
   * Thread starter's avatar
   * Thread post count `{4}` (this is able to be disabled easily in [#Setup](#Setup)
