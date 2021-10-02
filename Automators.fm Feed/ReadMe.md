@@ -6,14 +6,12 @@ Content
 * [Examples](#Examples)
 * [Credits](#Credits)
 
-This widget can display a random recent VSCO post from a specified user (URL passed as a widget parameter). 
-
-Tap the widget, and you'll be directed to tbe post page.
+This widget shows the recent posts of an Automators.fm Feed of your choosing (defaults to Scriptable of course) 
 
 -----
 
 ### Setup
-Setup the widget parameter with an Automators.fm category of your choosing. For example, if you want to see the `Shortcuts` category, you can copy the section of the URL from Safari and use that as the parameter (see below). The default is `Scriptable` of course.
+Setup the widget parameter with an Automators.fm category of your choosing. For example, if you want to see the `Shortcuts` category, you can copy the section of the URL from Safari and use that as the parameter (see below). The default is `Scriptable`.
 ![Widget Parameter Input](https://i.imgur.com/DEuKmj6.jpg)
 ![Widget Parameter Set](https://i.imgur.com/fli7Efx.jpg)
 
@@ -24,7 +22,6 @@ Setup the widget parameter with an Automators.fm category of your choosing. For 
   * Automators logo (if size of widget is large)
 
 ### Examples
-Example of what it could look like is below.
 ![Example1](https://i.imgur.com/demewNd.png)
 ![Example2](https://i.imgur.com/3JXlZtE.png)
 
