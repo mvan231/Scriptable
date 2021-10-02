@@ -109,6 +109,8 @@
     ![Example](https://i.imgur.com/z8CNRmx.png)
 
 * ### [Automators.fm Feed Widget](Automators.fm%20Feed)
+    This widget shows the recent posts of an Automators.fm Feed of your choosing (defaults to Scriptable of course)
+    ![Example](https://i.imgur.com/3yjLJk6.png)
   
 
 ## Scripts
