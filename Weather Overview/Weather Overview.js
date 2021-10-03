@@ -12,15 +12,12 @@ modifications and new features added by mvan231
 ---
 version info
 ---
-v1.3
-- Fixes for spelling in the script (minor)
-- Adjustments for smoother settings reset
-- Tweaks for placement of legend labels, temperature lines, and temperatures
-- iOS 15 SF Symbol workaround
+v1.4
+- iOS 15 SF Symbol workaround commented out after Scriptable app update
 
 ><><><><><><><><><><><*/
 //check for an update quick before building the widget
-let needUpdated = await updateCheck(1.3)
+let needUpdated = await updateCheck(1.4)
 
 /*><><><><><><><><><><><
 
@@ -389,10 +386,10 @@ for (let i = 0; i <= hoursToShow; i++) {
   }
 
   const condition = i == 0 ? weatherData.current.weather[0].id : hourData.weather[0].id
-  if(Device.systemVersion().match(/^../)==15){
+ /* if(Device.systemVersion().match(/^../)==15){
     drawContext.setFillColor(new Color(Color.white().hex,0.9))
     drawContext.fillEllipse(new Rect(spaceBetweenDays * i + (xStart + (barWidth/2)) - (36 / 2), 158 - (50 * delta),36,36))  
-  }
+  }*/
   
   //addSymbol
   drawImage(symbolForCondition(condition), (spaceBetweenDays * i) + xStart + (barWidth/2) - (32/2)/*spaceBetweenDays * i + imageSpace*/, 160 - (50 * delta));
