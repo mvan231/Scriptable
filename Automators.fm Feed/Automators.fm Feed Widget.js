@@ -13,11 +13,16 @@
 |                                     |
 |The 'showThreadPostNum' boolean is   |                                     |used to determine whether the number |
 |of thread posts on the shown thread, |                                    |will be displayed before the title.  |
+|                                     |
+|              Version                |
+|1.1 - fix for small widget's not     |
+|being tappable.                      |
 |-------------------------------------|
 */
 
-let feed = 'scriptable'
 let showThreadPostNum = true
+
+let feed = args.widgetParameter?args.widgetParameter:'scriptable'
 
 let r = new Request(`https://talk.automators.fm/c/${feed}.json`)
 let res = await r.loadJSON()
@@ -26,7 +31,7 @@ let userList = res.users
 res=res.topic_list.topics
 //log(res)
 
-let slicer = config.widgetFamily=='large'?11:6
+let slicer = config.widgetFamily=='large'?12:6
 res = res.slice(1,slicer)
 
 let w = new ListWidget()
@@ -80,6 +85,8 @@ grad.colors = [new Color(Color.lightGray().hex,8/10),new Color(Color.darkGray().
 grad.locations = [0,0.75]
 w.backgroundGradient = grad
 w.setPadding(20,5,20,5)
+
+w.url= `https://talk.automators.fm/c/${feed}`
 
 Script.setWidget(w)
 Script.complete()
