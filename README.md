@@ -97,7 +97,7 @@
     * **See more info at the link**
 
 * ### [Exchange Rate Widget](exchangeRate.js)
-    * This widget is based on the version by juniorchen. It has been adapted to work with the free version of the exchangerateapi. 
+    * This widget is based on the version by juniorchen. It has been adapted to work with the free version of the exchangerateapi. You still need an API key to use it, but the signup for it is free. 
     * Inputing a currency code will use that as the base for the widget. The default base is EUR.
 
 * ### [Weather Overview Widget](Weather%20Overview)
