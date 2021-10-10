@@ -9,7 +9,7 @@ Content
 
 This widget can display a random recent VSCO post from a specified user (URL passed as a widget parameter). 
 
-Tap the widget, and you'll be directed to tbe post page.
+Tap the widget, and you'll be asked if you want to download the photo, go to the post, or go to the profile. (New as of 1.1) 
 
 -----
 
