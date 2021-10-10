@@ -1,1 +1,4 @@
-{"version":"1.0","notes":"- Initial Release"}
+{
+"version":"1.0",
+"notes":"- Add menu when tapping the widget so the user can save the image, view the post, or view the profile"
+}
