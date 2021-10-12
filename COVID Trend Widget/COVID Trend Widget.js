@@ -1,6 +1,6 @@
 // Variables used by Scriptable.
 // These must be at the very top of the file. Do not edit.
-// icon-color: gray; icon-glyph: magic;
+// icon-color: deep-purple; icon-glyph: syringe;
 /*
 Welcome to COVID Trend Widget
 
@@ -10,12 +10,19 @@ The default setting has colored arrows enabled (green for good and red for bad).
 */
 const colorArrows = true
 
+
+//useTransparency is to indicate whether or not to use the no-background module
+const useTransparency = false
+
+//numColor is the color of the numbers in the widget
+let numColor = new Color(Color.black().hex)
 /*--------------------------
 
 Version History:
 v1.0 initial release
 v1.1 - added a fix for items returned from API with 'null' value
 v1.2 - add new Intl.NumberFormat().format(itemValue) so the item values are formatted for better readability
+v1.3 - add in transparency module code and text color changes to accomodate
 
 --------------------------*/
 
@@ -28,7 +35,7 @@ Begin Script
 
 let widget = new ListWidget()
 
-const country = args.widgetParameter?args.widgetParameter:'Sweden'
+const country = args.widgetParameter?args.widgetParameter:'Guatemala'
 
 const API_URL = "https://coronavirus-19-api.herokuapp.com/countries/"+country;
 
@@ -40,7 +47,7 @@ let req = new Request(API_URL)
 let json = await req.loadJSON()
 log(json)
 //check if update is available
-let needUpdate = await updateCheck(1.2)
+let needUpdate = await updateCheck(1.3)
 
 //get the data from the JSON
 let todayCases = checkForValueInJSON('todayCases')
@@ -80,7 +87,14 @@ addItem('recovered', recovered)
 
 // Finalize widget settings 
 widget.setPadding(16,16,16,16)
-widget.backgroundColor=Color.black()
+
+if(useTransparency){
+  const RESET_BACKGROUND = !config.runsInWidget
+  const { transparent } = importModule('no-background')
+  widget.backgroundImage = await transparent(Script.name(), RESET_BACKGROUND)
+}else{  
+  widget.backgroundColor=Color.black()
+}
 Script.setWidget(widget) 
 Script.complete()
 widget.presentSmall()
@@ -146,6 +160,7 @@ function addItem(item,itemValue){
   const trendImg = symbolStack.addImage(trendSymbol);
   trendImg.resizable = false;
   trendImg.tintColor = (trend.includes('left') || !colorArrows)?Color.white():new Color(trendColors[item][trend.match(/[^\.]+$/)])
+  if (useTransparency)val.textColor = trendImg.tintColor
   trendImg.imageSize = new Size(30, 20);
   widget.addSpacer(2)
 }
