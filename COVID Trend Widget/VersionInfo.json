@@ -1,1 +1,4 @@
-{"version":"1.2","notes":"- add new Intl.NumberFormat().format(itemValue) so the item values are formatted for better readability"}
+{
+"version":"1.2",
+"notes":"- add in transparency module code and text color changes to accomodate"
+}
