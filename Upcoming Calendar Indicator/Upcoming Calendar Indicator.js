@@ -9,13 +9,13 @@ let scriptPath = fm.documentsDirectory()+'/UpcomingIndicator/'
 let settingsPath = scriptPath+'settings.json'
 const reRun = URLScheme.forRunningScript()
 if(!fm.fileExists(scriptPath))fm.createDirectory(scriptPath, false)
-let needUpdated = await updateCheck(2.3)
+let needUpdated = await updateCheck(2.4)
 //log(needUpdated)
 /*--------------------------
 |------version notes------
-2.3
-- Fix for all day events that are on-going showing as "LATER" in the left event list
-- Fix for events after an extended all day event showing up as "LATER" even though they are today
+2.4
+- Fix for reminders that were being excluded due to the if statements added in the successCallback function during filtering
+- Added improved updater mechanism
 --------------------------*/
 /*
 ####################
@@ -962,16 +962,24 @@ async function successCallback(result) {
   let ids = []
   newCalArray = newCalArray.filter(item => {
     //log(new Date(item.startDate).getTime())
-    //log(item.calendar.title)
+    //log(`calendar is ${item.calendar.title} and item is ${item.title}`)
+
     //log(new Date(item.startDate).getDate())
     //log(`it is now ${now.getTime()}`)
     //log(ids)
 
-    
+  let isCalEvent
+  if('endDate' in item){
+    isCalEvent=true
+  }else{
+    isCalEvent=false
+  }  
+  
+  
     //if(!(ids.includes(item.identifier))){  
 
       //ids.push(item.title)
-      if (((new Date(item.startDate).getTime() > now.getTime()) || (showCurrentAllDayEvents?((new Date(item.startDate).getDate()==now.getDate() || (new Date(item.startDate).getTime()<now.getTime() && new Date(item.endDate).getTime()>now.getTime())) && item.isAllDay):false)) && cal.includes(item.calendar.title) && !(ids.includes(item.identifier))) {  
+      if (((new Date(item.startDate).getTime() > now.getTime()) || (showCurrentAllDayEvents?((new Date(item.startDate).getDate()==now.getDate() || (new Date(item.startDate).getTime()<now.getTime() && new Date(item.endDate).getTime()>now.getTime())) && item.isAllDay):false)) && (cal.includes(item.calendar.title) || !isCalEvent) && !(ids.includes(item.identifier))) {  
         ids.push(item.identifier)
         return true    
       }
@@ -1163,7 +1171,6 @@ function colorDots(colors){
     return context.getImage()  
   } 
 }
-
 async function updateCheck(version){
   /*
   #####
@@ -1187,11 +1194,15 @@ async function updateCheck(version){
     upd.title="Server Version Available"
     upd.addAction("OK")
     upd.addDestructiveAction("Later")
-    upd.add
     upd.message="Changes:\n"+uC.notes+"\n\nPress OK to get the update from GitHub"
       if (await upd.present()==0){
-      Safari.open("https://raw.githubusercontent.com/mvan231/Scriptable/main/Upcoming%20Calendar%20Indicator/Upcoming%20Calendar%20Indicator.js")
-      throw new Error("Update Time!")
+        let r = new Request('https://raw.githubusercontent.com/mvan231/Scriptable/main/Upcoming%20Calendar%20Indicator/Upcoming%20Calendar%20Indicator.js')
+        let updatedCode = await r.loadString()
+        let fm = FileManager.iCloud()
+        let path = fm.joinPath(fm.documentsDirectory(), `${Script.name()}.js`)
+        log(path)
+        fm.writeString(path, updatedCode)
+        throw new Error("Update Complete!")
       }
     } 
   }else{
