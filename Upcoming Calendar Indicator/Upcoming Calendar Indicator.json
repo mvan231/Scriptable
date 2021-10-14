@@ -1,1 +1,4 @@
-{"version":"2.3","notes":"- Fix for all day events that are on-going showing as 'LATER' in the left event list\n- Fix for events after an extended all day event showing up as 'LATER' even though they are today"}
+{
+  "notes": "- Fix for reminders that were being excluded due to the if statements added in the successCallback function during filtering\n- Added improved updater mechanism",
+  "version": "2.4"
+}
