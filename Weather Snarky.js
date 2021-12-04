@@ -12,7 +12,9 @@ weather smarky widget by mvan231
 version info
 ---
 v1.0
-
+v1.1
+- added back the night flag calculation
+- added a replacer for the messageText if it shows "day" but it is nighttime, it will replace "day" with "night". (i.e. "Today will be smokin'" would become "Tonight ve will smokin'")
 ><><><><><><><><><><><*/
 
 /*><><><><><><><><><><><
@@ -124,6 +126,10 @@ try {
     console.log("Error: No offline data cached")
   }
 }
+//check if it is day / night
+let now = new Date()
+var night = (now > weatherData.current.sunset || now < weatherData.current.sunrise)
+
 let widget = new ListWidget();
 
 let mvDate = new Date()
@@ -137,6 +143,7 @@ let left = topStack.addStack()
 let right = topStack.addStack()
 
 let cityText = left.addText(LOCATION_NAME + String(" "+curTemp)+'°')
+cityText.font = Font.regularSystemFont(14)
 
 let img = right.addImage(symbolForCondition(weatherData.current.weather[0].id))
 img.tintColor = Color.green()
@@ -149,13 +156,17 @@ if (curTemp >= hotTempThresh) messageText = hotSnark[Math.floor(Math.random() * 
 
 if (curTemp <= coldTempThresh) messageText = hotSnark[Math.floor(Math.random() * coldSnark.length)]
 
+widget.addSpacer(5)
+
+messageText = night?messageText.replace(/day/g, "night"):messageText
 let message = widget.addText(messageText)
+message.font = Font.regularSystemFont(18)
 
 widget.url = 'https://openweathermap.org'
 Script.complete()
 Script.setWidget(widget)
-widget.presentSmall()
-// widget.presentMedium()
+//widget.presentSmall()
+widget.presentMedium()
 
 /*
 <><><><><><><><><>
