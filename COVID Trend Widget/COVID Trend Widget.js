@@ -36,7 +36,7 @@ Begin Script
 
 let widget = new ListWidget()
 
-const country = args.widgetParameter?args.widgetParameter:'South Africa'//'Guatemala'
+const country = args.widgetParameter?args.widgetParameter:'Guatemala'
 
 const API_URL = "https://coronavirus-19-api.herokuapp.com/countries/"+country.replace(" ", "%20");
 
