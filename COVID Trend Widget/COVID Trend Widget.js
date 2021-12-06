@@ -23,6 +23,7 @@ v1.0 initial release
 v1.1 - added a fix for items returned from API with 'null' value
 v1.2 - add new Intl.NumberFormat().format(itemValue) so the item values are formatted for better readability
 v1.3 - add in transparency module code and text color changes to accomodate
+v1.4 - Added a fix for country names with a space included
 
 --------------------------*/
 
@@ -35,9 +36,9 @@ Begin Script
 
 let widget = new ListWidget()
 
-const country = args.widgetParameter?args.widgetParameter:'Guatemala'
+const country = args.widgetParameter?args.widgetParameter:'South Africa'//'Guatemala'
 
-const API_URL = "https://coronavirus-19-api.herokuapp.com/countries/"+country;
+const API_URL = "https://coronavirus-19-api.herokuapp.com/countries/"+country.replace(" ", "%20");
 
 const fileManager = FileManager.iCloud()
 const cacheDirectory = fileManager.joinPath(fileManager.documentsDirectory(), "CovidWidget");
@@ -47,7 +48,7 @@ let req = new Request(API_URL)
 let json = await req.loadJSON()
 log(json)
 //check if update is available
-let needUpdate = await updateCheck(1.3)
+let needUpdate = await updateCheck(1.4)
 
 //get the data from the JSON
 let todayCases = checkForValueInJSON('todayCases')
