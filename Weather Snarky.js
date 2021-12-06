@@ -15,6 +15,8 @@ v1.0
 v1.1
 - added back the night flag calculation
 - added a replacer for the messageText if it shows "day" but it is nighttime, it will replace "day" with "night". (i.e. "Today will be smokin'" would become "Tonight ve will smokin'")
+v1.2
+- Fix cold Message Grabber issue found by u/colinc47
 ><><><><><><><><><><><*/
 
 /*><><><><><><><><><><><
@@ -128,14 +130,12 @@ try {
 }
 //check if it is day / night
 let now = new Date()
-var night = (now > weatherData.current.sunset || now < weatherData.current.sunrise)
+// log(`sunrise raw is ${weatherData.current.sunrise} sunrise formatted is ${mvDf.string(new Date(weatherData.current.sunrise*1000))}`)
+//log(weatherData.current.sunset)
+var night = (now.getTime()/1000 > weatherData.current.sunset || now.getTime()/1000 < weatherData.current.sunrise)?true:false
+log(night)
 
 let widget = new ListWidget();
-
-let mvDate = new Date()
-let mvDf = new DateFormatter
-mvDf.dateFormat = 'MMM d'
-
 let curTemp = weatherData.current.temp.toFixed(1)
 
 let topStack = widget.addStack()
@@ -154,19 +154,20 @@ let messageText = normalSnark[Math.floor(Math.random() * normalSnark.length)]
 
 if (curTemp >= hotTempThresh) messageText = hotSnark[Math.floor(Math.random() * hotSnark.length)]
 
-if (curTemp <= coldTempThresh) messageText = hotSnark[Math.floor(Math.random() * coldSnark.length)]
+if (curTemp <= coldTempThresh) messageText = coldSnark[Math.floor(Math.random() * coldSnark.length)]
 
 widget.addSpacer(5)
 
 messageText = night?messageText.replace(/day/g, "night"):messageText
 let message = widget.addText(messageText)
 message.font = Font.regularSystemFont(18)
+message.minimumScaleFactor = 0.5
 
 widget.url = 'https://openweathermap.org'
 Script.complete()
 Script.setWidget(widget)
-//widget.presentSmall()
-widget.presentMedium()
+widget.presentSmall()
+//widget.presentMedium()
 
 /*
 <><><><><><><><><>
