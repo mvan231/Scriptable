@@ -7,7 +7,7 @@ let r = new Request('https://highwaysengland.co.uk/travel-updates/the-severn-bri
 let res = await r.loadString()
 
 //log(res)
-Pasteboard.copy(res)
+// Pasteboard.copy(res)
 
 let reg1 = /div class\=\"severn-crossing-status__heading\"\>(.*?)\</g
 let reg2 = /div class\=\"severn-crossing-status__heading\"\>(.*?)\</
@@ -21,6 +21,7 @@ Script.complete()
 w.presentSmall()
 
 function f(input,index){
+  log
   let itemText = input.match(reg2)[1]
   log(itemText)
   //let itemIcon = itemText.includes('Open')?'🟢':'🔴'
@@ -35,8 +36,7 @@ function f(input,index){
   let colorInd,dirMatch = itemText.match(directionReg)
   if(!openStatus && itemText.includes('both')){
     colorInd = [Color.red(),Color.red()]
-  }
-  if(!openStatus && dirMatch){
+  }else if(!openStatus && dirMatch){
     log(`${itemText} partially closed`)
 
     log(`dirMatch is ${dirMatch}`)
