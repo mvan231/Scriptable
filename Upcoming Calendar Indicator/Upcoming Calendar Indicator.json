@@ -1,4 +1,4 @@
 {
-  "notes": "- Fix for reminders that were being excluded due to the if statements added in the successCallback function during filtering\n- Added improved updater mechanism",
-  "version": "2.4"
+  "notes":"- Add condition for using only the left side (event list) so that the events are left justified better when event titles are short\n- Modify if statement for the ' TODAY ' heading in the f function for the event list\n- Add calshow url scheme to widget if user is using the small size widget\n- Add ability to hide completed reminders\n- Add ability to continue to show reminders that aren't yet completed but the due date is in the past. The event list now shows these in a "EARLIER" section (new fix added in beta8)\n- Modify 'Earlier' color to be red",
+  "version": "2.5"
 }
