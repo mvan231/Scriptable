@@ -9,13 +9,21 @@ let scriptPath = fm.documentsDirectory()+'/UpcomingIndicator/'
 let settingsPath = scriptPath+'settings.json'
 const reRun = URLScheme.forRunningScript()
 if(!fm.fileExists(scriptPath))fm.createDirectory(scriptPath, false)
-let needUpdated = await updateCheck(2.4)
+let needUpdated = await updateCheck(2.5)
 //log(needUpdated)
 /*--------------------------
 |------version notes------
-2.4
-- Fix for reminders that were being excluded due to the if statements added in the successCallback function during filtering
-- Added improved updater mechanism
+2.5
+- Add condition for using only the left side (event list) so that the events are left justified better when event titles are short
+- Modify if statement for the ' TODAY ' heading in the f function for the event list
+- Add calshow url scheme to widget if user is using the small size widget
+- Add ability to hide completed reminders
+- Add ability to continue to show reminders that aren't yet completed but the due date is in the past. The event list now shows these in a "EARLIER" section (new fix added in beta8)
+- Modify "Earlier" color to be red
+
+
+- Add ability to pick reminder lists to be shown in the event list
+  (not started)
 --------------------------*/
 /*
 ####################
@@ -112,11 +120,17 @@ if (useEventShadow)
 //eventFontSize sets the size of the event title to be displayed in the left side view. Default is 11.
 const eventFontSize = settings.eventFontSize
 
-//showCurrentAllDayEvents enables the ability to show an event that is happening today and is set as all day
-const showCurrentAllDayEvents = settings.showCurrentAllDayEvents
-
 //showReminders is the determining factor to show reminders in the event list or not
 const showReminders = settings.showReminders
+
+//hideCompletedReminders determines whether the event list on the left of the widget will show reminders that have been completed or not. If true, reminders that have been completed will not show up in the event list, if false, reminders that have been completed will show in the event list until their dueDate has passed
+const hideCompletedReminders = settings.hideCompletedReminders
+
+//persistIncompleteReminders determines whether incomplete reminders from this week or last week shall stay on the event list if they have not yet been completed
+const persistIncompleteReminders = true//settings.persistIncompleteReminders
+
+//showCurrentAllDayEvents enables the ability to show an event that is happening today and is set as all day
+const showCurrentAllDayEvents = settings.showCurrentAllDayEvents
 
 //showCalendarColorEventList is to display the event name in the calendar color
 const showCalendarColorEventList = settings.showCalendarColorEventList
@@ -211,8 +225,8 @@ let dF = new DateFormatter()
 dF.dateFormat='ZZ'
 let tZOffsetSec = (dF.string(new Date())/100)*60*60
 //log(`tZOffsetSec is ${tZOffsetSec}`)
-let dHolder,later
 
+let dHolder,later,earlier
 let main = w.addStack()
 if (widg=='right')r=true
 if (widg=='left')l=true
@@ -220,6 +234,7 @@ if(l){
   var left = main.addStack()
   //if(widgFam!='large')left.size=new Size(0, 135) 
   left.layoutVertically()  
+  if(!r)main.addSpacer()
 }
 if(r && l)main.addSpacer()
 if(r)
@@ -239,6 +254,8 @@ const RESET_BACKGROUND = !config.runsInWidget
 const { transparent } = importModule('no-background')
 w.backgroundImage = await transparent(Script.name(), RESET_BACKGROUND)
 }
+
+if(widgFam=='small')w.url='calshow://'
 
 Script.setWidget(w)
 Script.complete()
@@ -261,7 +278,7 @@ begin function section
 
 async function setup(full){
   
-  let quests = [{'key':'dynamicSpacing','q':'Do you want to enable dynamic spacing of the events in the left events view?'},{'key':'monStart','q':'Do you want the week to start on Monday in the right month view?'},{'key':'useBackgroundColor','q':'Do you want to use a backgroundColor different than the default white / black based on iOS appearance?'},{'key':'useTransparency','q':'Do you want to use the no-background.js transparency module?'},{'key':'showCurrentAllDayEvents','q':'Do you want to show "All Day" events that are happening today?'},{'key':'showReminders','q':'Do you want to display reminders with the events in the left side event list?'},{'key':'use24hrTime','q':'Do you want to show the time in a 24hr format instead of 12hr?'},{'key':'showCalendarColorEventList','q':'Do you want to display the event name in the color of the calendar for which it belongs?'},{'key':'useLineSeparator','q':'Do you want to display a line separator between the day name and the rest of the calendar dates?'},{'key':'useBaseTextColor','q':'Do you want to change the base text color (text color used for the event times and the calendar month view)?'},{'key':'useSundayColor','q':'Do you want to change the text color for Sunday in the month view?'},{'key':'useSaturdayColor','q':'Do you want to change the text color for Saturday in the month view?'},{'key':'useEventShadow','q':'Do you want to show a shadow under the event name in the event list on the left of the widget (this helps for readability)?'},{'key':'heatMapEnabled','q':'Do you want to enable the heat map feature?'},{'key':'showDatesBeforeAfter','q':'Do you want to show the dates just before the first day and just after the last day of the month in the calendar view?'},{'key':'dayColorEnable','q':'Do you want to display the day initials as a different color from the base text?'},{'key':'saturdaySundayHighlight','q':'Do you want to enable highlight of Saturday and Sunday in addition to the text opacity to differentiate from the other days of the week?\nNote:this will cause the reminder  heat map functionality to be disabled'}]
+  let quests = [{'key':'dynamicSpacing','q':'Do you want to enable dynamic spacing of the events in the left events view?'},{'key':'monStart','q':'Do you want the week to start on Monday in the right month view?'},{'key':'useBackgroundColor','q':'Do you want to use a backgroundColor different than the default white / black based on iOS appearance?'},{'key':'useTransparency','q':'Do you want to use the no-background.js transparency module?'},{'key':'showCurrentAllDayEvents','q':'Do you want to show "All Day" events that are happening today? NOTE: if you enable persist incomplete reminders, this will be disabled automatically'},{'key':'showReminders','q':'Do you want to display reminders with the events in the left side event list?'},{'key':'hideCompletedReminders','q':'Do you want to hide completed reminders that are in the future (early completion)?'},{'key':'persistIncompleteReminders','q':'Do you want incomplete reminders to persist in the list after their due date passes?'},{'key':'use24hrTime','q':'Do you want to show the time in a 24hr format instead of 12hr?'},{'key':'showCalendarColorEventList','q':'Do you want to display the event name in the color of the calendar for which it belongs?'},{'key':'useLineSeparator','q':'Do you want to display a line separator between the day name and the rest of the calendar dates?'},{'key':'useBaseTextColor','q':'Do you want to change the base text color (text color used for the event times and the calendar month view)?'},{'key':'useSundayColor','q':'Do you want to change the text color for Sunday in the month view?'},{'key':'useSaturdayColor','q':'Do you want to change the text color for Saturday in the month view?'},{'key':'useEventShadow','q':'Do you want to show a shadow under the event name in the event list on the left of the widget (this helps for readability)?'},{'key':'heatMapEnabled','q':'Do you want to enable the heat map feature?'},{'key':'showDatesBeforeAfter','q':'Do you want to show the dates just before the first day and just after the last day of the month in the calendar view?'},{'key':'dayColorEnable','q':'Do you want to display the day initials as a different color from the base text?'},{'key':'saturdaySundayHighlight','q':'Do you want to enable highlight of Saturday and Sunday in addition to the text opacity to differentiate from the other days of the week?\nNote:this will cause the reminder  heat map functionality to be disabled'}]
 
   await quests.reduce(async (memo,i)=>{
     await memo
@@ -654,8 +671,6 @@ async function setup(full){
   return true
 }
 
-
-
 async function createWidget() {  
   // opacity value for weekends and times
   const opacity = 6/10;  
@@ -710,10 +725,8 @@ async function createWidget() {
           sat = 6
           sun = 0
         }
-        //textColor=""
         if(i==sat)textColor=saturdayColor
         if(i==sun)textColor=sundayColor
-
         addWidgetTextLine(dateStackUp, `${month[i][j]}`,
         {
           color: (dayColor && j==0)?dayColor:'',//textColor,
@@ -722,20 +735,12 @@ async function createWidget() {
           align: "center",
         });
       }
-      
-      //if (!useTransparency && !isNaN(month[i][j])){   
       if (!isNaN(month[i][j])){   
           const nDate = new Date(date.getFullYear(),prevMonth?date.getMonth()-1:nextMonth?date.getMonth()+1: date.getMonth(),month[i][j],12,00)
         let diff = ((nDate-oDate)/1000)
-        //diff=Number(diff)+tZOffsetSec
-//         log(`date is ${nDate.getMonth()} ${nDate.getDate()} diff is ${diff}`)
         dateStack.url='calshow:'+diff
       }
-      dateStack.layoutVertically() 
-      /*let colorDotStack = dateStack.addStack()
-      colorDotStack.size=new Size(22, 5)
-      colorDotStack.layoutHorizontally() 
-      */
+      dateStack.layoutVertically()
       let yr = date.getFullYear()
       let mth = date.getMonth()
       let dots = [],colors=[]
@@ -752,10 +757,8 @@ if(useBaseTextColor)tColor=Color.dynamic(new Color(baseTextColorLight), new Colo
         
         if (saturdaySundayHighlight){
           if(i == sat || i == sun)dateStack.backgroundColor = new Color(satSunHighlightColor,(4/10))
-          
         }else{
           //start reminder list check
-  
           if (remList&&(!prevMonth&&!nextMonth)){
             let list = await Calendar.forRemindersByTitle(remList)
             let rem = await Reminder.completedBetween(st, fn, [list])
@@ -767,44 +770,22 @@ if(useBaseTextColor)tColor=Color.dynamic(new Color(baseTextColorLight), new Colo
         }
         
         let events = await CalendarEvent.between(st, fn)  
-//log(colors) 
-//log(events.length) 
         events = events.filter((event) => {
           if(cal.includes(event.calendar.title))return true
-return false
+          return false
           })
-          //log(events.length)
         events = events.map(item => {
           return item.calendar.color.hex
         })
-        //colors = events
-        //log(`events colors is ${events}`)
-        //log(`colors are ${colors}`)
         colors = [...new Set(events)]
         colors = colors.slice(0, 5)
-        //log(`colors set is ${colors}`)
-        //if (events.length>0){       
-          /*
-            events.forEach((kk,index)=>{ 
-           if(cal.includes(kk.calendar.title)){
-            if(index<=5){
-              if(!colors.includes(kk.calendar.color.hex)){
-               colors.push(kk.calendar.color.hex)
-              }
-            }
-           }
-          })
-          */
           if(colors.length>0){
             let colorDotsImg=colorDots(colors)
-            //colorDotStack.addSpacer()  
             let colDotsImg = dateStack.addImage(colorDotsImg)
             if(prevMonth||nextMonth)colDotsImg.imageOpacity=3/10
             colDotsImg.resizable=true
             colDotsImg.imageSize=new Size(22,3)
             colDotsImg.centerAlignImage()
-            
-            //colorDotStack.addSpacer()
           }else{
             dateStack.addSpacer(3)
           }
@@ -834,10 +815,8 @@ function buildMonthVertical() {
   let month,forLoopFirstDay,forLoopLastDay
   if(!monWeekStart){
     month = [["S"],["M"], ["T"], ["W"], ["T"], ["F"], ["S"]];
-
     forLoopFirstDay=firstDayStack.getDay()  
-    forLoopLastDay = lastDayStack.getDay()
-    
+    forLoopLastDay = lastDayStack.getDay()    
   }else{
     month = [["M"], ["T"], ["W"], ["T"], ["F"], ["S"],["S"]];
 
@@ -861,7 +840,6 @@ function buildMonthVertical() {
   }
   let idx = 1
   for (let i = forLoopLastDay+1;i<=6;i++){
-    //log(`forLoopLastDay is ${forLoopLastDay} and i is ${i}`)
     let dateee = new Date(date.getFullYear(),date.getMonth()+1,idx)
     idx+=1
     month[i].push(showDatesBeforeAfter?`${dateee.getDate()}`:" ")
@@ -882,9 +860,6 @@ function buildMonthVertical() {
   return month;
 }
 
-
-
-
 /**
  * Draws a circle with a date on it for highlighting in calendar view
  *
@@ -892,7 +867,6 @@ function buildMonthVertical() {
  *
  * @returns {Image} a circle with the date
  */
-
 function getHighlightedDate(date) {
   const drawing = new DrawContext();
   drawing.respectScreenScale = true;
@@ -915,7 +889,6 @@ function getHighlightedDate(date) {
  * @param  {CalendarEvent} event - an event to add on the stack
  * @param  {number} opacity - text opacity
  */
-
 function addWidgetTextLine(
   widget,
   text,
@@ -946,9 +919,10 @@ async function successCallback(result) {
     newCalArray = res
   })
   if(showReminders){
+    reminLast = await Reminder.allDueLastWeek()
     remin = await Reminder.allDueThisWeek()
     reminNext=await Reminder.allDueNextWeek()
-    newCalArray = mergeArrays(calcal,newCalArray,remin,reminNext)
+    newCalArray = mergeArrays(calcal,newCalArray,remin,reminNext,reminLast)
   }else{
     newCalArray = mergeArrays(calcal,newCalArray)
   }
@@ -961,30 +935,24 @@ async function successCallback(result) {
   let now = new Date()
   let ids = []
   newCalArray = newCalArray.filter(item => {
-    //log(new Date(item.startDate).getTime())
-    //log(`calendar is ${item.calendar.title} and item is ${item.title}`)
 
-    //log(new Date(item.startDate).getDate())
-    //log(`it is now ${now.getTime()}`)
-    //log(ids)
-
-  let isCalEvent
-  if('endDate' in item){
-    isCalEvent=true
-  }else{
-    isCalEvent=false
-  }  
+    let isCalEvent
+    if('endDate' in item){
+      isCalEvent=true
+    }else{
+      isCalEvent=false
+    }  
   
-  
-    //if(!(ids.includes(item.identifier))){  
-
-      //ids.push(item.title)
-      if (((new Date(item.startDate).getTime() > now.getTime()) || (showCurrentAllDayEvents?((new Date(item.startDate).getDate()==now.getDate() || (new Date(item.startDate).getTime()<now.getTime() && new Date(item.endDate).getTime()>now.getTime())) && item.isAllDay):false)) && (cal.includes(item.calendar.title) || !isCalEvent) && !(ids.includes(item.identifier))) {  
+    if ((((new Date(item.startDate).getTime() > now.getTime()) && (hideCompletedReminders?(!isCalEvent?(item.isCompleted?false:true):true):true)) || (showCurrentAllDayEvents?((new Date(item.startDate).getDate()==now.getDate() || (new Date(item.startDate).getTime()<now.getTime() && new Date(item.endDate).getTime()>now.getTime())) && item.isAllDay):false) || (persistIncompleteReminders?(!isCalEvent?(!item.isCompleted):false):false) ) && (cal.includes(item.calendar.title) || !isCalEvent) && !(ids.includes(item.identifier))) { 
+      ids.push(item.identifier)
+      return true
+    }  
+      /*if (((new Date(item.startDate).getTime() > now.getTime()) || (showCurrentAllDayEvents?((new Date(item.startDate).getDate()==now.getDate() || (new Date(item.startDate).getTime()<now.getTime() && new Date(item.endDate).getTime()>now.getTime())) && item.isAllDay):false) || (persistIncompleteReminders?(!isCalEvent?(!item.isCompleted):false):false) ) && (cal.includes(item.calendar.title) || !isCalEvent) && !(ids.includes(item.identifier))) {  
         ids.push(item.identifier)
         return true    
-      }
+      }*/
     //}
-      return false
+    return false
   })
   log(newCalArray.length)
   
@@ -995,10 +963,14 @@ async function successCallback(result) {
     return 0;
   });
   
-  //log(newCalArray.length)
   newCalArray = newCalArray.slice(0, 5)
-  //log(newCalArray.length)
-  //throw new Error("done")
+  newCalArray.forEach((earlyE,index) => {
+    if((new Date(earlyE.startDate).getTime() < now.getTime()) && !('endDate' in earlyE) && !earlyE.isCompleted){  
+      f(earlyE)
+      newCalArray.splice(index, 1)
+    }
+  })
+  log('starting normal events')
   newCalArray.forEach(f)
 }
 
@@ -1024,21 +996,11 @@ function eventCount(item){
         eventCounter +=1
       }      
     }  
-  }/*else if (item.dueDate > 0){//this is no longer needed due to dueDate being replaced by startDate in earlier section of code
-    if (item.dueDate.getTime() > now.getTime())  
-    {
-      if(cal.includes(item.calendar.title))
-      {
-        eventCounter +=1
-      }      
-    }  
   }
-  */
 }
 
 
 function f(item){
-//   log(item)
   eventDisplay = (eventFontSize>1)?3 : 5
   if(widgFam=='large')eventDisplay=eventDisplay*3
   const date = new Date(); 
@@ -1048,20 +1010,16 @@ function f(item){
   }else{
     isCalEvent=false
   }  
-//   log(item.startDate)
-log(item.identifier)
+  log(item.identifier)
   dF.dateFormat='yyyy-MM-dd HH:mm:ss.SSSZ'
   let dateString = item.startDate.toString()
   dateString=dateString.replace('T', ' ')
-//   log(dateString)
   item.startDate = dF.date(dateString)
   if(isCalEvent){
     dateString=item.endDate.toString()
     dateString=dateString.replace('T',' ')
     item.endDate = dF.date(dateString)
   }
-//   log(item.startDate+'\n'+isCalEvent?item.endDate:'')
-//   log(item)
   if(cal.includes(item.calendar.title) || !isCalEvent)
       {
         indexed+=1  
@@ -1086,13 +1044,23 @@ log(item.identifier)
           let dd = item.startDate
           let ddd=dF.string(dd)
         if((widgFam=='large' && indexed<=(eventDisplay*(2/3)))|| widgFam!='large'){
-          if(!dHolder && (dF.string(date)==ddd || (dd<date && item.endDate>date)))         
+          if(!isCalEvent && (dd.getTime() < date.getTime()) && !earlier){
+            
+            //indexed += 1
+            let when = left.addText(' EARLIER ')
+            when.font = Font.heavyMonospacedSystemFont(8*eventFontSize)
+if(useBaseTextColor)when.textColor=Color.dynamic(new Color(baseTextColorLight), new Color(baseTextColorDark))  
+            when.textColor = Color.red()
+            earlier = true
+          }else if(!dHolder && ((item.startDate>date) || (item.isAllDay && showCurrentAllDayEvents)) && (dF.string(date)==ddd || (dd<date && item.endDate>date)))         
           {
+            if(earlier)left.addSpacer(2)
             let when = left.addText(' TODAY ')
-           when.font=Font.heavyMonospacedSystemFont(8*eventFontSize)
+            when.font = Font.heavyMonospacedSystemFont(8*eventFontSize)
 if(useBaseTextColor)when.textColor=Color.dynamic(new Color(baseTextColorLight), new Color(baseTextColorDark))
-
-          }else if(ddd!=dF.string(date)/*ddd!=dHolder*/ && !later){
+            
+            dHolder = ddd
+          }else if((dd.getTime() > date.getTime()) && ddd!=dHolder && !later){
             left.addSpacer(2)
             let when = left.addText(' LATER ')
             when.font = Font.heavyMonospacedSystemFont(8*eventFontSize)
@@ -1104,9 +1072,6 @@ if(useBaseTextColor)when.textColor=Color.dynamic(new Color(baseTextColorLight), 
         }else{
           var stack = right
         }
-          //let s = stack.addStack()
-          
-          dHolder = ddd
           let tx = stack.addText((isCalEvent?'':item.isCompleted?'☑':'☐')+item.title)
           tx.font= Font.boldMonospacedSystemFont(11*eventFontSize)
           tx.lineLimit=2
