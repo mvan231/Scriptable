@@ -112,7 +112,7 @@
     This widget shows the recent posts of an Automators.fm Feed of your choosing (defaults to Scriptable of course)
     ![Example](https://i.imgur.com/3yjLJk6.png)
     
-* ### [NASA Photo of the Day Widget](NASA%20Photo%20Of%20The%20Day)
+* ### [NASA Photo of the Day Widget](NASA%20Photo%20Of%20The%20Day.js)
     This widget will display the current NASA Photo of the Day. It will set the refresh after date to be the next day to avoid excessive data usage.
     To use it, just go to [NASA API Sign Up page](https://api.nasa.gov) and get your API key, then enter it at the top of the script, and add the widget size of your choice to your home screen.
     ![image](https://user-images.githubusercontent.com/50910610/147139358-f8da3927-93c1-4aa9-bdc7-672c6201ba20.jpeg)
