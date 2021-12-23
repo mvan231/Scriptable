@@ -1,7 +1,7 @@
 // Variables used by Scriptable.
 // These must be at the very top of the file. Do not edit.
 // icon-color: deep-gray; icon-glyph: star-and-crescent;
-let key = 'your key here'
+let key = 'your_key_here'
 let r = new Request(`https://api.nasa.gov/planetary/apod?api_key=${key}`)
 
 let res = await r.loadJSON()
@@ -37,7 +37,7 @@ tStack.addSpacer()
 w.backgroundImage = img
 
 let d = new Date()
-w.refreshAfterDate = new Date(d.getFullYear(),d.getMonth(),d.getDate()+1,00,00)
+w.refreshAfterDate = new Date(d.getFullYear(),d.getMonth(),d.getDate()+1,08,00)
 log(w.refreshAfterDate)
 
 Script.setWidget(w)
