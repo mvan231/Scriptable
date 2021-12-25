@@ -9,10 +9,12 @@ let scriptPath = fm.documentsDirectory()+'/UpcomingIndicator/'
 let settingsPath = scriptPath+'settings.json'
 const reRun = URLScheme.forRunningScript()
 if(!fm.fileExists(scriptPath))fm.createDirectory(scriptPath, false)
-let needUpdated = await updateCheck(2.5)
+let needUpdated = await updateCheck(2.6)
 //log(needUpdated)
 /*--------------------------
 |------version notes------
+2.6
+- Remove debugging step causing incomplete reminders to always be shown￼
 2.5
 - Add condition for using only the left side (event list) so that the events are left justified better when event titles are short
 - Modify if statement for the ' TODAY ' heading in the f function for the event list
@@ -127,7 +129,7 @@ const showReminders = settings.showReminders
 const hideCompletedReminders = settings.hideCompletedReminders
 
 //persistIncompleteReminders determines whether incomplete reminders from this week or last week shall stay on the event list if they have not yet been completed
-const persistIncompleteReminders = true//settings.persistIncompleteReminders
+const persistIncompleteReminders = settings.persistIncompleteReminders
 
 //showCurrentAllDayEvents enables the ability to show an event that is happening today and is set as all day
 const showCurrentAllDayEvents = settings.showCurrentAllDayEvents
