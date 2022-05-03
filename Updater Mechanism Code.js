@@ -19,7 +19,8 @@ $$$$$$$$$$$$$$$$$$$$$$
 let scriptURL = 'https://raw.githubusercontent.com/mvan231/Scriptable/main/Updater%20Mechanism%20Code.js'
 
 //uCheck is set up to receive the output of the update check function. It will either be set to true or false depending on whether or not an update is available
-let uCheck = updateCheck(1.0)
+let uCheck = await updateCheck(1.0)
+log(`${uCheck} to update available`)
 
 //set w as a ListWidget to display the update status if needed
 let w = new ListWidget()
