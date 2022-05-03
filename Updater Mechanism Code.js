@@ -15,13 +15,27 @@ The method involves setting a variable to the output of the update check functio
 $$$$$$$$$$$$$$$$$$$$$$
 */
 
+//provide the script URL where it is located
 let scriptURL = 'https://raw.githubusercontent.com/mvan231/Scriptable/main/Updater%20Mechanism%20Code.js'
+
+//uCheck is set up to receive the output of the update check function. It will either be set to true or false depending on whether or not an update is available
+let uCheck = updateCheck(1.0)
 
 //set w as a ListWidget to display the update status if needed
 let w = new ListWidget()
+if(uCheck){
+  let upText = w.addText('Update Available')
+  upText.font = Font.boldSystemFont(8)
+}
+w.addText("This is a widget")
 
-//uCheck is set up to receive the output of the update check function. It will either be set to true or false depending on whether or not an update is available￼
-let uCheck = updateCheck(1.0)
+//finish the script so we can oresent the information
+Script.setWidget(w)
+Script.complete()
+w.presentMedium()
+
+
+
 
 //begin the updateCheck function￼
 async function updateCheck(version){
@@ -51,11 +65,13 @@ async function updateCheck(version){
       //generate an alert to notify the user of the update and the changes included
       let upd = new Alert()
       upd.title="Server Version Available"
+      //pressing 'OK' downloads the new script file and installs it immediately
       upd.addAction("OK")
+      //pressung 'Later' will exit the updater and continue running the script. This is silent if running in the widget
       upd.addDestructiveAction("Later")
       upd.message="Changes:\n"+uC.notes+"\n\nPress OK to get the update from GitHub"
       if (await upd.present()==0){
-        let r = new Request(${scriptURL})
+        let r = new Request(scriptURL)
         //download the updated script file
         let updatedCode = await r.loadString()
         let fm = FileManager.iCloud()
