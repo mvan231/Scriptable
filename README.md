@@ -119,7 +119,8 @@
     As of v1.2, you will get an alert prompt when tapping the widget to either save the photo, go to the photo of the day site, or cancel. There is also a check to ensure the current POTD is an image to account for cases when NASA has set it as a video. 
     ![v1.2](https://user-images.githubusercontent.com/50910610/147410199-5431b855-c643-4ccb-ab34-8d9a86bbe34d.png)
 
-    
+* ### [Updater Mechanism Code Example](Updater%20Mechanism%20Code.js)
+    This widget code shows an example of how to implement the Updater Mechanism Code that I utilize in my widgets. Changing the version number passed to the updateCheck function can show you what it looks like when an update is avaliable. The server version (version info in the Updater Mechanism Code.json file in this repo) is 1.1, it will show an update is available if the version in the widget is set to anything other than 1.1.
 
   
 
