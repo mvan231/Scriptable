@@ -12,12 +12,12 @@ modifications and new features added by mvan231
 ---
 version info
 ---
-v1.4
-- iOS 15 SF Symbol workaround commented out after Scriptable app update
+v1.5
+- Added proper caching of weather data in case of no connection to internet so information will still be displayed
 
 ><><><><><><><><><><><*/
 //check for an update quick before building the widget
-let needUpdated = await updateCheck(1.4)
+let needUpdated = await updateCheck(1.5)
 
 /*><><><><><><><><><><><
 
@@ -124,8 +124,15 @@ log(latLong)
 const LAT = latLong.latitude
 const LON = latLong.longitude
 
-var response = await Location.reverseGeocode(LAT, LON)
-var LOCATION_NAME = response[0].postalAddress.city
+//now using try catcg for reverseGeocoding in case of no response
+try{
+  var response = await Location.reverseGeocode(LAT, LON)
+  var LOCATION_NAME = response[0].postalAddress.city
+}catch(e){
+  //need to add info here to grabbed cached location name
+  var LOCATION_NAME = 'Cached Data'
+
+}
 
 const locale = "en"
 const nowstring = (param=='daily')?"Today" : "Now"
@@ -165,18 +172,18 @@ drawContext.setTextAlignedCenter()
 
 if(config.widgetFamily == 'large')throw new Error('This widget is not designed for the large size widget, try medium or small instead')
 
+let cache = localFm.joinPath(cachePath, "lastread")
+
+
 try {
-  weatherData = await new Request("https://api.openweathermap.org/data/2.5/onecall?lat=" + LAT + "&lon=" + LON + "&exclude=minutely&units=" + units + "&lang=" + locale + "&appid=" + API_KEY).loadJSON();
+  log('trying')
+  weatherData = await new Request("https://api.openweathermap.org/data/2.5/onecall?lat=" + LAT + "&lon=" + LON + "&exclude=minutely&units=" + units + "&lang=" + locale + "&appid=" + API_KEY).loadJSON()
+  localFm.writeString(cache, JSON.stringify(weatherData))
 } catch(e) {
   console.log("Offline mode")
-  try {
-    await fm.downloadFileFromiCloud(fm.joinPath(cachePath, "lastread" + "_" + LAT + "_" + LON));
-    let raw = fm.readString(fm.joinPath(cachePath, "lastread"+"_"+LAT+"_"+LON));
+    let raw = localFm.readString(cache);
     weatherData = JSON.parse(raw);
-    usingCachedData = true;
-  } catch(e2) {
-    console.log("Error: No offline data cached")
-  }
+    usingCachedData = true
 }
 
 //log(JSON.stringify(weatherData, null, 2))
