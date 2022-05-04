@@ -1,4 +1,4 @@
 {
- "version":"1.4",
- "notes":"- iOS 15 SF Symbol workaround commented out after Scriptable app update"
+ "version":"1.5",
+ "notes":"- Added proper caching of weather data in case of no connection to internet so information will still be displayed"
 }
