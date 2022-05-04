@@ -1,18 +1,18 @@
 // Variables used by Scriptable.
 // These must be at the very top of the file. Do not edit.
-// icon-color: light-gray; icon-glyph: calendar-alt;
-﻿// Variables used by Scriptable.
-// These must be at the very top of the file. Do not edit.
-// icon-color: light-gray; icon-glyph: calendar-alt;
+// icon-color: deep-green; icon-glyph: calendar-alt;
 let fm = FileManager.iCloud()
 let scriptPath = fm.documentsDirectory()+'/UpcomingIndicator/'
 let settingsPath = scriptPath+'settings.json'
 const reRun = URLScheme.forRunningScript()
 if(!fm.fileExists(scriptPath))fm.createDirectory(scriptPath, false)
-let needUpdated = await updateCheck(2.6)
+let needUpdated = await updateCheck(2.7)
 //log(needUpdated)
 /*--------------------------
 |------version notes------
+2.7
+- Added handler at 1067,1068,and 1075 to not add the ' LATER ' tag to the event list if the event is happening today (after the other criteria is checked. Within the statement of function 'f' 'else if((dd.getTime() > date.getTime()) && ddd!=dHolder && !later){'
+- Reduced text shadow radius
 2.6
 - Remove debugging step causing incomplete reminders to always be shown￼
 2.5
@@ -1045,6 +1045,7 @@ function f(item){
           dF.dateFormat='MMM d'
           let dd = item.startDate
           let ddd=dF.string(dd)
+          let todayDateFormat = dF.string(date)
         if((widgFam=='large' && indexed<=(eventDisplay*(2/3)))|| widgFam!='large'){
           if(!isCalEvent && (dd.getTime() < date.getTime()) && !earlier){
             
@@ -1063,12 +1064,15 @@ if(useBaseTextColor)when.textColor=Color.dynamic(new Color(baseTextColorLight), 
             
             dHolder = ddd
           }else if((dd.getTime() > date.getTime()) && ddd!=dHolder && !later){
-            left.addSpacer(2)
-            let when = left.addText(' LATER ')
-            when.font = Font.heavyMonospacedSystemFont(8*eventFontSize)
-if(useBaseTextColor)when.textColor=Color.dynamic(new Color(baseTextColorLight), new Color(baseTextColorDark))
-
-            later = true
+            if(ddd==todayDateFormat){
+            }else{  
+              left.addSpacer(2)
+              let when = left.addText(' LATER ')
+              when.font = Font.heavyMonospacedSystemFont(8*eventFontSize)
+    if(useBaseTextColor)when.textColor=Color.dynamic(new Color(baseTextColorLight), new Color(baseTextColorDark))
+    
+              later = true
+            }
           }
           var stack = left
         }else{
@@ -1080,7 +1084,7 @@ if(useBaseTextColor)when.textColor=Color.dynamic(new Color(baseTextColorLight), 
           if(showCalendarColorEventList)tx.textColor= new Color(item.calendar.color.hex)
           if(useEventShadow){
             //add a shadow
-            tx.shadowRadius=4
+            tx.shadowRadius=0.6
             //shadow color for the calendar event title
             tx.shadowColor=Color.dynamic(new Color(shadowColorLight), new Color(shadowColorDark))  
           }
