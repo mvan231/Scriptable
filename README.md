@@ -122,7 +122,8 @@
 * ### [Updater Mechanism Code Example](Updater%20Mechanism%20Code.js)
     This widget code shows an example of how to implement the Updater Mechanism Code that I utilize in my widgets. Changing the version number passed to the updateCheck function can show you what it looks like when an update is avaliable. The server version (version info in the Updater Mechanism Code.json file in this repo) is 1.1, it will show an update is available if the version in the widget is set to anything other than 1.1.
 
-  
+* ### [Simple Image Widget](Simple%20Image%20Widget.js)
+    This widget is an example of setting the ListWidget.backgroundImage property of the widget to show an image in a widget. The example script has comments included to explain the different steps that are included. The main piece this relies on, is having an image in iCloud Drive -> Scriptable, which is named "WBack.jpeg"
 
 ## Scripts
 
