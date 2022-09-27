@@ -116,6 +116,7 @@
     This widget will display the current NASA Photo of the Day. It will set the refresh after date to be the next day to avoid excessive data usage.
     To use it, just go to [NASA API Sign Up page](https://api.nasa.gov) and get your API key, then enter it at the top of the script, and add the widget size of your choice to your home screen.
     ![image](https://user-images.githubusercontent.com/50910610/147139358-f8da3927-93c1-4aa9-bdc7-672c6201ba20.jpeg)
+    
     As of v1.2, you will get an alert prompt when tapping the widget to either save the photo, go to the photo of the day site, or cancel. There is also a check to ensure the current POTD is an image to account for cases when NASA has set it as a video. 
     ![v1.2](https://user-images.githubusercontent.com/50910610/147410199-5431b855-c643-4ccb-ab34-8d9a86bbe34d.png)
 
