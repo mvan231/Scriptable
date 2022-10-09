@@ -56,6 +56,7 @@ const FONT_COLOR_HEADLINE = Color.white();
 // Unless you know what you're doing.
 // Unlike me, I don't know what I'm doing.
 var WIDGET_SIZE = (config.runsInWidget ? config.widgetFamily : "small");
+
 if (args.widgetParameter) {
   let param = args.widgetParameter.split("|");
   if (param.length >= 1) {WIDGET_SIZE = param[0];}
@@ -141,7 +142,7 @@ async function createWidget() {
       
       const postStack = list.addStack();
       postStack.layoutVertically();
-      
+
       const labelDateTime = postStack.addText(await new Date(postData.aPostDates[0]).toLocaleString([], {hour: "2-digit", minute: "2-digit"}));
       labelDateTime.font = Font.heavySystemFont(12);
       labelDateTime.textColor = FONT_COLOR_POST_DATE;
@@ -164,24 +165,33 @@ async function createWidget() {
       let i;
       for (i = 0; i < POST_COUNT; i++) {
         aStackRow[i] = list.addStack();
+        aStackRow[i].addSpacer()
         aStackRow[i].layoutHorizontally();
         aStackRow[i].url = postData.aPostURLs[i];
-        
         aStackCol[i] = aStackRow[i].addStack();
-        aStackCol[i].layoutVertically();
+
         
-        aLblPostDate[i] = aStackCol[i].addText(await new Date(postData.aPostDates[i]).toLocaleString([], {hour: "2-digit", minute: "2-digit"}));
+        aStackCol[i].layoutVertically();
+
+        let aStackColRow1 = aStackCol[i].addStack()
+        let aStackColRow2 = aStackCol[i].addStack()
+        aStackColRow1.addSpacer()
+        aStackColRow2.addSpacer()
+        
+        //aLblPostDate[i] = aStackCol[i].addText(await new Date(postData.aPostDates[i]).toLocaleString([], {hour: "2-digit", minute: "2-digit"}));
+        aLblPostDate[i] = aStackColRow1.addText(await new Date(postData.aPostDates[i]).toLocaleString([], {hour: "2-digit", minute: "2-digit"}));
         aLblPostDate[i].font = Font.heavySystemFont(10);
         aLblPostDate[i].textColor = FONT_COLOR_POST_DATE;
         aLblPostDate[i].lineLimit = 1;
-        aLblPostDate[i].minimumScaleFactor = 0.5;
+        aLblPostDate[i].rightAlignText()
         
-        aLblPostTitle[i] = aStackCol[i].addText(postData.aPostTitles[i]);
+        //aLblPostTitle[i] = aStackCol[i].addText(postData.aPostTitles[i]);
+        aLblPostTitle[i] = aStackColRow2.addText(postData.aPostTitles[i]);
         aLblPostTitle[i].font = Font.heavySystemFont(17);
         aLblPostTitle[i].textColor = FONT_COLOR_HEADLINE;
         aLblPostTitle[i].lineLimit = 3;
         aLblPostTitle[i].rightAlignText()
-        
+
         if (SHOW_POST_IMAGES == "true" && postData.aPostIMGPaths[i] != "none") {
           aStackRow[i].addSpacer();
           aLblPostIMG[i] = aStackRow[i].addImage(await loadLocalImage(postData.aPostIMGPaths[i]));
