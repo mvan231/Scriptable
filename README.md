@@ -156,4 +156,4 @@
 * Tap outside the edit widget window and you should be all set
 
 ## Buy me a ☕️ or 🍺?
-  If you like my work and want to buy me a coffee or a beer, you can do so with [Venmo](https://venmo.com/code?user_id=1967077766201344976) or [PayPal](https://www.paypal.me/mvan231).
+  If you like my work and want to buy me a coffee or a beer, you can do so with [Venmo](https://venmo.com/code?user_id=1967077766201344976) or [PayPal](https://www.paypal.me/mvan231) or [Cash App](https://cash.app/$Mvan231).
