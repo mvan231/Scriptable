@@ -1,15 +1,20 @@
 // Variables used by Scriptable.
 // These must be at the very top of the file. Do not edit.
+// icon-color: green; icon-glyph: magic;
+// Variables used by Scriptable.
+// These must be at the very top of the file. Do not edit.
 // icon-color: deep-green; icon-glyph: calendar-alt;
 let fm = FileManager.iCloud()
 let scriptPath = fm.documentsDirectory()+'/UpcomingIndicator/'
 let settingsPath = scriptPath+'settings.json'
 const reRun = URLScheme.forRunningScript()
 if(!fm.fileExists(scriptPath))fm.createDirectory(scriptPath, false)
-let needUpdated = await updateCheck(2.7)
+let needUpdated = await updateCheck(2.8)
 //log(needUpdated)
 /*--------------------------
 |------version notes------
+2.8
+- Modified event list url attached to event item. Tapping now opens the event instead of going to that date in the calendar
 2.7
 - Added handler at 1067,1068,and 1075 to not add the ' LATER ' tag to the event list if the event is happening today (after the other criteria is checked. Within the statement of function 'f' 'else if((dd.getTime() > date.getTime()) && ddd!=dHolder && !later){'
 - Reduced text shadow radius
@@ -1012,7 +1017,7 @@ function f(item){
   }else{
     isCalEvent=false
   }  
-  log(item.identifier)
+  //log(item.identifier)
   dF.dateFormat='yyyy-MM-dd HH:mm:ss.SSSZ'
   let dateString = item.startDate.toString()
   dateString=dateString.replace('T', ' ')
@@ -1110,7 +1115,12 @@ if(useBaseTextColor)when.textColor=Color.dynamic(new Color(baseTextColorLight), 
           const nDate = item.isAllDay? new Date(item.startDate.getFullYear(),item.startDate.getMonth(),item.startDate.getDate(),12,00) : item.startDate.getTime()
           var diff = ((nDate-oDate)/1000)
           diff=Number(diff)-tZOffsetSec
-          tx.url=isCalEvent?"calshow:"+diff:"x-apple-reminderkit://"+item.identifier
+//           tx.url=isCalEvent?"calshow:"+diff:"x-apple-reminderkit://"+item.identifier
+          //log(item.identifier.replace(":", "/"))
+          tx.url=isCalEvent?"x-apple-calevent://"+item.identifier.replace(":", "/"):"x-apple-reminderkit://REMCDReminder/"+item.identifier
+          log(tx.url)
+          log(`title is ${item.title}`)
+          log(`item id is ${item.identifier}`)
 //if (!isCalEvent)log(item.calendar.identifier)
         }
   }
