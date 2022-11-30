@@ -1,4 +1,4 @@
 {
-  "notes":"- Added handler at 1067,1068,and 1075 to not add the ' LATER ' tag to the event list if the event is happening today (after the other criteria is checked. Within the statement of function 'f' 'else if((dd.getTime() > date.getTime()) && ddd!=dHolder && !later){'\n- Reduced text shadow radius"
-  ,"version": "2.7"
+  "notes":"- Modified event list url attached to event item. Tapping now opens the event instead of going to that date in the calendar"
+,"version": "2.8"
 }
