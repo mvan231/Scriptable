@@ -126,6 +126,30 @@
 * ### [Simple Image Widget](Simple%20Image%20Widget.js)
     This widget is an example of setting the ListWidget.backgroundImage property of the widget to show an image in a widget. The example script has comments included to explain the different steps that are included. The main piece this relies on, is having an image in iCloud Drive -> Scriptable, which is named "WBack.jpeg"
 
+* ### [Mastodon Latest Widget](Mastodon%20Latest.js)
+    This widget displays the latest post from a specified user. To specify the user you want to display, simply add the URL to their profile into the Widget Parameter and let the code do its thing.
+    
+    If the latest post of a user is less than 150 characters, it will show the latest two posts (shown below in the double example)
+   
+    By default it doesn't show Boosts/Reblogs
+
+    Add Widget Parameter
+    ![Mastodon Latest Setup](https://i.imgur.com/bIQx4ew.jpg)
+    
+    If you want to see console log items, set this flag to true
+    ![Mastodon ShowLog Flag](https://i.imgur.com/1Xz9iPP.jpg)
+    
+    Single Post Example
+    ![Mastodon Single Example](https://i.imgur.com/cbNzyb0.jpg)
+    
+    Double Post Example
+    ![Mastodon Double Example](https://i.imgur.com/9Dv0SdG.jpg)
+   
+    Large Widget Example
+    ![Mastodon Large Example](https://i.imgur.com/2tz3zVK.jpg)
+
+
+
 ## Scripts
 
 * ### [ScriptBackup.js](ScriptBackup.js)
