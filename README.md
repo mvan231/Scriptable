@@ -148,6 +148,12 @@
     Large Widget Example
     ![Mastodon Large Example](https://i.imgur.com/2tz3zVK.jpg)
 
+* ### [Pollen.com Widget](Pollen.com%20API%20-%20Today.js)
+    This widget displays pollen data fod your current location from Pollen.com. Works on lock screen and home screen widget types
+    ![image](https://github.com/mvan231/Scriptable/assets/50910610/9f2147e5-6e92-4bdc-aa21-ebdb72b0cbf6)
+    ![image](https://github.com/mvan231/Scriptable/assets/50910610/102e4f71-c235-414f-a42c-e5d71c2395a5)
+
+
 
 
 ## Scripts
