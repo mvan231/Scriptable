@@ -173,6 +173,8 @@
     * A helpful script for importing scripts to scriptable from various different sites
 * ### [widget blur from mzeryck](https://github.com/mzeryck/Widget-Blur)
     * A script to help generate a blurred slice of your wallpaper for usage as a widget background image
+* ### [Equal Stacks no hard code](Equal%20Stacks%20no%20hardcode.js)
+    * This widget by Supermamon generates a widget with equal width stacks without hardcoding the widths
     
 ## First time adding a widget?
 
