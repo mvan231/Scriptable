@@ -17,6 +17,7 @@ if (!fm.fileExists(path)){
   a.addAction("OK")
   a.addCancelAction("I don't have one")
   let aRes = await a.presentAlert()
+  if(aRes==-1)throw new Error("Please get an API key before proceeding")
   aRes = a.textFieldValue(0)
   fm.writeString(path, aRes)
 }
