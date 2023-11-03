@@ -162,6 +162,15 @@
     * This script will backup all of your current scripts into the iCloud Drive Scriptable directory underneath the folder "ScriptBackup" and then under the date formatted "yyyy_M_d__HHmm" folder that is created when it runs.
 * ### [Remove Scheduled Notifications.js](Remove%20Scheduled%20Notifications.js)
     * See how many pending notifications you have in the Scriptable app and choose from them to remove them, or alternatively, remove them all with one button.
+ 
+* ### [Alexa to Reminders Access.js](Alexa%20To%20Reminders%20Access.js)
+    * Purpose: To sync alexa reminders to a iOS reminders list. previously IFTTT could do this, but Amazon revoked the Alexa IFTTT integration recently.
+
+    * Setup: Insert the name of the desired reminders list in the "remCal" line. I use "Grocery and Shopping" with my wife, so i have that name entered.
+
+    * When running the first time, the script will check if you are logged in. If not, it will notify and present with login page. After that, the script should run seamlessly. 
+
+    * When running and items are found to sync, it will show a notification with the items that were added to reminders.
 
 ## Utilites (from others)
 ---
