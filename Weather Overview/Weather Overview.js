@@ -12,12 +12,18 @@ modifications and new features added by mvan231
 ---
 version info
 ---
-v1.5
-- Added proper caching of weather data in case of no connection to internet so information will still be displayed
-
+v1.6
+- added code to handle iOS 16 offloading files (the JSON settings file to be exact)
+- made adjustments to wind arrow placement
+- remove ° from temperature display to allow more hours / days to be displayed
+- (need to start) Add option for charting low and high temps as a line (for daily view)
+- (need to start) add widget parameter option for hours of forecast to display
+- added wind gust under the wind direction
+- trying better city ID method for tap on widget url
+- added new method to color wind arrows
 ><><><><><><><><><><><*/
 //check for an update quick before building the widget
-let needUpdated = await updateCheck(1.5)
+let needUpdated = await updateCheck(1.6)
 
 /*><><><><><><><><><><><
 
@@ -26,7 +32,7 @@ Start of Setup
 ><><><><><><><><><><><*/
 let fm = FileManager.iCloud()
 let settingsPath = fm.documentsDirectory()+'/weatherOverviewSettings.JSON'
-
+log(settingsPath)
 let a, settings ={}
 
 if(!config.runsInWidget && fm.fileExists(settingsPath)){
@@ -40,9 +46,19 @@ if(!config.runsInWidget && fm.fileExists(settingsPath)){
       await fm.remove(settingsPath)
     }
 }
-if(fm.fileExists(settingsPath))settings = JSON.parse(fm.readString(settingsPath))
-let set = await setup()
 
+// log(`stored in iCloud? ${fm.isFileStoredIniCloud(settingsPath)}\n\nfile exists ${fm.fileExists(settingsPath)}`)
+if(fm.fileExists(settingsPath)){
+  //if file exists check if it is downloaded. if not downloaded, then download the file// 
+// log(`file is downloaded? ${fm.isFileDownloaded(settingsPath)}`)
+  //file always showning as downloded even if it isnt.
+  if(!fm.isFileDownloaded(settingsPath))fm.downloadFileFromiCloud(settingsPath)
+  
+  //log(fm.readString(settingsPath))
+  settings = JSON.parse(fm.readString(settingsPath))
+    
+}
+let set = await setup()
 
 //settings variables initialization
 
@@ -109,7 +125,7 @@ try {
   log('new location cached...')
   locFound=true  
 } catch(e) {
-    log("couldn't get live location, trying to read from file")
+  log("couldn't get live location, trying to read from file")
 }
 if(!locFound){
   try{
@@ -124,7 +140,7 @@ log(latLong)
 const LAT = latLong.latitude
 const LON = latLong.longitude
 
-//now using try catcg for reverseGeocoding in case of no response
+//now using try catch for reverseGeocoding in case of no response
 try{
   var response = await Location.reverseGeocode(LAT, LON)
   var LOCATION_NAME = response[0].postalAddress.city
@@ -143,8 +159,8 @@ const pressure = ""
 const twelveHours = false
 const roundedGraph = false
 const roundedTemp = true
-const hoursToShow = (config.widgetFamily == "small") ? 3 : (param == 'daily') ? 6 : 11;
-const spaceBetweenDays = (config.widgetFamily == "small") ? 60 : (param == 'daily') ? 76 : 44;
+const hoursToShow = (config.widgetFamily == "small") ? 3 : (param == 'daily') ? 6 : 14//11;
+const spaceBetweenDays = (config.widgetFamily == "small") ? 60 : (param == 'daily') ? 76 : 35//44;
 
 const show24Hours = true
 if (!show24Hours) {
@@ -162,7 +178,7 @@ const locationNameCoords = new Point(30, showWindspeed?5:25)//25)
 const xStart = /*(config.widgetFamily=='small')? 35 :*/ 30
 const barWidth = spaceBetweenDays - (config.widgetFamily == 'small'?8:4)
 
-let weatherData,percentageLinesDrawn;
+let cityId,weatherData,percentageLinesDrawn;
 let usingCachedData = false;
 let drawContext = new DrawContext();
 
@@ -174,19 +190,29 @@ if(config.widgetFamily == 'large')throw new Error('This widget is not designed f
 
 let cache = localFm.joinPath(cachePath, "lastread")
 
+//new cityId method
+try{
+  log("start cityId method")
+  currentData = await new Request(`https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&appid=${API_KEY}`).loadJSON()
+  log(currentData)
+  cityId = currentData.id
+  log(`cityId is ${cityId}`)
+}catch(e){
+  log("couldnt get current data")
+}
 
 try {
-  log('trying')
+  log('trying to get data from API')
   weatherData = await new Request("https://api.openweathermap.org/data/2.5/onecall?lat=" + LAT + "&lon=" + LON + "&exclude=minutely&units=" + units + "&lang=" + locale + "&appid=" + API_KEY).loadJSON()
   localFm.writeString(cache, JSON.stringify(weatherData))
 } catch(e) {
   console.log("Offline mode")
-    let raw = localFm.readString(cache);
-    weatherData = JSON.parse(raw);
-    usingCachedData = true
+  let raw = localFm.readString(cache);
+  weatherData = JSON.parse(raw);
+  usingCachedData = true
 }
 
-//log(JSON.stringify(weatherData, null, 2))
+log(JSON.stringify(weatherData, null, 2))
 let widget = new ListWidget();
 widget.setPadding(0, 0, 0, 0);
 widget.backgroundColor = backgroundColor;
@@ -339,7 +365,10 @@ for (let i = 0; i <= hoursToShow; i++) {
   if (twelveHours && (param!='daily'))
     hour = (hour > 12 ? hour - 12 : (hour == 0 ? "12a" : ((hour == 12) ? "12p" : hour)))
   let temp = (param=='daily')?hourData.temp.max : (i == 0) ? weatherData.current.temp : hourData.temp
-
+  if(param=='daily'){
+    var lowTemp = shouldRound(roundedTemp,hourData.temp.min)
+  }
+  
   let delta = (diff > 0) ? (shouldRound(roundedGraph, temp) - min) / diff : 0;
   let nextDelta = (diff>0) ? (nextHourTemp - min) / diff : 0
   temp = shouldRound(roundedTemp, temp)
@@ -357,13 +386,22 @@ for (let i = 0; i <= hoursToShow; i++) {
     now = new Date()
     var night = (hourData.dt > hourDay.sunset || hourData.dt < hourDay.sunrise || (i == 0 && (now.getTime > weatherData.current.sunset || now.getTime < weatherData.current.sunrise)))
 
-    let freezing = (units=='imperial'?32:0)
+    var freezing = (units=='imperial'?32:0)
     var tempColor = (temp>freezing)?Color.orange():Color.blue()
+    
+    if(param == "daily" && lowTemp){
+      var lowTempColor = (lowTemp>freezing)?Color.orange():Color.blue()
+    }
 
     drawLine(spaceBetweenDays * (i) + xStart + (barWidth/2)/*spaceBetweenDays * (i) + barWidth*/, 175 - (50 * delta),spaceBetweenDays * (i + 1) + xStart + (barWidth/2), 175 - (50 * nextDelta), 2,tempColor) //Color.gray())// (night ? Color.gray() : accentColor))
   }
 
-  drawTextC(temp + "°", 18, spaceBetweenDays * i + xStart, 130 - (50 * delta), barWidth /*50*/, 18, tempColor)
+  drawTextC(temp + "", 18, spaceBetweenDays * i + xStart, 130 - (50 * delta), barWidth /*50*/, 18, tempColor)
+  
+  if(param == "daily" && lowTemp){
+    var lowTempColor = (lowTemp>freezing)?Color.orange():Color.blue()
+    drawTextC(lowTemp + "", 18, spaceBetweenDays * i + xStart, (130 - (50 * delta))+ 65, barWidth /*50*/, 18, lowTempColor)
+  }
   
   let imageSpace = config.widgetFamily == 'small'? 42 : (param =='daily')?48:34
   //if showWindSpeed is enabled, get the wind data and display it
@@ -373,6 +411,7 @@ for (let i = 0; i <= hoursToShow; i++) {
     dir = windDirs[dir]
     //dir is now the cardinal direction of the wind source
     let windSpeed = Math.round(hourData.wind_speed)
+    let windGust = Math.round(hourData.wind_gust)
     
     //add wind direction arrow
     if(showWindArrow){
@@ -382,14 +421,21 @@ for (let i = 0; i <= hoursToShow; i++) {
 
       let symb = SFSymbol.named(windArrows[dir])
       symb.applyFont(Font.systemFont(14))
-      symb=symb.image
-      drawImage(symb, spaceBetweenDays * i + (config.widgetFamily=='small'? 49 : param=='daily'?59:43), 45/*220 - 15*/)
+      
+      symb=await tintSFSymbol(symb.image, Color.black())
+
+      
+      //drawImage(symb, spaceBetweenDays * i + (xStart + (barWidth/2)) - (16/2),45)
+      drawContext.drawImageInRect(symb, new Rect(spaceBetweenDays * i + (xStart + (barWidth/2)) - (16/2) +1, 44+1, 16-2, 16-2))
+      //drawImage(symb, spaceBetweenDays * i + (config.widgetFamily=='small'? 49 : param=='daily'?59:43), 45/*220 - 15*/)
     }else{
       //place wind cardinal direction
       drawTextC(dir, 14, spaceBetweenDays * i + 30, 44/*220 - 18*/, barWidth /*50*/, 20)//, Color.white())  
     }
     //place wind speed
     drawTextC(windSpeed, 14, spaceBetweenDays * i + 30, 29/*220 - 32*/, barWidth /*50*/, 20,Color.white())
+    
+    drawTextC(windGust, 14, spaceBetweenDays * i + 30, 59/*220 - 32*/, barWidth /*50*/, 20,Color.white())
   }
 
   const condition = i == 0 ? weatherData.current.weather[0].id : hourData.weather[0].id
@@ -410,7 +456,8 @@ for (let i = 0; i <= hoursToShow; i++) {
 }
 
 widget.backgroundImage = (drawContext.getImage())
-widget.url = 'https://openweathermap.org'
+widget.url = cityId?`https://openweathermap.org/city/${cityId}`
+:'https://openweathermap.org'
 Script.complete()
 widget.presentMedium()
 
@@ -586,6 +633,7 @@ async function updateCheck(version){
 
 async function setup(full){
 
+//log(settings)
   if (!('apiKey' in settings) || settings.apiKey == ""){
     let q = new Alert()
     q.title='API Key'
@@ -630,7 +678,41 @@ async function setup(full){
       settings[i.key]=(a==0)?true:false
     }
   },undefined)  
-
+  log(JSON.stringify(settings))
   fm.writeString(settingsPath, JSON.stringify(settings))
   return true
+}
+
+async function tintSFSymbol(image, color) {
+  let html = `
+  <img id="image" src="data:image/png;base64,${Data.fromPNG(image).toBase64String()}" />
+  <canvas id="canvas"></canvas>
+  `;
+  
+  let js = `
+    let img = document.getElementById("image");
+    let canvas = document.getElementById("canvas");
+    let color = 0x${color.hex};
+
+    canvas.width = img.width;
+    canvas.height = img.height;
+    let ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0);
+    let imgData = ctx.getImageData(0, 0, img.width, img.height);
+    // ordered in RGBA format
+    let data = imgData.data;
+    for (let i = 0; i < data.length; i++) {
+      // skip alpha channel
+      if (i % 4 === 3) continue;
+      // bit shift the color value to get the correct channel
+      data[i] = (color >> (2 - i % 4) * 8) & 0xFF
+    }
+    ctx.putImageData(imgData, 0, 0);
+    canvas.toDataURL("image/png").replace(/^data:image\\/png;base64,/, "");
+  `;
+  
+  let wv = new WebView();
+  await wv.loadHTML(html);
+  let base64 = await wv.evaluateJavaScript(js);
+  return Image.fromData(Data.fromBase64String(base64));
 }
