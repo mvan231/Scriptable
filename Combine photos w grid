@@ -1,0 +1,110 @@
+
+// Variables used by Scriptable.
+// These must be at the very top of the file. Do not edit.
+// icon-color: deep-brown; icon-glyph: magic;
+
+/*
+* Combine images horizontally or vertically.
+* @param {Image[]} imgs The images to combine.
+* @param {string} method The method to use for combining the images. When this is "h", the images will be combined horizontally. Set to "v" for vertical combine. Set to "g" for a grid output
+* @param {number} spacing The spacing between images.
+* @returns {Image} The combined image.
+*/
+function combine(imgs, method, spacing = 0) {
+  const dc = new DrawContext();
+  let long_side = spacing * (imgs.length - 1);
+  log(`long_side start is: ${long_side}`)
+  let short_side = 0;
+  
+  let gridWidthCount = Math.ceil(Math.sqrt(imgs.length))
+  log(gridWidthCount)
+  let gridShortSidePH = 0, gridLongSidePH = 0
+  let counter = 1
+  
+  //determine needed size of DrawContext
+  for (const img of imgs) {
+    if (method == "v") {
+      long_side += img.size.height;
+      if (img.size.width > short_side) short_side = img.size.width;
+    } else if(method == "h") {
+      long_side += img.size.width;
+      if (img.size.height > short_side) short_side = img.size.height;
+    } else {
+      //it's a grid
+      gridShortSidePH += img.size.width;
+      if(img.size.height > gridLongSidePH)gridLongSidePH = img.size.height
+      log(`counter is:${counter}
+        gridLongSidePH is: ${gridLongSidePH}
+        long_side is: ${long_side}`)
+      if (counter == 1)        long_side+=gridLongSidePH
+      if (counter >= gridWidthCount){
+        if(gridShortSidePH > short_side)short_side = gridShortSidePH
+        counter = 0;
+        gridLongSidePH = 0
+        gridShortSidePH = 0
+      }
+      
+      
+    }
+
+    ++counter
+
+  }
+  
+  //create DrawContext based on determined size
+  if (method == "v" || method == "g") {
+    dc.size = new Size(short_side, long_side)
+  } else if(method == "h") {
+    dc.size = new Size(long_side, short_side);
+  }
+  
+  
+  //prepare variables for adding images to DrawContext
+  let long_position = 0;
+  let short_position = 0;
+  counter = 1;
+  gridLongSidePH = 0
+  gridShortSidePH = 0
+  
+  //start processing and adding images to DrawContext
+  for (const img of imgs) {
+    let r;
+    if (method == "v") {
+      r = new Rect(0, long_position, img.size.width, img.size.height);
+      long_position += img.size.height
+    } else if(method == "h") {
+      r = new Rect(long_position, 0, img.size.width, img.size.height);
+      long_position += img.size.width
+    }else {
+      //it's a grid
+      r = new Rect(short_position, long_position, img.size.width, img.size.height)
+      dc.drawImageInRect(img, r);
+      //gridShortSidePH += img.size.width;
+      if(img.size.height > gridLongSidePH)gridLongSidePH = img.size.height
+      log(`gridLongSidePH is: ${gridLongSidePH}`)
+      short_position += img.size.width
+      log(`2nd counter is:${counter}
+        long_position is: ${long_position}`)
+      if (counter >= gridWidthCount){
+        long_position += gridLongSidePH
+        short_position = 0
+        gridLongSidePH = 0
+        counter = 0
+      }
+    }//end grid portion of if statement
+  
+    if(method != 'g')dc.drawImageInRect(img, r);
+    //long_position += (method == "v") ? img.size.height : (method == "h")? img.size.width : ;
+  
+    if(method == "v" || method == "h")long_position += spacing;
+  
+    counter++
+  }//end for loop
+  
+  return dc.getImage();
+}
+
+let imgs= await Photos.latestPhotos(5)
+
+let fro = combine(imgs, "g")
+QuickLook.present(fro)
