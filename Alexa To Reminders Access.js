@@ -78,7 +78,12 @@ let r = new Request(url)
 let json = await r.loadJSON()
 //log(json)
 
-let itemArr = json[Object.keys(json)]["listItems"]
+let itemArr =[]
+
+for (let key of Object.keys(json)) {
+  console.log(json[key].listItems[0].value)
+  itemArr.push(json[key].listItems[0])
+}
 //log(itemArr)
 
 let newArr = itemArr.filter((item)=> {
