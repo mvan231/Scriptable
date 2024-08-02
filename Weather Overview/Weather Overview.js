@@ -12,6 +12,8 @@ modifications and new features added by mvan231
 ---
 version info
 ---
+v1.7
+- updated to openweather 3.0 API
 v1.6
 - added code to handle iOS 16 offloading files (the JSON settings file to be exact)
 - made adjustments to wind arrow placement
@@ -23,7 +25,7 @@ v1.6
 - added new method to color wind arrows
 ><><><><><><><><><><><*/
 //check for an update quick before building the widget
-let needUpdated = await updateCheck(1.6)
+let needUpdated = await updateCheck(1.7)
 
 /*><><><><><><><><><><><
 
@@ -46,7 +48,7 @@ if(!config.runsInWidget && fm.fileExists(settingsPath)){
       await fm.remove(settingsPath)
     }
 }
-
+/* REMOVED SETTINGS FILE DUE TO ICLOUD OFFLOADING ISSUES
 // log(`stored in iCloud? ${fm.isFileStoredIniCloud(settingsPath)}\n\nfile exists ${fm.fileExists(settingsPath)}`)
 if(fm.fileExists(settingsPath)){
   //if file exists check if it is downloaded. if not downloaded, then download the file// 
@@ -58,7 +60,11 @@ if(fm.fileExists(settingsPath)){
   settings = JSON.parse(fm.readString(settingsPath))
     
 }
+*/
+
 let set = await setup()
+
+settings = {"apiKey":"","units":"imperial","showWindspeed":true,"showWindArrow":true,"showPrecipitation":true,"showCloudCover":true,"showHumidity":true,"showLegend":true,"showAlerts":true}
 
 //settings variables initialization
 
@@ -203,7 +209,7 @@ try{
 
 try {
   log('trying to get data from API')
-  weatherData = await new Request("https://api.openweathermap.org/data/2.5/onecall?lat=" + LAT + "&lon=" + LON + "&exclude=minutely&units=" + units + "&lang=" + locale + "&appid=" + API_KEY).loadJSON()
+  weatherData = await new Request("https://api.openweathermap.org/data/3.0/onecall?lat=" + LAT + "&lon=" + LON + "&exclude=minutely&units=" + units + "&lang=" + locale + "&appid=" + API_KEY).loadJSON()
   localFm.writeString(cache, JSON.stringify(weatherData))
 } catch(e) {
   console.log("Offline mode")
