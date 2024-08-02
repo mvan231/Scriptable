@@ -1,4 +1,4 @@
 {
- "version":"1.6",
- "notes":"- added code to handle iOS 16 offloading files (the JSON settings file to be exact\n- made adjustments to wind arrow placement\n- remove ° from temperature display to allow more hours / days to be displayed\n- (need to start) Add option for charting low and high temps as a line (for daily view)\n- (need to start) add widget parameter option for hours of forecast to display\n- added wind gust under the wind direction\n- trying better city ID method for tap on widget url\n- added new method to color wind arrows"
+ "version":"1.7",
+ "notes":"- updated to openweather 3.0 API\n- Removed settings file due to iCloud offloading files unnecessarily"
 }
