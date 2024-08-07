@@ -12,6 +12,9 @@ modifications and new features added by mvan231
 ---
 version info
 ---
+v1.8
+- fixed issue with alert for settings
+- settings file removal
 v1.7
 - updated to openweather 3.0 API
 v1.6
@@ -25,19 +28,20 @@ v1.6
 - added new method to color wind arrows
 ><><><><><><><><><><><*/
 //check for an update quick before building the widget
-let needUpdated = await updateCheck(1.7)
+let needUpdated = await updateCheck(1.8)
 
 /*><><><><><><><><><><><
 
 Start of Setup
 
 ><><><><><><><><><><><*/
-let fm = FileManager.iCloud()
-let settingsPath = fm.documentsDirectory()+'/weatherOverviewSettings.JSON'
-log(settingsPath)
+//let fm = FileManager.iCloud()
+//let settingsPath = fm.documentsDirectory()+'/weatherOverviewSettings.JSON'
 let a, settings ={}
 
-if(!config.runsInWidget && fm.fileExists(settingsPath)){
+settings = {"apiKey":"3b70d09bec54f8b555452513fd4be001","units":"imperial","showWindspeed":true,"showWindArrow":true,"showPrecipitation":true,"showCloudCover":true,"showHumidity":true,"showLegend":true,"showAlerts":true}
+
+/*if(!config.runsInWidget && fm.fileExists(settingsPath)){
     let resetQ = new Alert()
     resetQ.title='Want to reset?'
     resetQ.message='If you tap "Yes" below, the settings for this widget will be reset and setup will run again'  
@@ -48,6 +52,7 @@ if(!config.runsInWidget && fm.fileExists(settingsPath)){
       await fm.remove(settingsPath)
     }
 }
+*/
 /* REMOVED SETTINGS FILE DUE TO ICLOUD OFFLOADING ISSUES
 // log(`stored in iCloud? ${fm.isFileStoredIniCloud(settingsPath)}\n\nfile exists ${fm.fileExists(settingsPath)}`)
 if(fm.fileExists(settingsPath)){
@@ -62,9 +67,7 @@ if(fm.fileExists(settingsPath)){
 }
 */
 
-let set = await setup()
-
-settings = {"apiKey":"","units":"imperial","showWindspeed":true,"showWindArrow":true,"showPrecipitation":true,"showCloudCover":true,"showHumidity":true,"showLegend":true,"showAlerts":true}
+//let set = await setup()
 
 //settings variables initialization
 
