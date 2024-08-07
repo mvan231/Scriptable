@@ -1,4 +1,4 @@
 {
- "version":"1.7",
- "notes":"- updated to openweather 3.0 API\n- Removed settings file due to iCloud offloading files unnecessarily"
+ "version":"1.8",
+ "notes":"- fixed issue with alert for settings\n- settings file removal"
 }
