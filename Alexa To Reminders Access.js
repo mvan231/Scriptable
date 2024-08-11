@@ -46,30 +46,30 @@ let html = await wv.getHTML()
 
 let n = new Notification()
 
-log(`index of "Sign in" is ${html.indexOf("Sign in")}`)
+if(config.runsInApp)log(`index of "Sign in" is ${html.indexOf("Sign in")}`)
 
 if(html.indexOf("Sign in")<0 ){
-  log("logged in")
+  if(config.runsInApp)log("logged in")
 }else{
-  log("not logged in")
+  if(config.runsInApp)log("not logged in")
   n.title = 'Alexa Reminder Sync'
   n.body = `You appear not logged in, run in app to login to Amazon within Scriptable`
   n.schedule()
-  await wv.present(false)
+  if(config.runsInApp)await wv.present(false)
 }
 
 //empty html and wv variable
 html = ""
 wv = ""
 
-//initialize the lastCreatedDateTime variable from file if it exists
+//initialize the AlexaLastCreatedDateTime variable from file if it exists
 let fm = FileManager.iCloud()
 let path = fm.documentsDirectory()
-path = `${path}/lastCreatedDateTime.txt`
-log(path)
+path = `${path}/AlexaLastCreatedDateTime.txt`
+if(config.runsInApp)log(`file path is ${path}`)
 
 let lastDate = fm.fileExists(path)?fm.readString(path):0
-log(`lastDate is ${lastDate}`)
+if(config.runsInApp)log(`lastDate file is ${lastDate}`)
 
 //perform the request to the Amazon Alexa Shopping List API
 url = "https://amazon.com/alexashoppinglists/api/getlistitems"
@@ -82,15 +82,16 @@ let itemArr = json[Object.keys(json)]["listItems"]
 //log(itemArr)
 
 let newArr = itemArr.filter((item)=> {
-  log(`completed? ${item["completed"]}\n date after stored? ${item["createdDateTime"]>lastDate}`)
+  if(config.runsInApp)log(`${item["value"]}\n is completed? ${item["completed"]}\n date is after last stored/ran? ${item["createdDateTime"]>lastDate}`)
   if((!item["completed"]) && (item["createdDateTime"]>lastDate)) return true
   return false
 })
 
 let result = []
-log(newArr)
+//show new array in console
+if(config.runsInApp)log(newArr)
 newArr.forEach((item) => {
-  log(`saving ${item["value"]} to reminders\newSaveDate is ${item["createdDateTime"]}`)
+  if(config.runsInApp)log(`saving ${item["value"]} to reminders\n newSaveDate is ${item["createdDateTime"]}`)
 
   let rem = new Reminder()
   rem.title = item["value"]
