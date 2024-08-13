@@ -164,13 +164,18 @@
     * See how many pending notifications you have in the Scriptable app and choose from them to remove them, or alternatively, remove them all with one button.
  
 * ### [Alexa to Reminders Access.js](Alexa%20To%20Reminders%20Access.js)
-    * Purpose: To sync alexa reminders to a iOS reminders list. previously IFTTT could do this, but Amazon revoked the Alexa IFTTT integration recently.
 
-    * Setup: Insert the name of the desired reminders list in the "remCal" line. I use "Grocery and Shopping" with my wife, so i have that name entered.
+  * Purpose: To sync alexa reminders to a iOS reminders list. previously IFTTT could do this, but Amazon revoked the Alexa IFTTT integration recently.
 
-    * When running the first time, the script will check if you are logged in. If not, it will notify and present with login page. After that, the script should run seamlessly. 
+  * Setup: 
+    - Insert the Amazon base url your country uses (if different from default) in the "baseURL" variable below
+    - Insert the name of the desired reminders list in the "reminderListName" line. I use "Grocery and Shopping" with my wife, so i have that name entered.
+    - Insert the wording for "Sign In" for the signInKeyvariable below. sometimes this varies based on region
+    - For proper naming preference, please use the withVar and withoutVar for your local language to proeprly set naming of the reminders to be created
 
-    * When running and items are found to sync, it will show a notification with the items that were added to reminders.
+
+  * When running the first time, the script will check if you are logged in. If not, it will notify and present with login page. After that, the script should run seamlessly.
+
 
 ## Utilites (from others)
 ---
