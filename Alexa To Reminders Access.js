@@ -1,37 +1,6 @@
 // Variables used by Scriptable.
 // These must be at the very top of the file. Do not edit.
-// icon-color: purple; icon-glyph: magic;
-/*
-$$$$$$$$$$$$$$$$$$$$$$$
-$$$$$$$$$$
-
-Alexa To Reminders Access
-
-Script made by: mvan231
-Date made: 2023/10/26
-
-Purpose: To sync alexa reminders to a iOS reminders list. previously IFTTT could do this, but Amazon revoked the Alexa IFTTT integration recently.
-
-Setup: Insert the name of the desired reminders list in the "remCal" line. I use "Grocery and Shopping" with my wife, so i have that name entered.
-
-When running the first time, the script will check if you are logged in. If not, it will notify and present with login page. After that, the script should run seamlessly. 
-
-When running and items are found to sync, it will show a notification with the items that were added to reminders.
-
-$$$$$$$$$$
-$$$$$$$$$$$$$$$$$$$$$$$
-
-$$$$$$$$$$$$$$$$$$$$$$$
-$$$$$$$$$$
-
-Version Info:
-v4:modified the wv at beginning to use a variable for the response to aid with crashing
-v3:working version with notification for synced items
-
-$$$$$$$$$$
-$$$$$$$$$$$$$$$$$$$$$$$
-*/
-
+// icon-color: brown; icon-glyph: magic;
 //set baseURL based on your home country url
 const baseURL = 'https://www.amazon.com'
 const reminderListName = 'Grocery and Shopping'
