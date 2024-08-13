@@ -32,83 +32,105 @@ $$$$$$$$$$
 $$$$$$$$$$$$$$$$$$$$$$$
 */
 
-//fill in the specific name of the reminders list in the "remCal" line below
-let remCal = await Calendar.forRemindersByTitle("Grocery and Shopping")
+//set baseURL based on your home country url
+const baseURL = 'https://www.amazon.com'
+const reminderListName = 'Grocery and Shopping'
+//signInKey should be specific for your language. English uses "Sign In". German uses "Anmelden"
+const signInKey = "Sign In"
 
-let url = 'https://www.amazon.com'
+main();
+Script.complete();
 
-let wv = new WebView()
-let wvRes = await wv.loadURL(url)
-//await wv.present(false)
+async function checkIfUserIsAuthenticated() {
+  try {
+    const url = `${baseURL}/alexashoppinglists/api/getlistitems`;
+    const request = new Request(url);
+    await request.load();
 
-let html = await wv.getHTML()
-//log(html)
+    if (request.response.statusCode === 401 || request.response.statusCode === 403) {
+      return false;
+    }
 
-let n = new Notification()
-
-if(config.runsInApp)log(`index of "Sign in" is ${html.indexOf("Sign in")}`)
-
-if(html.indexOf("Sign in")<0 ){
-  if(config.runsInApp)log("logged in")
-}else{
-  if(config.runsInApp)log("not logged in")
-  n.title = 'Alexa Reminder Sync'
-  n.body = `You appear not logged in, run in app to login to Amazon within Scriptable`
-  n.schedule()
-  if(config.runsInApp)await wv.present(false)
+    return true;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
 }
 
-//empty html and wv variable
-html = ""
-wv = ""
-
-//initialize the AlexaLastCreatedDateTime variable from file if it exists
-let fm = FileManager.iCloud()
-let path = fm.documentsDirectory()
-path = `${path}/AlexaLastCreatedDateTime.txt`
-if(config.runsInApp)log(`file path is ${path}`)
-
-let lastDate = fm.fileExists(path)?fm.readString(path):0
-if(config.runsInApp)log(`lastDate file is ${lastDate}`)
-
-//perform the request to the Amazon Alexa Shopping List API
-url = "https://amazon.com/alexashoppinglists/api/getlistitems"
-let r = new Request(url)
-
-let json = await r.loadJSON()
-//log(json)
-
-let itemArr = json[Object.keys(json)]["listItems"]
-//log(itemArr)
-
-let newArr = itemArr.filter((item)=> {
-  if(config.runsInApp)log(`${item["value"]}\n is completed? ${item["completed"]}\n date is after last stored/ran? ${item["createdDateTime"]>lastDate}`)
-  if((!item["completed"]) && (item["createdDateTime"]>lastDate)) return true
-  return false
-})
-
-let result = []
-//show new array in console
-if(config.runsInApp)log(newArr)
-newArr.forEach((item) => {
-  if(config.runsInApp)log(`saving ${item["value"]} to reminders\n newSaveDate is ${item["createdDateTime"]}`)
-
-  let rem = new Reminder()
-  rem.title = item["value"]
-  result.push(rem.title)
-  rem.calendar = remCal
-  rem.save()
-  if(item["createdDateTime"]>lastDate)lastDate=item["createdDateTime"]
-})
-
-fm.writeString(path, String(lastDate))
-
-if(result.length > 0){
-  n = new Notification()
-  n.title = 'Alexa Reminder Sync'
-  n.body = `added to reminders:\n${result}`
-  n.schedule()
+async function makeLogin() {
+  const url = `${baseURL}`;
+  const webView = new WebView();
+  
+  try {
+    await webView.loadURL(url);
+    const html = await webView.getHTML();
+    
+    if (html.includes(signInKey)) {
+      await webView.present(false);
+      return false;
+    } 
+    
+    return true;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
 }
 
-//end of script
-Script.complete()
+async function synchronizeReminders() {
+  try {
+    const reminderCalendar = await Calendar.forRemindersByTitle(reminderListName);
+
+    const url = `${baseURL}/alexashoppinglists/api/getlistitems`;
+    const deleteUrl = `${baseURL}/alexashoppinglists/api/deletelistitem`;
+    const json = await new Request(url).loadJSON();
+    const listItems = json[Object.keys(json)[0]].listItems;
+    const existingReminders = await Reminder.all([reminderCalendar]);
+
+    for (const item of listItems) {
+      const reminderTitle = item.value.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+      const reminderExists = existingReminders.some(reminder => reminder.title === reminderTitle);
+
+      if (!reminderExists) {
+        const reminder = new Reminder();
+        reminder.title = reminderTitle;
+        reminder.calendar = reminderCalendar;
+        await reminder.save();
+
+      }
+
+      const request = new Request(deleteUrl);
+      request.method = "DELETE";
+      request.headers = {
+        "Content-Type": "application/json"
+      };
+      request.body = JSON.stringify(item);
+      
+      try {
+        const response = await request.loadString();
+      } catch (deleteError) {
+        console.error(deleteError);
+      }
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+
+async function main() {
+  const isAuthenticated = await checkIfUserIsAuthenticated();
+  log(`authenticated? ${isAuthenticated}`);
+  
+  if (!isAuthenticated) {
+    const loggedIn = await makeLogin();
+    log(`loggedIn? ${loggedIn}`);
+    if (!loggedIn) {
+      console.log('Login failed. Exiting.');
+      return;
+    }
+  }
+
+  await synchronizeReminders();
+}
