@@ -16,7 +16,7 @@ Setup:
   - Insert the Amazon base url your country uses (if different from default) in the "baseURL" variable below
   - Insert the name of the desired reminders list in the "reminderListName" line. I use "Grocery and Shopping" with my wife, so i have that name entered.
   - Insert the wording for "Sign In" for the signInKeyvariable below. sometimes this varies based on region
-  - For proper naming preference, please use the withVar and withoutVar for your local language to proeprly set naming of the reminders to be created
+  - For proper naming preference, please use the withVar and withoutVar for your local language to properly set naming of the reminders to be created
 
 
 When running the first time, the script will check if you are logged in. If not, it will notify and present with login page. After that, the script should run seamlessly.
@@ -30,6 +30,8 @@ $$$$$$$$$$
 Version Info:
 v5 used code from user andereeicheln0z frok github repo issue linked below to inprove performance
 https://github.com/mvan231/Scriptable/issues/25
+
+v6 updated if statement from withVariable to withVar so it works properly
 
 $$$$$$$$$$
 $$$$$$$$$$$$$$$$$$$$$$$
@@ -102,7 +104,7 @@ async function synchronizeReminders() {
 
     for (const item of listItems) {
       const reminderTitle = item.value.split(' ').map(word => {
-        if (word.toLowerCase() === withVariable || word.toLowerCase() === withoutVar) {
+        if (word.toLowerCase() === withVar || word.toLowerCase() === withoutVar) {
           return word.toLowerCase();
         } else {
           return word.charAt(0).toUpperCase() + word.slice(1);
