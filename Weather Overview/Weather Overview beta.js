@@ -306,17 +306,19 @@ if(showPrecipitation){
     percentageLinesDrawn = true
   }
 
-
-
   //gather precipitation data
-  var maxPrecip,precips = []
-
-  maxPrecip = units=='imperial'? param=='daily'?0.8:0.2:param=='daily'?20:5
+  //var precips = []
+  const maxPrecip = (units === 'imperial') ? (param === 'daily' ? 0.8 : 0.2) : (param === 'daily' ? 20 : 5);
+  //maxPrecip = units=='imperial'? param=='daily'?0.8:0.2:param=='daily'?20:5
 
   drawAmountLabels()
-
-  hourData = (param=='daily')?weatherData.daily:weatherData.hourly;
-  hourData.map(function(item,index){
+  //add label for percentage
+  if(showLegend)drawTextC("precPrb", 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 220,showWindspeed?5:25,180,20,new Color('1fb2b7',0.9))
+  //add label for amount
+  if(showLegend)drawTextC("precAmt", 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 150,showWindspeed?5:25,180,20,new Color(precipAmountColor,0.8))
+	  
+  //hourData = (param=='daily')?weatherData.daily:weatherData.hourly;
+/*  hourData.map(function(item,index){
     if(index <= hoursToShow){
       let itemT = ('rain' in item)?'rain':('snow' in item)?'snow':false
       if(itemT){
@@ -331,8 +333,9 @@ if(showPrecipitation){
       }
     }
   })
+*/
 
-  
+/*  
 	for (let i = 0; i <= hoursToShow; i++) {
     //mm to inch factor = 394/10000 //factor is 0.0394 mm to 1 inch
     let rain = 'rain' in hourData[i]
@@ -358,12 +361,13 @@ if(showPrecipitation){
       if(showLegend)drawTextC("precAmt", 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 150,showWindspeed?5:25,180,20,new Color(precipAmountColor,0.8))
 
     //}
+
     //draw the percentage of precipitation bar with the cyan blue color. If there is precipitation amount for the current timeframe, then use halfwidth, if not, use fullwidth
     drawPOP(spaceBetweenDays * i,barH, barWidth*0.5/**(precipAmount?0.5:1)*/, '1fb2b7',0.6)//0.8)//value reduced
   }
+*/
 
-  //add label for percentage
-  if(showLegend)drawTextC("precPrb", 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 220,showWindspeed?5:25,180,20,new Color('1fb2b7',0.9))
+
 
 }
 //end adding precipitation POP and amount
@@ -391,6 +395,10 @@ for (let i = 0; i <= hoursToShow; i++) {
     drawLine(spaceBetweenDays * (i) + xStart + (barWidth/2), yPos/*175 - (50 * delta)*/,spaceBetweenDays * (i + 1) + xStart + (barWidth/2), yPosNext/*175 - (50 * nextDelta)*/, 1,new Color(Color.magenta().hex,0.9))
 
   //end humidity
+  
+  //start precip
+    drawPrecipitation(hourData[i], i)
+  //end precip
   
   //start temp and date/time
   let nextHourTemp = shouldRound(roundedGraph, (param=='daily')?hourData[i+1]['temp']['max']:  hourData[i + 1].temp);
@@ -552,6 +560,27 @@ function drawText(text, fontSize, x, y, color = Color.black()) {
 
 function drawImage(image, x, y) {
   drawContext.drawImageAtPoint(image, new Point(x, y))
+}
+
+function drawPrecipitation(data, i) {
+  
+    if (i > hoursToShow) return;
+    
+    let precipAmount = data.rain ? data.rain * mmToInch : data.snow ? data.snow * mmToInch : 0;
+    const pop = data.pop * 100;
+    const barHeight = ((220 - 60) / 100) * pop;
+    const precipBarHeight = ((220 - 60) / 100) * (100 * (precipAmount / maxPrecip));
+
+    if (precipAmount > maxPrecip) precipAmount = maxPrecip;
+
+    const color = data.snow ? 'FFFFFF' : '6495ED';
+    const xPos = spaceBetweenDays * i + (barWidth * 0.5);
+
+    // Draw precipitation amount
+    drawPOP(xPos, precipBarHeight, barWidth * 0.5, color, 0.8);
+
+    // Draw precipitation probability
+    drawPOP(spaceBetweenDays * i, barHeight, barWidth * 0.5, '1fb2b7', 0.6);
 }
 
 function drawPOP(/*POP,*/ x, barH, barW,color,alpha=1){
