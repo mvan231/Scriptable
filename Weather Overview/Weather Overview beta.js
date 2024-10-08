@@ -28,7 +28,7 @@ Start of Setup
 
 ><><><><><><><><><><><*/
 
-let settings = {
+/*let settings = {
   "apiKey":"3b70d09bec54f8b555452513fd4be001",
   "units":"imperial",
   "showWindspeed": true,
@@ -38,7 +38,26 @@ let settings = {
   "showHumidity": true,
   "showLegend": true,
   "showAlerts": true
-}
+}*/
+const localFm = FileManager.local();
+const settingsPath = localFm.documentsDirectory() + '/weatherOverviewSettings.json';
+let settings = {};
+loadSettings();
+await promptSettings();
+
+if(config.runsInApp)await promptResetSettings();
+
+/*let settings = {
+  apiKey: "",
+  units: "",
+  showWindspeed: true,
+  showWindArrow: true,
+  showPrecipitation: true,
+  showCloudCover: true,
+  showHumidity: true,
+  showLegend: true,
+  showAlerts: true
+};*/
 
 //settings variables initialization
 
@@ -579,60 +598,88 @@ async function updateCheck(version){
   /*
   #####
   End Update Check
-  #####g
+  #####
   */
 }
 
-async function setup(full){
-
-//log(settings)
-  if (!('apiKey' in settings) || settings.apiKey == ""){
-    let q = new Alert()
-    q.title='API Key'
-    q.message='Please paste in your OpenWeatherMap API Key'   
-    q.addTextField('API Key',Pasteboard.paste())
-    q.addAction("Done")
-    await q.present()
-    if(q.textFieldValue(0).length < 1)throw new Error("You must enter an API Key, please copy to clipboard and try again")
-    settings.apiKey = q.textFieldValue(0)
-    //write the settings to iCloud Drive  
-    fm.writeString(settingsPath, JSON.stringify(settings))    
-  }
-
-  if (!('units' in settings)){
-    let q = new Alert()
-    q.title="Units"
-    q.addAction("Imperial")
-    q.addAction("Metric")
-    a=await q.presentSheet()
-    settings['units'] = (a==0)?'imperial':'metric'
-  }
-
-  let quests = [{'key':'showWindspeed',
-  'q':'Do you want display the windspeed on the widget?'},
-  {'key':'showWindArrow','q':'If using windspeed, do you want to display the wind direction as an arrow?'},
-  {'key':'showPrecipitation','q':'Do you want to display precipitation information?'},
-  {'key':'showCloudCover','q':'Do you want to show the line display of the cloud cover?'},
-  {'key':'showHumidity','q':'Do you want to show the line display of the humidity level?'},
-  {'key':'showLegend','q':'Do you want to display the legend at the top of the widget?'},
-  {'key':'showAlerts','q':'Do you want to show alerts in your area? A yellow warning triangle for each weather alert in your area will be displayed. Tapping the widget will take you to the OpenWeather page in Safari.'}]
-
-  await quests.reduce(async (memo,i)=>{
-    await memo
-
-    if(!(i.key in settings)){
-      let q = new Alert()
-      q.message=String(i.q)
-      q.title='Setup'
-      q.addAction('Yes')
-      q.addAction('No')
-      a=await q.presentSheet()
-      settings[i.key]=(a==0)?true:false
+function loadSettings() {
+  try {
+    if (localFm.fileExists(settingsPath)) {
+      settings = JSON.parse(localFm.readString(settingsPath));
     }
-  },undefined)  
-  if(config.runsInApp)log(JSON.stringify(settings))
-  fm.writeString(settingsPath, JSON.stringify(settings))
-  return true
+  } catch (e) {
+    if (config.runsInApp) log(`Failed to load settings: ${e}`);
+  }
+}
+
+function saveSettings() {
+  try {
+    localFm.writeString(settingsPath, JSON.stringify(settings));
+  } catch (e) {
+    if (config.runsInApp) log(`Failed to save settings: ${e}`);
+  }
+}
+
+async function promptSettings() {
+  const settingsPrompts = [
+    { key: 'apiKey', question: 'Please paste in your OpenWeatherMap API Key', type: 'text' },
+    { key: 'units', question: 'Choose units:', type: 'selection', options: ['Imperial', 'Metric'] },
+    { key: 'showWindspeed', question: 'Display the windspeed on the widget?', type: 'boolean' },
+    { key: 'showWindArrow', question: 'Display the wind direction as an arrow?', type: 'boolean' },
+    { key: 'showPrecipitation', question: 'Display precipitation information?', type: 'boolean' },
+    { key: 'showCloudCover', question: 'Show the line display of the cloud cover?', type: 'boolean' },
+    { key: 'showHumidity', question: 'Show the line display of the humidity level?', type: 'boolean' },
+    { key: 'showLegend', question: 'Display the legend at the top of the widget?', type: 'boolean' },
+    { key: 'showAlerts', question: 'Show alerts in your area?', type: 'boolean' }
+  ];
+
+  for (const prompt of settingsPrompts) {
+    if (!(prompt.key in settings) || !settings[prompt.key]) {
+      const q = new Alert();
+      q.title = 'Setup';
+      q.message = prompt.question;
+
+      if (prompt.type === 'text') {
+        q.addTextField('', Pasteboard.paste());
+        q.addAction('Done');
+        await q.present();
+        settings[prompt.key] = q.textFieldValue(0);
+      } else if (prompt.type === 'selection') {
+        for (const option of prompt.options) {
+          q.addAction(option);
+        }
+        const choice = await q.presentSheet();
+        settings[prompt.key] = prompt.options[choice].toLowerCase();
+      } else if (prompt.type === 'boolean') {
+        q.addAction('Yes');
+        q.addAction('No');
+        const choice = await q.presentSheet();
+        settings[prompt.key] = (choice === 0);
+      }
+    }
+  }
+
+  saveSettings();
+}
+
+async function promptResetSettings() {
+  const resetAlert = new Alert();
+  resetAlert.title = 'Reset Settings';
+  resetAlert.message = 'Do you want to reset the settings?';
+  resetAlert.addAction('Yes');
+  resetAlert.addAction('No');
+  const choice = await resetAlert.presentAlert();
+
+  if (choice === 0) {
+    resetSettings();
+  }
+}
+
+async function resetSettings() {
+  settings = {};
+  saveSettings();
+  if (config.runsInApp) log('Settings have been reset.');
+  await promptSettings();  // Re-run the settings questions
 }
 
 async function tintSFSymbol(image, color) {
@@ -673,3 +720,4 @@ function logTime(label, startTime) {
   const duration = (Date.now() - startTime) / 1000;
   console.log(`${label} took: ${duration}s`);
 }
+
