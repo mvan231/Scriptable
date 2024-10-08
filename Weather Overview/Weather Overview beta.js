@@ -14,6 +14,7 @@ version info
 ---
 v1.9beta
 - made log lines only work when run in app
+- revised code to be more efficient by removing unnecessary extra repeats
 v1.8
 - fixed issue with alert for settings
 - settings file removal
@@ -114,7 +115,7 @@ End of Setup
 
 //param must be == 'daily' for the daily forecast to be shown. Below, thr variable 'param' is set to the widgetParameter, which can be modified when choosing the script from thr widget configurator screen. 
 let param = args.widgetParameter
-
+param ="daily"
 //the commented code on the line below will force the daily display to be shown
 //param='daily'
 
@@ -261,17 +262,7 @@ if(showCloudCover){
     percentageLinesDrawn = true
   }
   if(showLegend)drawTextC("cld", 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 310,showWindspeed?5:25,180,20,new Color(Color.white().hex,0.9))
- /*
-  hourData = (param=='daily')?weatherData.daily:weatherData.hourly;
-  for (let i = 0; i < hoursToShow; i++) {
 
-    let cloudCover = (param!='daily' && i==0)?weatherData.current.clouds : hourData[i].clouds
-    let cloudCoverNext = hourData[i+1].clouds
-    let yPos = 220-(((220-60)/100) * cloudCover)
-    let yPosNext = 220-(((220-60)/100) * cloudCoverNext)
-    drawLine(spaceBetweenDays * (i) + xStart + (barWidth/2), yPos/*175 - (50 * delta)*/,(spaceBetweenDays * (i + 1)) + xStart + (barWidth/2), yPosNext/*175 - (50 * nextDelta)*/, 1,new Color(Color.white().hex,0.9))
-  }
- */
 }
 //end cloud cover line
 
@@ -283,18 +274,7 @@ if(showHumidity){
   }
   if(showLegend)drawTextC("hum", 16, mediumWidgetWidth - 275,showWindspeed?5:25,180,20,new Color(Color.magenta().hex,0.9))
 	  
-  /*
-  hourData = (param=='daily')?weatherData.daily:weatherData.hourly;
-  for (let i = 0; i < hoursToShow; i++) {
 
-    let humidity = (param!='daily' && i==0)?weatherData.current.humidity : hourData[i].humidity
-    let humidityNext = hourData[i+1].humidity
-    let yPos = 220-(((220-60)/100) * humidity)
-    let yPosNext = 220-(((220-60)/100) * humidityNext)
-    drawLine(spaceBetweenDays * (i) + xStart + (barWidth/2), yPos/*175 - (50 * delta)*/,spaceBetweenDays * (i + 1) + xStart + (barWidth/2), yPosNext/*175 - (50 * nextDelta)*/, 1,new Color(Color.magenta().hex,0.9))
-
-  }
-  */
 }
 //end humidity line
 
@@ -308,64 +288,15 @@ if(showPrecipitation){
 
   //gather precipitation data
   //var precips = []
-  const maxPrecip = (units === 'imperial') ? (param === 'daily' ? 0.8 : 0.2) : (param === 'daily' ? 20 : 5);
+  var maxPrecip = (units === 'imperial') ? (param === 'daily' ? 0.8 : 0.2) : (param === 'daily' ? 20 : 5);
   //maxPrecip = units=='imperial'? param=='daily'?0.8:0.2:param=='daily'?20:5
 
   drawAmountLabels()
   //add label for percentage
   if(showLegend)drawTextC("precPrb", 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 220,showWindspeed?5:25,180,20,new Color('1fb2b7',0.9))
-  //add label for amount
-  if(showLegend)drawTextC("precAmt", 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 150,showWindspeed?5:25,180,20,new Color(precipAmountColor,0.8))
+
 	  
-  //hourData = (param=='daily')?weatherData.daily:weatherData.hourly;
-/*  hourData.map(function(item,index){
-    if(index <= hoursToShow){
-      let itemT = ('rain' in item)?'rain':('snow' in item)?'snow':false
-      if(itemT){
-        if (typeof item[itemT] === 'object' && '1h' in item[itemT])
-        {
-          let amount = item[itemT]
-          item[itemT]=amount['1h']
-    
-          weatherData.hourly[index]=item
-        }
-        //if(itemT) precips.push((item[itemT]*mmToInch).toFixed(2))
-      }
-    }
-  })
-*/
 
-/*  
-	for (let i = 0; i <= hoursToShow; i++) {
-    //mm to inch factor = 394/10000 //factor is 0.0394 mm to 1 inch
-    let rain = 'rain' in hourData[i]
-    if(rain)rain = Number(hourData[i].rain * mmToInch).toFixed(2)
-    let snow = ('snow' in hourData[i])
-    if(snow)snow = Number(hourData[i].snow * mmToInch).toFixed(2)
-    let pop = hourData[i].pop * 100
-    let barH = ((220-60)/100) * pop
-    let precipAmount,precipType
-    var precipAmountColor
-	
-    //if there is amount of snow or rain, plot them with bars. 
-    //if(snow>0|rain>0){//always drawing amount column
-       precipAmount = snow?snow:rain
-       if(precipAmount>maxPrecip)precipAmount=maxPrecip
-       precipType = snow?'snow':'rain'
-	  precipAmountColor = (precipType == 'snow')?'FFFFFF':'6495ED'
-      let precipBarH = ((220-60)/100)*(100*(precipAmount/maxPrecip))
-      //draw the amount of precipitation with the bar info calculated above 
-	 drawPOP((spaceBetweenDays * i)+(barWidth*0.5),precipBarH, barWidth*0.5, precipAmountColor,0.8)
-     
-      //add label for amount
-      if(showLegend)drawTextC("precAmt", 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 150,showWindspeed?5:25,180,20,new Color(precipAmountColor,0.8))
-
-    //}
-
-    //draw the percentage of precipitation bar with the cyan blue color. If there is precipitation amount for the current timeframe, then use halfwidth, if not, use fullwidth
-    drawPOP(spaceBetweenDays * i,barH, barWidth*0.5/**(precipAmount?0.5:1)*/, '1fb2b7',0.6)//0.8)//value reduced
-  }
-*/
 
 
 
@@ -390,8 +321,8 @@ for (let i = 0; i <= hoursToShow; i++) {
   //start humidity
     let humidity = (param!='daily' && i==0)?weatherData.current.humidity : hourData[i].humidity
     let humidityNext = hourData[i+1].humidity
-    let yPos = 220-(((220-60)/100) * humidity)
-    let yPosNext = 220-(((220-60)/100) * humidityNext)
+    yPos = 220-(((220-60)/100) * humidity)
+    yPosNext = 220-(((220-60)/100) * humidityNext)
     drawLine(spaceBetweenDays * (i) + xStart + (barWidth/2), yPos/*175 - (50 * delta)*/,spaceBetweenDays * (i + 1) + xStart + (barWidth/2), yPosNext/*175 - (50 * nextDelta)*/, 1,new Color(Color.magenta().hex,0.9))
 
   //end humidity
@@ -581,6 +512,14 @@ function drawPrecipitation(data, i) {
 
     // Draw precipitation probability
     drawPOP(spaceBetweenDays * i, barHeight, barWidth * 0.5, '1fb2b7', 0.6);
+    
+  //add label for amount
+  var amtLabel = 0
+  if(showLegend && amtLabel == 0){
+    drawTextC("precAmt", 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 150,showWindspeed?5:25,180,20,new Color(color,0.8))
+    amtLabel = 1
+  }
+
 }
 
 function drawPOP(/*POP,*/ x, barH, barW,color,alpha=1){
