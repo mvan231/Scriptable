@@ -12,62 +12,43 @@ modifications and new features added by mvan231
 ---
 version info
 ---
+v1.9
+- made log lines only work when run in app
+- revised code to be more efficient by removing unnecessary extra repeats and condensing the settings
+- reimplemented settings questions
 v1.8
 - fixed issue with alert for settings
 - settings file removal
-v1.7
-- updated to openweather 3.0 API
-v1.6
-- added code to handle iOS 16 offloading files (the JSON settings file to be exact)
-- made adjustments to wind arrow placement
-- remove ° from temperature display to allow more hours / days to be displayed
-- (need to start) Add option for charting low and high temps as a line (for daily view)
-- (need to start) add widget parameter option for hours of forecast to display
-- added wind gust under the wind direction
-- trying better city ID method for tap on widget url
-- added new method to color wind arrows
 ><><><><><><><><><><><*/
 //check for an update quick before building the widget
-let needUpdated = await updateCheck(1.8)
+let needUpdated = await updateCheck(1.9)
 
 /*><><><><><><><><><><><
 
 Start of Setup
 
 ><><><><><><><><><><><*/
-//let fm = FileManager.iCloud()
-//let settingsPath = fm.documentsDirectory()+'/weatherOverviewSettings.JSON'
-let a, settings ={}
 
-settings = {"apiKey":"3b70d09bec54f8b555452513fd4be001","units":"imperial","showWindspeed":true,"showWindArrow":true,"showPrecipitation":true,"showCloudCover":true,"showHumidity":true,"showLegend":true,"showAlerts":true}
 
-/*if(!config.runsInWidget && fm.fileExists(settingsPath)){
-    let resetQ = new Alert()
-    resetQ.title='Want to reset?'
-    resetQ.message='If you tap "Yes" below, the settings for this widget will be reset and setup will run again'  
-    resetQ.addAction('Yes')
-    resetQ.addAction('No')
-    a = await resetQ.presentSheet()
-    if(a=='0'){
-      await fm.remove(settingsPath)
-    }
-}
-*/
-/* REMOVED SETTINGS FILE DUE TO ICLOUD OFFLOADING ISSUES
-// log(`stored in iCloud? ${fm.isFileStoredIniCloud(settingsPath)}\n\nfile exists ${fm.fileExists(settingsPath)}`)
-if(fm.fileExists(settingsPath)){
-  //if file exists check if it is downloaded. if not downloaded, then download the file// 
-// log(`file is downloaded? ${fm.isFileDownloaded(settingsPath)}`)
-  //file always showning as downloded even if it isnt.
-  if(!fm.isFileDownloaded(settingsPath))fm.downloadFileFromiCloud(settingsPath)
-  
-  //log(fm.readString(settingsPath))
-  settings = JSON.parse(fm.readString(settingsPath))
-    
-}
-*/
+const localFm = FileManager.local();
+const settingsPath = localFm.documentsDirectory() + '/weatherOverviewSettings.json';
+let settings = {};
+loadSettings();
+await promptSettings();
 
-//let set = await setup()
+if(config.runsInApp)await promptResetSettings();
+
+/*settings = {
+  apiKey: "",//api key
+  units: "",//imperial or metric
+  showWindspeed: true,
+  showWindArrow: true,
+  showPrecipitation: true,
+  showCloudCover: true,
+  showHumidity: true,
+  showLegend: true,
+  showAlerts: true
+};*/
 
 //settings variables initialization
 
@@ -122,33 +103,37 @@ let windDirs = {"9":"ESE","25":"WNW","18":"SSW","10":"ESE","26":"WNW","19":"SW",
 
 let windArrows = {"ESE":"arrow.up.left","SSE":"arrow.up","S":"arrow.up","WSW":"arrow.up.right","W":"arrow.right","WNW":"arrow.down.right","SSW":"arrow.up","SW":"arrow.up.right","SE":"arrow.up.left","NW":"arrow.down.right","N":"arrow.down","NNE":"arrow.down","NNW":"arrow.down","NE":"arrow.down.left","ENE":"arrow.down.left","E":"arrow.left"}
 
-let localFm = FileManager.local()
+//let localFm = FileManager.local()
 let cachePath = localFm.documentsDirectory()
 
 var latLong = {},locFound = false
+
+var startTime = Date.now();
 try {
-  log('getting location...')
+  if(config.runsInApp)log('getting location...')
   Location.setAccuracyToKilometer()
   latLong = await Location.current()  
   localFm.writeString(cachePath+'/locCache.json', JSON.stringify(latLong))   
-  log('new location cached...')
+  if(config.runsInApp)log('new location cached...')
   locFound=true  
 } catch(e) {
-  log("couldn't get live location, trying to read from file")
+  if(config.runsInApp)log("couldn't get live location, trying to read from file")
 }
+logTime('Fetching Location Data', startTime);
 if(!locFound){
   try{
       latLong = JSON.parse(await localFm.readString(cachePath+'/locCache.json'))
-      log('using cached location')
+      if(config.runsInApp)log('using cached location')
   }catch(e2){    
-      log(e2+" could not get location")
+      if(config.runsInApp)log(e2+" could not get location")
       throw new Error("Could not get location live or from file")
   }
 }
-log(latLong)
+if(config.runsInApp)log(latLong)
 const LAT = latLong.latitude
 const LON = latLong.longitude
 
+startTime = Date.now();
 //now using try catch for reverseGeocoding in case of no response
 try{
   var response = await Location.reverseGeocode(LAT, LON)
@@ -156,8 +141,8 @@ try{
 }catch(e){
   //need to add info here to grabbed cached location name
   var LOCATION_NAME = 'Cached Data'
-
 }
+logTime('Reverse Geocoding',startTime);
 
 const locale = "en"
 const nowstring = (param=='daily')?"Today" : "Now"
@@ -201,27 +186,29 @@ let cache = localFm.joinPath(cachePath, "lastread")
 
 //new cityId method
 try{
-  log("start cityId method")
+  if(config.runsInApp)log("start cityId method")
   currentData = await new Request(`https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&appid=${API_KEY}`).loadJSON()
-  log(currentData)
+  if(config.runsInApp)log(currentData)
   cityId = currentData.id
-  log(`cityId is ${cityId}`)
+  if(config.runsInApp)log(`cityId is ${cityId}`)
 }catch(e){
-  log("couldnt get current data")
+  if(config.runsInApp)log("couldnt get current data")
 }
 
+startTime = Date.now()
 try {
-  log('trying to get data from API')
-  weatherData = await new Request("https://api.openweathermap.org/data/3.0/onecall?lat=" + LAT + "&lon=" + LON + "&exclude=minutely&units=" + units + "&lang=" + locale + "&appid=" + API_KEY).loadJSON()
+  if(config.runsInApp)log('trying to get data from API')
+  weatherData = await new Request(`https://api.openweathermap.org/data/3.0/onecall?lat=${LAT}&lon=${LON}&exclude=minutely&units=${units}&lang=${locale}&appid=${API_KEY}`).loadJSON()
   localFm.writeString(cache, JSON.stringify(weatherData))
 } catch(e) {
-  console.log("Offline mode")
+  if(config.runsInApp)log("Offline mode")
   let raw = localFm.readString(cache);
   weatherData = JSON.parse(raw);
   usingCachedData = true
 }
+logTime('Gathering Weather Data',startTime)
 
-log(JSON.stringify(weatherData, null, 2))
+if(config.runsInApp)log(JSON.stringify(weatherData, null, 2))
 let widget = new ListWidget();
 widget.setPadding(0, 0, 0, 0);
 widget.backgroundColor = backgroundColor;
@@ -252,140 +239,90 @@ diff = max -min;
 
 let mmToInch = units=='imperial'? 394/10000:1
 
-//start cloud cover line
+//start cloud cover legend
 if(showCloudCover){
   if(!percentageLinesDrawn){
     drawPercentageLines()
     percentageLinesDrawn = true
   }
-  hourData = (param=='daily')?weatherData.daily:weatherData.hourly;
-  for (let i = 0; i < hoursToShow; i++) {
-
-    let cloudCover = (param!='daily' && i==0)?weatherData.current.clouds : hourData[i].clouds
-    let cloudCoverNext = hourData[i+1].clouds
-    let yPos = 220-(((220-60)/100) * cloudCover)
-    let yPosNext = 220-(((220-60)/100) * cloudCoverNext)
-    drawLine(spaceBetweenDays * (i) + xStart + (barWidth/2), yPos/*175 - (50 * delta)*/,(spaceBetweenDays * (i + 1)) + xStart + (barWidth/2), yPosNext/*175 - (50 * nextDelta)*/, 1,new Color(Color.white().hex,0.9))
-  }
   if(showLegend)drawTextC("cld", 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 310,showWindspeed?5:25,180,20,new Color(Color.white().hex,0.9))
-}
-//end cloud cover line
 
-//start humidity line
+}
+//end cloud cover legend
+
+//start humidity legend
 if(showHumidity){
   if(!percentageLinesDrawn){
     drawPercentageLines()
     percentageLinesDrawn = true
   }
-  hourData = (param=='daily')?weatherData.daily:weatherData.hourly;
-  for (let i = 0; i < hoursToShow; i++) {
-
-    let humidity = (param!='daily' && i==0)?weatherData.current.humidity : hourData[i].humidity
-    let humidityNext = hourData[i+1].humidity
-    let yPos = 220-(((220-60)/100) * humidity)
-    let yPosNext = 220-(((220-60)/100) * humidityNext)
-    drawLine(spaceBetweenDays * (i) + xStart + (barWidth/2), yPos/*175 - (50 * delta)*/,spaceBetweenDays * (i + 1) + xStart + (barWidth/2), yPosNext/*175 - (50 * nextDelta)*/, 1,new Color(Color.magenta().hex,0.9))
-
-  }
   if(showLegend)drawTextC("hum", 16, mediumWidgetWidth - 275,showWindspeed?5:25,180,20,new Color(Color.magenta().hex,0.9))
 }
-//end humidity line
+//end humidity legend
 
 
-//start adding precipitation POP and amount
+//start adding precipitation POP and amount legend
 if(showPrecipitation){
   if(!percentageLinesDrawn){
     drawPercentageLines()
     percentageLinesDrawn = true
   }
 
-
-
-  //gather precipitation data
-  var maxPrecip,precips = []
-
-  maxPrecip = units=='imperial'? param=='daily'?0.8:0.2:param=='daily'?20:5
-
+  var maxPrecip = (units === 'imperial') ? (param === 'daily' ? 0.8 : 0.2) : (param === 'daily' ? 20 : 5);
   drawAmountLabels()
-
-  hourData = (param=='daily')?weatherData.daily:weatherData.hourly;
-  hourData.map(function(item,index){
-    if(index <= hoursToShow){
-      let itemT = ('rain' in item)?'rain':('snow' in item)?'snow':false
-      if(itemT){
-        if (typeof item[itemT] === 'object' && '1h' in item[itemT])
-        {
-          let amount = item[itemT]
-          item[itemT]=amount['1h']
-    
-          weatherData.hourly[index]=item
-        }
-        if(itemT) precips.push((item[itemT]*mmToInch).toFixed(2))
-      }
-    }
-  })
-
-  for (let i = 0; i <= hoursToShow; i++) {
-    //mm to inch factor = 394/10000 //factor is 0.0394 mm to 1 inch
-    let rain = 'rain' in hourData[i]
-    if(rain)rain = Number(hourData[i].rain * mmToInch).toFixed(2)
-    let snow = ('snow' in hourData[i])
-    if(snow)snow = Number(hourData[i].snow * mmToInch).toFixed(2)
-    let pop = hourData[i].pop * 100
-    let barH = ((220-60)/100) * pop
-    let precipAmount,precipType
-    var precipAmountColor
-	
-    //if there is amount of snow or rain, plot them with bars. 
-    //if(snow>0|rain>0){//always drawing amount column
-       precipAmount = snow?snow:rain
-       if(precipAmount>maxPrecip)precipAmount=maxPrecip
-       precipType = snow?'snow':'rain'
-	  precipAmountColor = (precipType == 'snow')?'FFFFFF':'6495ED'
-      let precipBarH = ((220-60)/100)*(100*(precipAmount/maxPrecip))
-      //draw the amount of precipitation with the bar info calculated above 
-	 drawPOP((spaceBetweenDays * i)+(barWidth*0.5),precipBarH, barWidth*0.5, precipAmountColor,0.8)
-     
-      //add label for amount
-      if(showLegend)drawTextC("precAmt", 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 150,showWindspeed?5:25,180,20,new Color(precipAmountColor,0.8))
-
-    //}
-    //draw the percentage of precipitation bar with the cyan blue color. If there is precipitation amount for the current timeframe, then use halfwidth, if not, use fullwidth
-    drawPOP(spaceBetweenDays * i,barH, barWidth*0.5/**(precipAmount?0.5:1)*/, '1fb2b7',0.6)//0.8)//value reduced
-  }
-
   //add label for percentage
   if(showLegend)drawTextC("precPrb", 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 220,showWindspeed?5:25,180,20,new Color('1fb2b7',0.9))
-
 }
-//end adding precipitation POP and amount
+//end adding precipitation POP and amount legend
   
   
-//start adding dates/times and temperatures (and wind if enabled)
+//start adding dates/times and temperatures (and if enabled: wind, precipitation chance and amount, )
 drawContext.setTextAlignedCenter()
 
   
 for (let i = 0; i <= hoursToShow; i++) {
-  let hourData = (param=='daily')?weatherData.daily[i]:weatherData.hourly[i];
-  let nextHourTemp = shouldRound(roundedGraph, (param=='daily')?weatherData.daily[i+1]['temp']['max']:  weatherData.hourly[i + 1].temp);
+  let hourData = (param=='daily')?weatherData.daily:weatherData.hourly;
+  // start cloud cover
+    let cloudCover = (param!='daily' && i==0)?weatherData.current.clouds : hourData[i].clouds
+    let cloudCoverNext = hourData[i+1].clouds
+    let yPos = 220-(((220-60)/100) * cloudCover)
+    let yPosNext = 220-(((220-60)/100) * cloudCoverNext)
+    drawLine(spaceBetweenDays * (i) + xStart + (barWidth/2), yPos/*175 - (50 * delta)*/,(spaceBetweenDays * (i + 1)) + xStart + (barWidth/2), yPosNext/*175 - (50 * nextDelta)*/, 1,new Color(Color.white().hex,0.9))
+  
+  //end cloud cover
+  //start humidity
+    let humidity = (param!='daily' && i==0)?weatherData.current.humidity : hourData[i].humidity
+    let humidityNext = hourData[i+1].humidity
+    yPos = 220-(((220-60)/100) * humidity)
+    yPosNext = 220-(((220-60)/100) * humidityNext)
+    drawLine(spaceBetweenDays * (i) + xStart + (barWidth/2), yPos/*175 - (50 * delta)*/,spaceBetweenDays * (i + 1) + xStart + (barWidth/2), yPosNext/*175 - (50 * nextDelta)*/, 1,new Color(Color.magenta().hex,0.9))
+
+  //end humidity
+  
+  //start precip
+    drawPrecipitation(hourData[i], i)
+  //end precip
+  
+  //start temp and date/time
+  let nextHourTemp = shouldRound(roundedGraph, (param=='daily')?hourData[i+1]['temp']['max']:  hourData[i + 1].temp);
   let dF = new DateFormatter()
   dF.dateFormat = 'eee'
-  let hour = (param=='daily')?dF.string(epochToDate(hourData.dt))+' '+epochToDate(hourData.dt).getDate():epochToDate(hourData.dt).getHours();
+  let hour = (param=='daily')?dF.string(epochToDate(hourData[i].dt))+' '+epochToDate(hourData[i].dt).getDate():epochToDate(hourData[i].dt).getHours();
   if (twelveHours && (param!='daily'))
     hour = (hour > 12 ? hour - 12 : (hour == 0 ? "12a" : ((hour == 12) ? "12p" : hour)))
-  let temp = (param=='daily')?hourData.temp.max : (i == 0) ? weatherData.current.temp : hourData.temp
+  let temp = (param=='daily')?hourData[i].temp.max : (i == 0) ? weatherData.current.temp : hourData[i].temp
   if(param=='daily'){
-    var lowTemp = shouldRound(roundedTemp,hourData.temp.min)
+    var lowTemp = shouldRound(roundedTemp,hourData[i].temp.min)
   }
   
   let delta = (diff > 0) ? (shouldRound(roundedGraph, temp) - min) / diff : 0;
   let nextDelta = (diff>0) ? (nextHourTemp - min) / diff : 0
   temp = shouldRound(roundedTemp, temp)
   if (i < hoursToShow) {
-    let hourDay = epochToDate(hourData.dt);
+    let hourDay = epochToDate(hourData[i].dt);
     for (let i2 = 0 ; i2 < weatherData.daily.length; i2++)  {
       let day = weatherData.daily[i2];
-      if (isSameDay(epochToDate(day.dt), epochToDate(hourData.dt))) {
+      if (isSameDay(epochToDate(day.dt), epochToDate(hourData[i].dt))) {
         hourDay = day;
         break;
       }
@@ -393,7 +330,7 @@ for (let i = 0; i <= hoursToShow; i++) {
   
     //check if it is day / night
     now = new Date()
-    var night = (hourData.dt > hourDay.sunset || hourData.dt < hourDay.sunrise || (i == 0 && (now.getTime > weatherData.current.sunset || now.getTime < weatherData.current.sunrise)))
+    var night = (hourData[i].dt > hourDay.sunset || hourData[i].dt < hourDay.sunrise || (i == 0 && (now.getTime > weatherData.current.sunset || now.getTime < weatherData.current.sunrise)))
 
     var freezing = (units=='imperial'?32:0)
     var tempColor = (temp>freezing)?Color.orange():Color.blue()
@@ -415,12 +352,12 @@ for (let i = 0; i <= hoursToShow; i++) {
   let imageSpace = config.widgetFamily == 'small'? 42 : (param =='daily')?48:34
   //if showWindSpeed is enabled, get the wind data and display it
   if(showWindspeed){
-    let hourWindDir = hourData.wind_deg
+    let hourWindDir = hourData[i].wind_deg
     let dir = (hourWindDir-(hourWindDir%11.25))/11.25
     dir = windDirs[dir]
     //dir is now the cardinal direction of the wind source
-    let windSpeed = Math.round(hourData.wind_speed)
-    let windGust = Math.round(hourData.wind_gust)
+    let windSpeed = Math.round(hourData[i].wind_speed)
+    let windGust = Math.round(hourData[i].wind_gust)
     
     //add wind direction arrow
     if(showWindArrow){
@@ -432,7 +369,6 @@ for (let i = 0; i <= hoursToShow; i++) {
       symb.applyFont(Font.systemFont(14))
       
       symb=await tintSFSymbol(symb.image, Color.black())
-
       
       //drawImage(symb, spaceBetweenDays * i + (xStart + (barWidth/2)) - (16/2),45)
       drawContext.drawImageInRect(symb, new Rect(spaceBetweenDays * i + (xStart + (barWidth/2)) - (16/2) +1, 44+1, 16-2, 16-2))
@@ -447,11 +383,7 @@ for (let i = 0; i <= hoursToShow; i++) {
     drawTextC(windGust, 14, spaceBetweenDays * i + 30, 59/*220 - 32*/, barWidth /*50*/, 20,Color.white())
   }
 
-  const condition = i == 0 ? weatherData.current.weather[0].id : hourData.weather[0].id
- /* if(Device.systemVersion().match(/^../)==15){
-    drawContext.setFillColor(new Color(Color.white().hex,0.9))
-    drawContext.fillEllipse(new Rect(spaceBetweenDays * i + (xStart + (barWidth/2)) - (36 / 2), 158 - (50 * delta),36,36))  
-  }*/
+  const condition = i == 0 ? weatherData.current.weather[0].id : hourData[i].weather[0].id
   
   //addSymbol
   drawImage(symbolForCondition(condition), (spaceBetweenDays * i) + xStart + (barWidth/2) - (32/2)/*spaceBetweenDays * i + imageSpace*/, 160 - (50 * delta));
@@ -469,7 +401,6 @@ widget.url = cityId?`https://openweathermap.org/city/${cityId}`
 :'https://openweathermap.org'
 Script.complete()
 widget.presentMedium()
-
 
 /*
 <><><><><><><><><>
@@ -495,7 +426,6 @@ function drawPercentageLines() {
     tex = String(100-(i*25))+'%'
     drawContext.setFont(Font.boldSystemFont(10))
     drawContext.drawTextInRect(String(tex), new Rect(0, yPt-6, 30, 10))
-
   }  
   drawContext.addPath(pa)
   drawContext.setStrokeColor(Color.lightGray())
@@ -526,6 +456,29 @@ function drawText(text, fontSize, x, y, color = Color.black()) {
 
 function drawImage(image, x, y) {
   drawContext.drawImageAtPoint(image, new Point(x, y))
+}
+
+function drawPrecipitation(data, i) {
+  
+	if (i > hoursToShow)return;
+	let precipAmount = data.rain ? data.rain * mmToInch : data.snow ? data.snow * mmToInch : 0;
+	const pop = data.pop * 100;
+	const barHeight = ((220 - 60) / 100) * pop;
+	const precipBarHeight = ((220 - 60) / 100) * (100 * (precipAmount / maxPrecip));
+	if (precipAmount > maxPrecip) precipAmount = maxPrecip;
+	const color = data.snow ? 'FFFFFF' : '6495ED';
+	const xPos = spaceBetweenDays * i + (barWidth * 0.5);
+	// Draw precipitation amount
+	drawPOP(xPos, precipBarHeight, barWidth * 0.5, color, 0.8);
+	// Draw precipitation probability
+	drawPOP(spaceBetweenDays * i, barHeight, barWidth * 0.5, '1fb2b7', 0.6);
+	//add label for amount
+	var amtLabel = 0
+	if(showLegend && amtLabel == 0){
+	  drawTextC("precAmt", 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 150,showWindspeed?5:25,180,20,new Color(color,0.8))
+	  amtLabel = 1
+	}
+
 }
 
 function drawPOP(/*POP,*/ x, barH, barW,color,alpha=1){
@@ -604,15 +557,15 @@ async function updateCheck(version){
   try{let updateCheck = new Request('https://raw.githubusercontent.com/mvan231/Scriptable/main/Weather%20Overview/WeatherOverview.json')
   uC = await updateCheck.loadJSON()
   }catch(e){return log(e)}
-  log(uC)
-  log(uC.version)
+  if(config.runsInApp)log(uC)
+  if(config.runsInApp)log(uC.version)
   let needUpdate = false
   if (uC.version != version){
     needUpdate = true
-    log("Server version available")
+    if(config.runsInApp)log("Server version available")
     if (!config.runsInWidget)
     {
-    log("running standalone")
+    if(config.runsInApp)log("running standalone")
     let upd = new Alert()
     upd.title="Server Version Available"
     upd.addAction("OK")
@@ -623,73 +576,101 @@ async function updateCheck(version){
         let updatedCode = await r.loadString()
         let fm = FileManager.iCloud()
         let path = fm.joinPath(fm.documentsDirectory(), `${Script.name()}.js`)
-        log(path)
+        if(config.runsInApp)log(path)
         fm.writeString(path, updatedCode)
         throw new Error("Update Complete!")
       }
     } 
   }else{
-    log("up to date")
+    if(config.runsInApp)log("up to date")
   }
   
   return needUpdate
   /*
   #####
   End Update Check
-  #####g
+  #####
   */
 }
 
-async function setup(full){
-
-//log(settings)
-  if (!('apiKey' in settings) || settings.apiKey == ""){
-    let q = new Alert()
-    q.title='API Key'
-    q.message='Please paste in your OpenWeatherMap API Key'   
-    q.addTextField('API Key',Pasteboard.paste())
-    q.addAction("Done")
-    await q.present()
-    if(q.textFieldValue(0).length < 1)throw new Error("You must enter an API Key, please copy to clipboard and try again")
-    settings.apiKey = q.textFieldValue(0)
-    //write the settings to iCloud Drive  
-    fm.writeString(settingsPath, JSON.stringify(settings))    
-  }
-
-  if (!('units' in settings)){
-    let q = new Alert()
-    q.title="Units"
-    q.addAction("Imperial")
-    q.addAction("Metric")
-    a=await q.presentSheet()
-    settings['units'] = (a==0)?'imperial':'metric'
-  }
-
-  let quests = [{'key':'showWindspeed',
-  'q':'Do you want display the windspeed on the widget?'},
-  {'key':'showWindArrow','q':'If using windspeed, do you want to display the wind direction as an arrow?'},
-  {'key':'showPrecipitation','q':'Do you want to display precipitation information?'},
-  {'key':'showCloudCover','q':'Do you want to show the line display of the cloud cover?'},
-  {'key':'showHumidity','q':'Do you want to show the line display of the humidity level?'},
-  {'key':'showLegend','q':'Do you want to display the legend at the top of the widget?'},
-  {'key':'showAlerts','q':'Do you want to show alerts in your area? A yellow warning triangle for each weather alert in your area will be displayed. Tapping the widget will take you to the OpenWeather page in Safari.'}]
-
-  await quests.reduce(async (memo,i)=>{
-    await memo
-
-    if(!(i.key in settings)){
-      let q = new Alert()
-      q.message=String(i.q)
-      q.title='Setup'
-      q.addAction('Yes')
-      q.addAction('No')
-      a=await q.presentSheet()
-      settings[i.key]=(a==0)?true:false
+function loadSettings() {
+  try {
+    if (localFm.fileExists(settingsPath)) {
+      settings = JSON.parse(localFm.readString(settingsPath));
     }
-  },undefined)  
-  log(JSON.stringify(settings))
-  fm.writeString(settingsPath, JSON.stringify(settings))
-  return true
+  } catch (e) {
+    if (config.runsInApp) log(`Failed to load settings: ${e}`);
+  }
+}
+
+function saveSettings() {
+  try {
+    localFm.writeString(settingsPath, JSON.stringify(settings));
+  } catch (e) {
+    if (config.runsInApp) log(`Failed to save settings: ${e}`);
+  }
+}
+
+async function promptSettings() {
+  const settingsPrompts = [
+    { key: 'apiKey', question: 'Please paste in your OpenWeatherMap API Key', type: 'text' },
+    { key: 'units', question: 'Choose units:', type: 'selection', options: ['Imperial', 'Metric'] },
+    { key: 'showWindspeed', question: 'Display the windspeed on the widget?', type: 'boolean' },
+    { key: 'showWindArrow', question: 'Display the wind direction as an arrow?', type: 'boolean' },
+    { key: 'showPrecipitation', question: 'Display precipitation information?', type: 'boolean' },
+    { key: 'showCloudCover', question: 'Show the line display of the cloud cover?', type: 'boolean' },
+    { key: 'showHumidity', question: 'Show the line display of the humidity level?', type: 'boolean' },
+    { key: 'showLegend', question: 'Display the legend at the top of the widget?', type: 'boolean' },
+    { key: 'showAlerts', question: 'Show alerts in your area?', type: 'boolean' }
+  ];
+
+  for (const prompt of settingsPrompts) {
+    if (!(prompt.key in settings)) {
+      const q = new Alert();
+      q.title = 'Setup';
+      q.message = prompt.question;
+
+      if (prompt.type === 'text') {
+        q.addTextField('', Pasteboard.paste());
+        q.addAction('Done');
+        await q.present();
+        settings[prompt.key] = q.textFieldValue(0);
+      } else if (prompt.type === 'selection') {
+        for (const option of prompt.options) {
+          q.addAction(option);
+        }
+        const choice = await q.presentSheet();
+        settings[prompt.key] = prompt.options[choice].toLowerCase();
+      } else if (prompt.type === 'boolean') {
+        q.addAction('Yes');
+        q.addAction('No');
+        const choice = await q.presentSheet();
+        settings[prompt.key] = (choice === 0);
+      }
+    }
+  }
+
+  saveSettings();
+}
+
+async function promptResetSettings() {
+  const resetAlert = new Alert();
+  resetAlert.title = 'Reset Settings';
+  resetAlert.message = 'Do you want to reset the settings?';
+  resetAlert.addAction('Yes');
+  resetAlert.addAction('No');
+  const choice = await resetAlert.presentAlert();
+
+  if (choice === 0) {
+    resetSettings();
+  }
+}
+
+async function resetSettings() {
+  settings = {};
+  saveSettings();
+  if (config.runsInApp) log('Settings have been reset.');
+  await promptSettings();  // Re-run the settings questions
 }
 
 async function tintSFSymbol(image, color) {
@@ -725,3 +706,9 @@ async function tintSFSymbol(image, color) {
   let base64 = await wv.evaluateJavaScript(js);
   return Image.fromData(Data.fromBase64String(base64));
 }
+
+function logTime(label, startTime) {
+  const duration = (Date.now() - startTime) / 1000;
+  console.log(`${label} took: ${duration}s`);
+}
+
