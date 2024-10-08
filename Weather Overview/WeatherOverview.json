@@ -1,4 +1,4 @@
 {
- "version":"1.8",
- "notes":"- fixed issue with alert for settings\n- settings file removal"
+ "version":"1.9",
+ "notes":"- made log lines only work when run in app\n- revised code to be more efficient by removing unnecessary extra repeats and condensing the settings\n- reimplemented settings questions"
 }
