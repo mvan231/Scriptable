@@ -260,6 +260,8 @@ if(showCloudCover){
     drawPercentageLines()
     percentageLinesDrawn = true
   }
+  if(showLegend)drawTextC("cld", 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 310,showWindspeed?5:25,180,20,new Color(Color.white().hex,0.9))
+ /*
   hourData = (param=='daily')?weatherData.daily:weatherData.hourly;
   for (let i = 0; i < hoursToShow; i++) {
 
@@ -269,7 +271,7 @@ if(showCloudCover){
     let yPosNext = 220-(((220-60)/100) * cloudCoverNext)
     drawLine(spaceBetweenDays * (i) + xStart + (barWidth/2), yPos/*175 - (50 * delta)*/,(spaceBetweenDays * (i + 1)) + xStart + (barWidth/2), yPosNext/*175 - (50 * nextDelta)*/, 1,new Color(Color.white().hex,0.9))
   }
-  if(showLegend)drawTextC("cld", 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 310,showWindspeed?5:25,180,20,new Color(Color.white().hex,0.9))
+ */
 }
 //end cloud cover line
 
@@ -279,6 +281,9 @@ if(showHumidity){
     drawPercentageLines()
     percentageLinesDrawn = true
   }
+  if(showLegend)drawTextC("hum", 16, mediumWidgetWidth - 275,showWindspeed?5:25,180,20,new Color(Color.magenta().hex,0.9))
+	  
+  /*
   hourData = (param=='daily')?weatherData.daily:weatherData.hourly;
   for (let i = 0; i < hoursToShow; i++) {
 
@@ -289,7 +294,7 @@ if(showHumidity){
     drawLine(spaceBetweenDays * (i) + xStart + (barWidth/2), yPos/*175 - (50 * delta)*/,spaceBetweenDays * (i + 1) + xStart + (barWidth/2), yPosNext/*175 - (50 * nextDelta)*/, 1,new Color(Color.magenta().hex,0.9))
 
   }
-  if(showLegend)drawTextC("hum", 16, mediumWidgetWidth - 275,showWindspeed?5:25,180,20,new Color(Color.magenta().hex,0.9))
+  */
 }
 //end humidity line
 
@@ -322,12 +327,13 @@ if(showPrecipitation){
     
           weatherData.hourly[index]=item
         }
-        if(itemT) precips.push((item[itemT]*mmToInch).toFixed(2))
+        //if(itemT) precips.push((item[itemT]*mmToInch).toFixed(2))
       }
     }
   })
 
-  for (let i = 0; i <= hoursToShow; i++) {
+  
+	for (let i = 0; i <= hoursToShow; i++) {
     //mm to inch factor = 394/10000 //factor is 0.0394 mm to 1 inch
     let rain = 'rain' in hourData[i]
     if(rain)rain = Number(hourData[i].rain * mmToInch).toFixed(2)
@@ -363,31 +369,49 @@ if(showPrecipitation){
 //end adding precipitation POP and amount
   
   
-//start adding dates/times and temperatures (and wind if enabled)
+//start adding dates/times and temperatures (and if enabled: wind, precipitation chance and amount, )
 drawContext.setTextAlignedCenter()
 
   
 for (let i = 0; i <= hoursToShow; i++) {
-  let hourData = (param=='daily')?weatherData.daily[i]:weatherData.hourly[i];
-  let nextHourTemp = shouldRound(roundedGraph, (param=='daily')?weatherData.daily[i+1]['temp']['max']:  weatherData.hourly[i + 1].temp);
+  let hourData = (param=='daily')?weatherData.daily:weatherData.hourly;
+  // start cloud cover
+    let cloudCover = (param!='daily' && i==0)?weatherData.current.clouds : hourData[i].clouds
+    let cloudCoverNext = hourData[i+1].clouds
+    let yPos = 220-(((220-60)/100) * cloudCover)
+    let yPosNext = 220-(((220-60)/100) * cloudCoverNext)
+    drawLine(spaceBetweenDays * (i) + xStart + (barWidth/2), yPos/*175 - (50 * delta)*/,(spaceBetweenDays * (i + 1)) + xStart + (barWidth/2), yPosNext/*175 - (50 * nextDelta)*/, 1,new Color(Color.white().hex,0.9))
+  
+  //end cloud cover
+  //start humidity
+    let humidity = (param!='daily' && i==0)?weatherData.current.humidity : hourData[i].humidity
+    let humidityNext = hourData[i+1].humidity
+    let yPos = 220-(((220-60)/100) * humidity)
+    let yPosNext = 220-(((220-60)/100) * humidityNext)
+    drawLine(spaceBetweenDays * (i) + xStart + (barWidth/2), yPos/*175 - (50 * delta)*/,spaceBetweenDays * (i + 1) + xStart + (barWidth/2), yPosNext/*175 - (50 * nextDelta)*/, 1,new Color(Color.magenta().hex,0.9))
+
+  //end humidity
+  
+  //start temp and date/time
+  let nextHourTemp = shouldRound(roundedGraph, (param=='daily')?hourData[i+1]['temp']['max']:  hourData[i + 1].temp);
   let dF = new DateFormatter()
   dF.dateFormat = 'eee'
-  let hour = (param=='daily')?dF.string(epochToDate(hourData.dt))+' '+epochToDate(hourData.dt).getDate():epochToDate(hourData.dt).getHours();
+  let hour = (param=='daily')?dF.string(epochToDate(hourData[i].dt))+' '+epochToDate(hourData[i].dt).getDate():epochToDate(hourData[i].dt).getHours();
   if (twelveHours && (param!='daily'))
     hour = (hour > 12 ? hour - 12 : (hour == 0 ? "12a" : ((hour == 12) ? "12p" : hour)))
-  let temp = (param=='daily')?hourData.temp.max : (i == 0) ? weatherData.current.temp : hourData.temp
+  let temp = (param=='daily')?hourData[i].temp.max : (i == 0) ? weatherData.current.temp : hourData[i].temp
   if(param=='daily'){
-    var lowTemp = shouldRound(roundedTemp,hourData.temp.min)
+    var lowTemp = shouldRound(roundedTemp,hourData[i].temp.min)
   }
   
   let delta = (diff > 0) ? (shouldRound(roundedGraph, temp) - min) / diff : 0;
   let nextDelta = (diff>0) ? (nextHourTemp - min) / diff : 0
   temp = shouldRound(roundedTemp, temp)
   if (i < hoursToShow) {
-    let hourDay = epochToDate(hourData.dt);
+    let hourDay = epochToDate(hourData[i].dt);
     for (let i2 = 0 ; i2 < weatherData.daily.length; i2++)  {
       let day = weatherData.daily[i2];
-      if (isSameDay(epochToDate(day.dt), epochToDate(hourData.dt))) {
+      if (isSameDay(epochToDate(day.dt), epochToDate(hourData[i].dt))) {
         hourDay = day;
         break;
       }
@@ -395,7 +419,7 @@ for (let i = 0; i <= hoursToShow; i++) {
   
     //check if it is day / night
     now = new Date()
-    var night = (hourData.dt > hourDay.sunset || hourData.dt < hourDay.sunrise || (i == 0 && (now.getTime > weatherData.current.sunset || now.getTime < weatherData.current.sunrise)))
+    var night = (hourData[i].dt > hourDay.sunset || hourData[i].dt < hourDay.sunrise || (i == 0 && (now.getTime > weatherData.current.sunset || now.getTime < weatherData.current.sunrise)))
 
     var freezing = (units=='imperial'?32:0)
     var tempColor = (temp>freezing)?Color.orange():Color.blue()
@@ -417,12 +441,12 @@ for (let i = 0; i <= hoursToShow; i++) {
   let imageSpace = config.widgetFamily == 'small'? 42 : (param =='daily')?48:34
   //if showWindSpeed is enabled, get the wind data and display it
   if(showWindspeed){
-    let hourWindDir = hourData.wind_deg
+    let hourWindDir = hourData[i].wind_deg
     let dir = (hourWindDir-(hourWindDir%11.25))/11.25
     dir = windDirs[dir]
     //dir is now the cardinal direction of the wind source
-    let windSpeed = Math.round(hourData.wind_speed)
-    let windGust = Math.round(hourData.wind_gust)
+    let windSpeed = Math.round(hourData[i].wind_speed)
+    let windGust = Math.round(hourData[i].wind_gust)
     
     //add wind direction arrow
     if(showWindArrow){
@@ -449,7 +473,7 @@ for (let i = 0; i <= hoursToShow; i++) {
     drawTextC(windGust, 14, spaceBetweenDays * i + 30, 59/*220 - 32*/, barWidth /*50*/, 20,Color.white())
   }
 
-  const condition = i == 0 ? weatherData.current.weather[0].id : hourData.weather[0].id
+  const condition = i == 0 ? weatherData.current.weather[0].id : hourData[i].weather[0].id
  /* if(Device.systemVersion().match(/^../)==15){
     drawContext.setFillColor(new Color(Color.white().hex,0.9))
     drawContext.fillEllipse(new Rect(spaceBetweenDays * i + (xStart + (barWidth/2)) - (36 / 2), 158 - (50 * delta),36,36))  
