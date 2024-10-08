@@ -18,17 +18,6 @@ v1.9beta
 v1.8
 - fixed issue with alert for settings
 - settings file removal
-v1.7
-- updated to openweather 3.0 API
-v1.6
-- added code to handle iOS 16 offloading files (the JSON settings file to be exact)
-- made adjustments to wind arrow placement
-- remove ° from temperature display to allow more hours / days to be displayed
-- (need to start) Add option for charting low and high temps as a line (for daily view)
-- (need to start) add widget parameter option for hours of forecast to display
-- added wind gust under the wind direction
-- trying better city ID method for tap on widget url
-- added new method to color wind arrows
 ><><><><><><><><><><><*/
 //check for an update quick before building the widget
 let needUpdated = await updateCheck(1.8)
@@ -38,39 +27,18 @@ let needUpdated = await updateCheck(1.8)
 Start of Setup
 
 ><><><><><><><><><><><*/
-//let fm = FileManager.iCloud()
-//let settingsPath = fm.documentsDirectory()+'/weatherOverviewSettings.JSON'
-let a, settings ={}
 
-settings = {"apiKey":"3b70d09bec54f8b555452513fd4be001","units":"imperial","showWindspeed":true,"showWindArrow":true,"showPrecipitation":true,"showCloudCover":true,"showHumidity":true,"showLegend":true,"showAlerts":true}
-
-/*if(!config.runsInWidget && fm.fileExists(settingsPath)){
-    let resetQ = new Alert()
-    resetQ.title='Want to reset?'
-    resetQ.message='If you tap "Yes" below, the settings for this widget will be reset and setup will run again'  
-    resetQ.addAction('Yes')
-    resetQ.addAction('No')
-    a = await resetQ.presentSheet()
-    if(a=='0'){
-      await fm.remove(settingsPath)
-    }
+let settings = {
+  "apiKey":"3b70d09bec54f8b555452513fd4be001",
+  "units":"imperial",
+  "showWindspeed": true,
+  "showWindArrow": true,
+  "showPrecipitation": true,
+  "showCloudCover": true,
+  "showHumidity": true,
+  "showLegend": true,
+  "showAlerts": true
 }
-*/
-/* REMOVED SETTINGS FILE DUE TO ICLOUD OFFLOADING ISSUES
-// log(`stored in iCloud? ${fm.isFileStoredIniCloud(settingsPath)}\n\nfile exists ${fm.fileExists(settingsPath)}`)
-if(fm.fileExists(settingsPath)){
-  //if file exists check if it is downloaded. if not downloaded, then download the file// 
-// log(`file is downloaded? ${fm.isFileDownloaded(settingsPath)}`)
-  //file always showning as downloded even if it isnt.
-  if(!fm.isFileDownloaded(settingsPath))fm.downloadFileFromiCloud(settingsPath)
-  
-  //log(fm.readString(settingsPath))
-  settings = JSON.parse(fm.readString(settingsPath))
-    
-}
-*/
-
-//let set = await setup()
 
 //settings variables initialization
 
@@ -129,6 +97,8 @@ let localFm = FileManager.local()
 let cachePath = localFm.documentsDirectory()
 
 var latLong = {},locFound = false
+
+var startTime = Date.now();
 try {
   if(config.runsInApp)log('getting location...')
   Location.setAccuracyToKilometer()
@@ -139,6 +109,7 @@ try {
 } catch(e) {
   if(config.runsInApp)log("couldn't get live location, trying to read from file")
 }
+logTime('Fetching Location Data', startTime);
 if(!locFound){
   try{
       latLong = JSON.parse(await localFm.readString(cachePath+'/locCache.json'))
@@ -152,6 +123,7 @@ if(config.runsInApp)log(latLong)
 const LAT = latLong.latitude
 const LON = latLong.longitude
 
+startTime = Date.now();
 //now using try catch for reverseGeocoding in case of no response
 try{
   var response = await Location.reverseGeocode(LAT, LON)
@@ -159,8 +131,8 @@ try{
 }catch(e){
   //need to add info here to grabbed cached location name
   var LOCATION_NAME = 'Cached Data'
-
 }
+logTime('Reverse Geocoding',startTime);
 
 const locale = "en"
 const nowstring = (param=='daily')?"Today" : "Now"
@@ -213,9 +185,10 @@ try{
   if(config.runsInApp)log("couldnt get current data")
 }
 
+startTime = Date.now()
 try {
   if(config.runsInApp)log('trying to get data from API')
-  weatherData = await new Request("https://api.openweathermap.org/data/3.0/onecall?lat=" + LAT + "&lon=" + LON + "&exclude=minutely&units=" + units + "&lang=" + locale + "&appid=" + API_KEY).loadJSON()
+  weatherData = await new Request(`https://api.openweathermap.org/data/3.0/onecall?lat=${LAT}&lon=${LON}&exclude=minutely&units=${units}&lang=${locale}&appid=${API_KEY}`).loadJSON()
   localFm.writeString(cache, JSON.stringify(weatherData))
 } catch(e) {
   if(config.runsInApp)log("Offline mode")
@@ -223,6 +196,7 @@ try {
   weatherData = JSON.parse(raw);
   usingCachedData = true
 }
+logTime('Gathering Weather Data',startTime)
 
 if(config.runsInApp)log(JSON.stringify(weatherData, null, 2))
 let widget = new ListWidget();
@@ -255,7 +229,7 @@ diff = max -min;
 
 let mmToInch = units=='imperial'? 394/10000:1
 
-//start cloud cover line
+//start cloud cover legend
 if(showCloudCover){
   if(!percentageLinesDrawn){
     drawPercentageLines()
@@ -264,44 +238,32 @@ if(showCloudCover){
   if(showLegend)drawTextC("cld", 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 310,showWindspeed?5:25,180,20,new Color(Color.white().hex,0.9))
 
 }
-//end cloud cover line
+//end cloud cover legend
 
-//start humidity line
+//start humidity legend
 if(showHumidity){
   if(!percentageLinesDrawn){
     drawPercentageLines()
     percentageLinesDrawn = true
   }
   if(showLegend)drawTextC("hum", 16, mediumWidgetWidth - 275,showWindspeed?5:25,180,20,new Color(Color.magenta().hex,0.9))
-	  
-
 }
-//end humidity line
+//end humidity legend
 
 
-//start adding precipitation POP and amount
+//start adding precipitation POP and amount legend
 if(showPrecipitation){
   if(!percentageLinesDrawn){
     drawPercentageLines()
     percentageLinesDrawn = true
   }
 
-  //gather precipitation data
-  //var precips = []
   var maxPrecip = (units === 'imperial') ? (param === 'daily' ? 0.8 : 0.2) : (param === 'daily' ? 20 : 5);
-  //maxPrecip = units=='imperial'? param=='daily'?0.8:0.2:param=='daily'?20:5
-
   drawAmountLabels()
   //add label for percentage
   if(showLegend)drawTextC("precPrb", 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 220,showWindspeed?5:25,180,20,new Color('1fb2b7',0.9))
-
-	  
-
-
-
-
 }
-//end adding precipitation POP and amount
+//end adding precipitation POP and amount legend
   
   
 //start adding dates/times and temperatures (and if enabled: wind, precipitation chance and amount, )
@@ -397,7 +359,6 @@ for (let i = 0; i <= hoursToShow; i++) {
       symb.applyFont(Font.systemFont(14))
       
       symb=await tintSFSymbol(symb.image, Color.black())
-
       
       //drawImage(symb, spaceBetweenDays * i + (xStart + (barWidth/2)) - (16/2),45)
       drawContext.drawImageInRect(symb, new Rect(spaceBetweenDays * i + (xStart + (barWidth/2)) - (16/2) +1, 44+1, 16-2, 16-2))
@@ -413,10 +374,6 @@ for (let i = 0; i <= hoursToShow; i++) {
   }
 
   const condition = i == 0 ? weatherData.current.weather[0].id : hourData[i].weather[0].id
- /* if(Device.systemVersion().match(/^../)==15){
-    drawContext.setFillColor(new Color(Color.white().hex,0.9))
-    drawContext.fillEllipse(new Rect(spaceBetweenDays * i + (xStart + (barWidth/2)) - (36 / 2), 158 - (50 * delta),36,36))  
-  }*/
   
   //addSymbol
   drawImage(symbolForCondition(condition), (spaceBetweenDays * i) + xStart + (barWidth/2) - (32/2)/*spaceBetweenDays * i + imageSpace*/, 160 - (50 * delta));
@@ -434,7 +391,6 @@ widget.url = cityId?`https://openweathermap.org/city/${cityId}`
 :'https://openweathermap.org'
 Script.complete()
 widget.presentMedium()
-
 
 /*
 <><><><><><><><><>
@@ -460,7 +416,6 @@ function drawPercentageLines() {
     tex = String(100-(i*25))+'%'
     drawContext.setFont(Font.boldSystemFont(10))
     drawContext.drawTextInRect(String(tex), new Rect(0, yPt-6, 30, 10))
-
   }  
   drawContext.addPath(pa)
   drawContext.setStrokeColor(Color.lightGray())
@@ -495,30 +450,24 @@ function drawImage(image, x, y) {
 
 function drawPrecipitation(data, i) {
   
-    if (i > hoursToShow) return;
-    
-    let precipAmount = data.rain ? data.rain * mmToInch : data.snow ? data.snow * mmToInch : 0;
-    const pop = data.pop * 100;
-    const barHeight = ((220 - 60) / 100) * pop;
-    const precipBarHeight = ((220 - 60) / 100) * (100 * (precipAmount / maxPrecip));
-
-    if (precipAmount > maxPrecip) precipAmount = maxPrecip;
-
-    const color = data.snow ? 'FFFFFF' : '6495ED';
-    const xPos = spaceBetweenDays * i + (barWidth * 0.5);
-
-    // Draw precipitation amount
-    drawPOP(xPos, precipBarHeight, barWidth * 0.5, color, 0.8);
-
-    // Draw precipitation probability
-    drawPOP(spaceBetweenDays * i, barHeight, barWidth * 0.5, '1fb2b7', 0.6);
-    
-  //add label for amount
-  var amtLabel = 0
-  if(showLegend && amtLabel == 0){
-    drawTextC("precAmt", 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 150,showWindspeed?5:25,180,20,new Color(color,0.8))
-    amtLabel = 1
-  }
+	if (i > hoursToShow)return;
+	let precipAmount = data.rain ? data.rain * mmToInch : data.snow ? data.snow * mmToInch : 0;
+	const pop = data.pop * 100;
+	const barHeight = ((220 - 60) / 100) * pop;
+	const precipBarHeight = ((220 - 60) / 100) * (100 * (precipAmount / maxPrecip));
+	if (precipAmount > maxPrecip) precipAmount = maxPrecip;
+	const color = data.snow ? 'FFFFFF' : '6495ED';
+	const xPos = spaceBetweenDays * i + (barWidth * 0.5);
+	// Draw precipitation amount
+	drawPOP(xPos, precipBarHeight, barWidth * 0.5, color, 0.8);
+	// Draw precipitation probability
+	drawPOP(spaceBetweenDays * i, barHeight, barWidth * 0.5, '1fb2b7', 0.6);
+	//add label for amount
+	var amtLabel = 0
+	if(showLegend && amtLabel == 0){
+	  drawTextC("precAmt", 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 150,showWindspeed?5:25,180,20,new Color(color,0.8))
+	  amtLabel = 1
+	}
 
 }
 
@@ -718,4 +667,9 @@ async function tintSFSymbol(image, color) {
   await wv.loadHTML(html);
   let base64 = await wv.evaluateJavaScript(js);
   return Image.fromData(Data.fromBase64String(base64));
+}
+
+function logTime(label, startTime) {
+  const duration = (Date.now() - startTime) / 1000;
+  console.log(`${label} took: ${duration}s`);
 }
