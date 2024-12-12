@@ -28,6 +28,7 @@ $$$$$$$$$$$$$$$$$$$$$$$
 $$$$$$$$$$
 
 Version Info:
+v6 had to make update to accomodate slight change on Amazon's end
 v5 used code from user andereeicheln0z frok github repo issue linked below to inprove performance
 https://github.com/mvan231/Scriptable/issues/25
 
@@ -43,8 +44,8 @@ const baseURL = 'https://www.amazon.com'
 //include the reminder list name exactly as it is in Reminders app
 const reminderListName = 'Grocery and Shopping'
 
-//signInKey should be specific for your language. English uses "Sign In". German uses "Anmelden"
-const signInKey = "Sign In"
+//signInKey should be specific for your language. English uses "Sign in". German uses "Anmelden"
+const signInKey = "Sign in"
 
 //withVar below needs to be set to your language's version of the word 'with'
 const withVar = "with"
@@ -60,7 +61,7 @@ async function checkIfUserIsAuthenticated() {
     const url = `${baseURL}/alexashoppinglists/api/getlistitems`;
     const request = new Request(url);
     await request.load();
-
+log(request.response.statusCode)
     if (request.response.statusCode === 401 || request.response.statusCode === 403) {
       return false;
     }
@@ -77,9 +78,8 @@ async function makeLogin() {
   const webView = new WebView();
   
   try {
-    await webView.loadURL(url);
+    await webView.loadURL(url)
     const html = await webView.getHTML();
-    
     if (html.includes(signInKey)) {
       await webView.present(false);
       return false;
@@ -95,10 +95,11 @@ async function makeLogin() {
 async function synchronizeReminders() {
   try {
     const reminderCalendar = await Calendar.forRemindersByTitle(reminderListName);
-
+log(reminderCalendar)
     const url = `${baseURL}/alexashoppinglists/api/getlistitems`;
     const deleteUrl = `${baseURL}/alexashoppinglists/api/deletelistitem`;
-    const json = await new Request(url).loadJSON();
+    const json = await new Request(url).loadJSON()
+    log(json)
     const listItems = json[Object.keys(json)[0]].listItems;
     //const existingReminders = await Reminder.all([reminderCalendar]);
 
@@ -136,6 +137,7 @@ async function synchronizeReminders() {
       }
     }
   } catch (error) {
+    log("doh")
     console.error(error);
   }
 }
