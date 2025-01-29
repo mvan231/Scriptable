@@ -1,5 +1,8 @@
 // Variables used by Scriptable.
 // These must be at the very top of the file. Do not edit.
+// icon-color: deep-purple; icon-glyph: magic;
+// Variables used by Scriptable.
+// These must be at the very top of the file. Do not edit.
 // icon-color: deep-gray; icon-glyph: image;
 /*
 
@@ -16,15 +19,28 @@ $$$$$$$$$$$$$$$
 version information
 v1.1
 - Add menu when tapping the widget so the user can save the image, view the post, or view the profile
+v1.2
+- Added image caching to save network data usage
+- fix added for undefined response in JSON causing parse errors
 */
 
+let bat = Device.batteryLevel()
+log(bat)
+if(bat <= 20/100){
+  let widg = new ListWidget()
+  widg.addText(`${Script.name()}\nbattery level is at ${(bat*100).toFixed(0)}%\ncan't run widget`)
+  Script.setWidget(widg)
+  Script.complete()
+}else{
+
 //check for an update quick before building the widget
-let needUpdated = await updateCheck(1.1)
+let needUpdated = await updateCheck(1.2)
 
 let scheme = URLScheme.forRunningScript()
 
 let url = args.widgetParameter?args.widgetParameter:args.queryParameters
-//url = 'https://vs.co/e119cbf1'
+//url = '|latest'
+
 log(url)
 log(Object.keys(url).length)
 log(url.length)
@@ -64,19 +80,23 @@ if(menu){
       //log('nothing')
   }
 
-
 }else{
 
   url=url.split('|')
   let latest = url[1]
   url = url[0]
   let r = new Request(url)
-  let res = await r.loadString()
-  // log(res)
+  let wv = new WebView()
+  await wv.loadURL(url)
   
+  let res = await wv.getHTML()
+  //log(res)
+
   let reg = /PRELOADED_STATE__ = (.*?)\<\/script\>/
+  //log(res.match(reg))
   let regRes = res.match(reg)[1]
-  //log(regRes)
+  regRes = regRes.replace(":undefined,", ":\"undefined\",")
+  log(regRes)
   regRes = JSON.parse(regRes)
   let items = regRes.entities.images
   let recentImagesCount = Object.keys(items).length
@@ -97,9 +117,35 @@ if(menu){
   log(user)
   
   let imgURL = `https://${item.responsiveUrl}`
+  log(imgURL)
   
   r.url = imgURL
-  let img = await r.loadImage()
+  let fmCache = FileManager.local()
+  let fmCacheDirectory = fmCache.cacheDirectory()
+  log(fmCacheDirectory)
+
+//https://im.vsco.co/aws-us-west-2/b67234/75241738/66dc7598ea82ac136daf6ae5/vsco_090724.jpg
+
+  let imgName = imgURL.replace(/(\/|:)/g, "-")
+//https---im.vsco.co-aws-us-west-2-b67234-75241738-66dc7598ea82ac136daf6ae5-vsco_090724.jpg
+  log(imgName)
+  let imgPath = fmCache.joinPath(fmCacheDirectory, imgName)
+  log(imgPath)
+  let imgExists = fmCache.fileExists(imgPath)
+  let img
+  if(imgExists){
+    img = fmCache.readImage(imgPath)
+    log("Image read from cache")
+  }else{
+    
+    img = await r.loadImage()
+    fmCache.writeImage(imgPath, img)
+    log("Image read from web, now cached")
+  }
+  //let imgName = imgURL.
+
+
+  //let img = await r.loadImage()
   // QuickLook.present(img, true)
   
   let profileImgURL = regRes.sites.siteByUsername[user].site.profileImage
@@ -108,7 +154,7 @@ if(menu){
   let name = regRes.sites.siteByUsername[user].site.name
   log(name)
   
-  log(item.captureDate)
+  //log(item.captureDate)
   let capDate = item.captureDate//Math.floor(item.captureDate/1000)
   log(capDate)
   capDate= new Date(capDate)
@@ -211,3 +257,5 @@ async function updateCheck(version){
   #####g
   */
 }
+
+}//end low battery check
