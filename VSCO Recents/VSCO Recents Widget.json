@@ -1,4 +1,4 @@
 {
-"version":"1.1",
-"notes":"- Add menu when tapping the widget so the user can save the image, view the post, or view the profile"
+"version":"1.2",
+"notes":"- Added image caching to save network data usage\n- fix added for undefined response in JSON causing parse errors"
 }
