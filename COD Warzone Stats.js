@@ -1,9 +1,4 @@
-// Variables used by Scriptable.
-// These must be at the very top of the file. Do not edit.
-// icon-color: teal; icon-glyph: magic;
-// Variables used by Scriptable.
-// These must be at the very top of the file. Do not edit.
-// icon-color: green; icon-glyph: magic;
+
 let param = args.widgetParameter
 //param = "dutchvan231"
 if (!param)throw new Error("please set a username in widget parameter")
