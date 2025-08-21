@@ -12,6 +12,8 @@ modifications and new features added by mvan231
 ---
 version info
 ---
+v2.0
+- fixed cloud cover and humidity lines being too long (one extra data point)
 v1.9
 - made log lines only work when run in app
 - revised code to be more efficient by removing unnecessary extra repeats and condensing the settings
@@ -20,8 +22,21 @@ v1.8
 - fixed issue with alert for settings
 - settings file removal
 ><><><><><><><><><><><*/
+//set debug to true to see weather data response from API in log
+const debug = false
+
+let bat = Device.batteryLevel()
+log(bat)
+if(bat <= 10/100){
+  let widg = new ListWidget()
+  widg.addText(`${Script.name()}\nbattery level is at ${(bat*100).toFixed(0)}%\ncan't run widget`)
+  Script.setWidget(widg)
+  Script.complete()
+}else{
+    
+
 //check for an update quick before building the widget
-let needUpdated = await updateCheck(1.9)
+let needUpdated = await updateCheck(2.0)
 
 /*><><><><><><><><><><><
 
@@ -145,7 +160,7 @@ try{
 logTime('Reverse Geocoding',startTime);
 
 const locale = "en"
-const nowstring = (param=='daily')?"Today" : "Now"
+const nowstring = (param=='daily')?"Today" : "^"
 const feelsstring = ""
 const relHumidity = ""
 const pressure = ""
@@ -207,8 +222,8 @@ try {
   usingCachedData = true
 }
 logTime('Gathering Weather Data',startTime)
-
-if(config.runsInApp)log(JSON.stringify(weatherData, null, 2))
+//log(weatherData)
+if(config.runsInApp && debug)log(JSON.stringify(weatherData, null, 2))
 let widget = new ListWidget();
 widget.setPadding(0, 0, 0, 0);
 widget.backgroundColor = backgroundColor;
@@ -272,6 +287,7 @@ if(showPrecipitation){
   drawAmountLabels()
   //add label for percentage
   if(showLegend)drawTextC("precPrb", 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 220,showWindspeed?5:25,180,20,new Color('1fb2b7',0.9))
+  	var amtLabel = 0 //amtLabel flag for usage in the function called within the hourData loop that starts after this
 }
 //end adding precipitation POP and amount legend
   
@@ -287,15 +303,19 @@ for (let i = 0; i <= hoursToShow; i++) {
     let cloudCoverNext = hourData[i+1].clouds
     let yPos = 220-(((220-60)/100) * cloudCover)
     let yPosNext = 220-(((220-60)/100) * cloudCoverNext)
-    drawLine(spaceBetweenDays * (i) + xStart + (barWidth/2), yPos/*175 - (50 * delta)*/,(spaceBetweenDays * (i + 1)) + xStart + (barWidth/2), yPosNext/*175 - (50 * nextDelta)*/, 1,new Color(Color.white().hex,0.9))
-  
+    if(i<hoursToShow){
+      drawLine(spaceBetweenDays * (i) + xStart + (barWidth/2), yPos/*175 - (50 * delta)*/,(spaceBetweenDays * (i + 1)) + xStart + (barWidth/2), yPosNext/*175 - (50 * nextDelta)*/, 1,new Color(Color.white().hex,0.9))
+    }
+    
   //end cloud cover
   //start humidity
     let humidity = (param!='daily' && i==0)?weatherData.current.humidity : hourData[i].humidity
     let humidityNext = hourData[i+1].humidity
     yPos = 220-(((220-60)/100) * humidity)
     yPosNext = 220-(((220-60)/100) * humidityNext)
-    drawLine(spaceBetweenDays * (i) + xStart + (barWidth/2), yPos/*175 - (50 * delta)*/,spaceBetweenDays * (i + 1) + xStart + (barWidth/2), yPosNext/*175 - (50 * nextDelta)*/, 1,new Color(Color.magenta().hex,0.9))
+    if(i<hoursToShow){
+          drawLine(spaceBetweenDays * (i) + xStart + (barWidth/2), yPos/*175 - (50 * delta)*/,spaceBetweenDays * (i + 1) + xStart + (barWidth/2), yPosNext/*175 - (50 * nextDelta)*/, 1,new Color(Color.magenta().hex,0.9))
+    }
 
   //end humidity
   
@@ -473,10 +493,10 @@ function drawPrecipitation(data, i) {
 	// Draw precipitation probability
 	drawPOP(spaceBetweenDays * i, barHeight, barWidth * 0.5, '1fb2b7', 0.6);
 	//add label for amount
-	var amtLabel = 0
 	if(showLegend && amtLabel == 0){
 	  drawTextC("precAmt", 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 150,showWindspeed?5:25,180,20,new Color(color,0.8))
 	  amtLabel = 1
+
 	}
 
 }
@@ -490,11 +510,7 @@ function drawPOP(/*POP,*/ x, barH, barW,color,alpha=1){
 function drawTextC(text, fontSize, x, y, w, h, color = Color.black()) {
   drawContext.setTextAlignedCenter()
   drawContext.setFont(Font.boldSystemFont(fontSize))
-  if (text == "Now") {
-     drawContext.setTextColor(color)
-  } else {
-     drawContext.setTextColor(color/*new Color("#B8B8B8", 1)*/)
-  }
+  drawContext.setTextColor(color)
   drawContext.drawTextInRect(new String(text).toString(), new Rect(x, y, w, h))
 }
 
@@ -662,7 +678,7 @@ async function promptResetSettings() {
   const choice = await resetAlert.presentAlert();
 
   if (choice === 0) {
-    resetSettings();
+    await resetSettings();
   }
 }
 
@@ -712,3 +728,5 @@ function logTime(label, startTime) {
   console.log(`${label} took: ${duration}s`);
 }
 
+
+}//end low battery else
