@@ -12,6 +12,8 @@ modifications and new features added by mvan231
 ---
 version info
 ---
+v2.1
+- adjust for precipitation amount change by OpenWeatherMap
 v2.0
 - fixed cloud cover and humidity lines being too long (one extra data point)
 v1.9
@@ -27,16 +29,16 @@ const debug = false
 
 let bat = Device.batteryLevel()
 log(bat)
-if(bat <= 10/100){
+/*if(bat <= 10/100){
   let widg = new ListWidget()
   widg.addText(`${Script.name()}\nbattery level is at ${(bat*100).toFixed(0)}%\ncan't run widget`)
   Script.setWidget(widg)
   Script.complete()
 }else{
-    
+*/
 
 //check for an update quick before building the widget
-let needUpdated = await updateCheck(2.0)
+let needUpdated = await updateCheck(2.1)
 
 /*><><><><><><><><><><><
 
@@ -215,6 +217,7 @@ try {
   if(config.runsInApp)log('trying to get data from API')
   weatherData = await new Request(`https://api.openweathermap.org/data/3.0/onecall?lat=${LAT}&lon=${LON}&exclude=minutely&units=${units}&lang=${locale}&appid=${API_KEY}`).loadJSON()
   localFm.writeString(cache, JSON.stringify(weatherData))
+  //if(config.runsInApp)log(JSON.stringify(weatherData,null,2))
 } catch(e) {
   if(config.runsInApp)log("Offline mode")
   let raw = localFm.readString(cache);
@@ -321,6 +324,7 @@ for (let i = 0; i <= hoursToShow; i++) {
   
   //start precip
     drawPrecipitation(hourData[i], i)
+   // log(hourData[i])
   //end precip
   
   //start temp and date/time
@@ -481,19 +485,19 @@ function drawImage(image, x, y) {
 function drawPrecipitation(data, i) {
   
 	if (i > hoursToShow)return;
-	let precipAmount = data.rain ? data.rain * mmToInch : data.snow ? data.snow * mmToInch : 0;
+  let precipAmount = data.rain ? data.rain['1h'] * mmToInch : data.snow ? data.snow['1h'] * mmToInch : 0;
 	const pop = data.pop * 100;
 	const barHeight = ((220 - 60) / 100) * pop;
-	const precipBarHeight = ((220 - 60) / 100) * (100 * (precipAmount / maxPrecip));
-	if (precipAmount > maxPrecip) precipAmount = maxPrecip;
+  const precipBarHeight = ((220 - 60) / 100) * (100 * (precipAmount / maxPrecip));
+  if (precipAmount > maxPrecip) precipAmount = maxPrecip;
 	const color = data.snow ? 'FFFFFF' : '6495ED';
 	const xPos = spaceBetweenDays * i + (barWidth * 0.5);
 	// Draw precipitation amount
-	drawPOP(xPos, precipBarHeight, barWidth * 0.5, color, 0.8);
+  drawPOP(xPos, precipBarHeight, barWidth * 0.5, color, 0.8);
 	// Draw precipitation probability
-	drawPOP(spaceBetweenDays * i, barHeight, barWidth * 0.5, '1fb2b7', 0.6);
+	drawPOP(spaceBetweenDays * i, barHeight, barWidth * 0.5, /*color*/'1fb2b7', 0.6);
 	//add label for amount
-	if(showLegend && amtLabel == 0){
+  if(showLegend && amtLabel == 0){
 	  drawTextC("precAmt", 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 150,showWindspeed?5:25,180,20,new Color(color,0.8))
 	  amtLabel = 1
 
@@ -729,4 +733,4 @@ function logTime(label, startTime) {
 }
 
 
-}//end low battery else
+//}//end low battery else
