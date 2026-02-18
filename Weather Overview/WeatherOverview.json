@@ -1,4 +1,4 @@
 {
- "version":"2.0",
- "notes":"- fix length of cloud and humidity datapoints"
+ "version":"2.1",
+ "notes":"- adjust for precipitation amount change by OpenWeatherMap"
 }
