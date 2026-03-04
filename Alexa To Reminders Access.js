@@ -34,6 +34,8 @@ https://github.com/mvan231/Scriptable/issues/25
 
 v6 updated if statement from withVariable to withVar so it works properly
 
+v7 updated to specifically target SHOPPING_LIST type and ignore other lists
+
 $$$$$$$$$$
 $$$$$$$$$$$$$$$$$$$$$$$
 */
@@ -100,9 +102,33 @@ log(reminderCalendar)
     const deleteUrl = `${baseURL}/alexashoppinglists/api/deletelistitem`;
     const json = await new Request(url).loadJSON()
     log(json)
-    const listItems = json[Object.keys(json)[0]].listItems;
-    //const existingReminders = await Reminder.all([reminderCalendar]);
+    
+    // Find the list with listType === "SHOPPING_LIST" and ignore other lists
+    let listItems = [];
+    let shoppingListId = null;
 
+    for (const listId in json) {
+      const list = json[listId];
+      if (list.listInfo && list.listInfo.listType === "SHOPPING_LIST") {
+        listItems = list.listItems || [];
+        shoppingListId = listId;
+        log(`Found shopping list: ${list.listInfo.listName || 'Default Shopping List'} with ${listItems.length} items`);
+        break;
+      }
+    }
+    
+    // Exit if no shopping list found
+    if (!shoppingListId) {
+      log("No SHOPPING_LIST found in the response");
+      return;
+    }
+    
+    // Exit if shopping list is empty
+    if (listItems.length === 0) {
+      log("Shopping list is empty, nothing to sync");
+      return;
+    }
+    
     for (const item of listItems) {
       const reminderTitle = item.value.split(' ').map(word => {
         if (word.toLowerCase() === withVar || word.toLowerCase() === withoutVar) {
@@ -132,12 +158,16 @@ log(reminderCalendar)
       
       try {
         const response = await request.loadString();
+        log(`Deleted item from Alexa: ${item.value}`);
       } catch (deleteError) {
+        console.error(`Failed to delete item: ${item.value}`);
         console.error(deleteError);
       }
     }
+    
+    log(`Sync completed: processed ${listItems.length} items`);
   } catch (error) {
-    log("doh")
+    log("Error during synchronization")
     console.error(error);
   }
 }
