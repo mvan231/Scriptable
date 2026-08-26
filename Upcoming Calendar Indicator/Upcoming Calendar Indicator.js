@@ -1,8 +1,5 @@
 // Variables used by Scriptable.
 // These must be at the very top of the file. Do not edit.
-// icon-color: green; icon-glyph: magic;
-// Variables used by Scriptable.
-// These must be at the very top of the file. Do not edit.
 // icon-color: deep-green; icon-glyph: calendar-alt;
 let fm = FileManager.iCloud()
 let scriptPath = fm.documentsDirectory()+'/UpcomingIndicator/'
@@ -108,7 +105,6 @@ const useBackgroundColor = settings.useBackgroundColor
 
 //backgroundColor below is setup as darkGray by default but can be changed to hex as well
 
-if(settings.useBackgroundColor){const backgroundColor = new Color(settings.backgroundColor)}
 
 //shows the dates before and after the current month and
 let showDatesBeforeAfter = settings.showDatesBeforeAfter
@@ -575,8 +571,8 @@ async function setup(full){
       
       if (!('heatMapMax' in settings)){
         let heatMax = new Alert()
-        heatMax.title = 'heatMapColor Setup'
-        heatMax.message = 'What color would you like to use for the heat map in the month view?'
+        heatMax.title = 'heatMapMax Setup'
+        heatMax.message = 'What is the maximum number of completed reminders per day to show as full heat map intensity?'
         heatMax.addAction('1')
         heatMax.addAction('2')
         heatMax.addAction('3')
@@ -732,8 +728,8 @@ async function createWidget() {
           sat = 6
           sun = 0
         }
-        if(i==sat)textColor=saturdayColor
-        if(i==sun)textColor=sundayColor
+        if(i==sat && useSaturdayColor)textColor=saturdayColor
+        if(i==sun && useSundayColor)textColor=sundayColor
         addWidgetTextLine(dateStackUp, `${month[i][j]}`,
         {
           color: (dayColor && j==0)?dayColor:'',//textColor,
@@ -766,7 +762,7 @@ if(useBaseTextColor)tColor=Color.dynamic(new Color(baseTextColorLight), new Colo
           if(i == sat || i == sun)dateStack.backgroundColor = new Color(satSunHighlightColor,(4/10))
         }else{
           //start reminder list check
-          if (remList&&(!prevMonth&&!nextMonth)){
+          if (heatMapEnabled && remList&&(!prevMonth&&!nextMonth)){
             let list = await Calendar.forRemindersByTitle(remList)
             let rem = await Reminder.completedBetween(st, fn, [list])
             let ratio = rem.length/heatMapMax
@@ -950,7 +946,7 @@ async function successCallback(result) {
       isCalEvent=false
     }  
   
-    if ((((new Date(item.startDate).getTime() > now.getTime()) && (hideCompletedReminders?(!isCalEvent?(item.isCompleted?false:true):true):true)) || (showCurrentAllDayEvents?((new Date(item.startDate).getDate()==now.getDate() || (new Date(item.startDate).getTime()<now.getTime() && new Date(item.endDate).getTime()>now.getTime())) && item.isAllDay):false) || (persistIncompleteReminders?(!isCalEvent?(!item.isCompleted):false):false) ) && (cal.includes(item.calendar.title) || !isCalEvent) && !(ids.includes(item.identifier))) { 
+    if ((((new Date(item.startDate).getTime() > now.getTime()) && (hideCompletedReminders?(!isCalEvent?(item.isCompleted?false:true):true):true)) || (showCurrentAllDayEvents?((new Date(item.startDate).getDate()==now.getDate() || (isCalEvent && new Date(item.startDate).getTime()<now.getTime() && new Date(item.endDate).getTime()>now.getTime())) && item.isAllDay):false) || (persistIncompleteReminders?(!isCalEvent?(!item.isCompleted):false):false) ) && (!isCalEvent || cal.includes(item.calendar.title)) && !(ids.includes(item.identifier))) {
       ids.push(item.identifier)
       return true
     }  
@@ -971,14 +967,13 @@ async function successCallback(result) {
   });
   
   newCalArray = newCalArray.slice(0, 5)
-  newCalArray.forEach((earlyE,index) => {
-    if((new Date(earlyE.startDate).getTime() < now.getTime()) && !('endDate' in earlyE) && !earlyE.isCompleted){  
-      f(earlyE)
-      newCalArray.splice(index, 1)
-    }
-  })
+  const earlyEvents = newCalArray.filter(e =>
+    new Date(e.startDate).getTime() < now.getTime() && !('endDate' in e) && !e.isCompleted
+  )
+  const normalEvents = newCalArray.filter(e => !earlyEvents.includes(e))
+  earlyEvents.forEach(f)
   log('starting normal events')
-  newCalArray.forEach(f)
+  normalEvents.forEach(f)
 }
 
 
@@ -1027,9 +1022,9 @@ function f(item){
     dateString=dateString.replace('T',' ')
     item.endDate = dF.date(dateString)
   }
-  if(cal.includes(item.calendar.title) || !isCalEvent)
+  if(!isCalEvent || cal.includes(item.calendar.title))
       {
-        indexed+=1  
+        indexed+=1
         if(!allowDynamicSpacing)eventCounter=null
         switch (eventCounter) {
           case 1:
@@ -1096,7 +1091,8 @@ if(useBaseTextColor)when.textColor=Color.dynamic(new Color(baseTextColorLight), 
           dF.dateFormat='EEE'
           let eee = dF.string(dd)        
           let dt = eee+' '+ddd+' '
-          let multipleAllDay = (item.isAllDay && (new Date(item.startDate).getDate() != new Date(item.endDate).getDate()))
+          const _s = new Date(item.startDate), _e = new Date(item.endDate)
+          let multipleAllDay = (item.isAllDay && (_s.getFullYear() !== _e.getFullYear() || _s.getMonth() !== _e.getMonth() || _s.getDate() !== _e.getDate()))
   
           if(multipleAllDay){
             dF.dateFormat='EEE MMM d'

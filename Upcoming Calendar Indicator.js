@@ -1,15 +1,12 @@
 // Variables used by Scriptable.
 // These must be at the very top of the file. Do not edit.
 // icon-color: light-gray; icon-glyph: calendar-alt;
-﻿// Variables used by Scriptable.
-// These must be at the very top of the file. Do not edit.
-// icon-color: light-gray; icon-glyph: calendar-alt;
 let fm = FileManager.iCloud()
 let scriptPath = fm.documentsDirectory()+'/UpcomingIndicator/'
 let settingsPath = scriptPath+'settings.json'
 const reRun = URLScheme.forRunningScript()
 if(!fm.fileExists(scriptPath))fm.createDirectory(scriptPath, false)
-let needUpdated = await updateCheck(2.2)
+let needUpdated = await updateCheck(2.8)
 //log(needUpdated)
 /*--------------------------
 |------version notes------
@@ -92,7 +89,6 @@ const useBackgroundColor = settings.useBackgroundColor
 
 //backgroundColor below is setup as darkGray by default but can be changed to hex as well
 
-if(settings.useBackgroundColor){const backgroundColor = new Color(settings.backgroundColor)}
 
 //shows the dates before and after the current month and
 let showDatesBeforeAfter = settings.showDatesBeforeAfter
@@ -550,8 +546,8 @@ async function setup(full){
       
       if (!('heatMapMax' in settings)){
         let heatMax = new Alert()
-        heatMax.title = 'heatMapColor Setup'
-        heatMax.message = 'What color would you like to use for the heat map in the month view?'
+        heatMax.title = 'heatMapMax Setup'
+        heatMax.message = 'What is the maximum number of completed reminders per day to show as full heat map intensity?'
         heatMax.addAction('1')
         heatMax.addAction('2')
         heatMax.addAction('3')
@@ -710,8 +706,8 @@ async function createWidget() {
           sun = 0
         }
         //textColor=""
-        if(i==sat)textColor=saturdayColor
-        if(i==sun)textColor=sundayColor
+        if(i==sat && useSaturdayColor)textColor=saturdayColor
+        if(i==sun && useSundayColor)textColor=sundayColor
 
         addWidgetTextLine(dateStackUp, `${month[i][j]}`,
         {
@@ -755,7 +751,7 @@ if(useBaseTextColor)tColor=Color.dynamic(new Color(baseTextColorLight), new Colo
         }else{
           //start reminder list check
   
-          if (remList&&(!prevMonth&&!nextMonth)){
+          if (heatMapEnabled && remList&&(!prevMonth&&!nextMonth)){
             let list = await Calendar.forRemindersByTitle(remList)
             let rem = await Reminder.completedBetween(st, fn, [list])
             let ratio = rem.length/heatMapMax
@@ -1053,9 +1049,9 @@ log(item.identifier)
   }
 //   log(item.startDate+'\n'+isCalEvent?item.endDate:'')
 //   log(item)
-  if(cal.includes(item.calendar.title) || !isCalEvent)
+  if(!isCalEvent || cal.includes(item.calendar.title))
       {
-        indexed+=1  
+        indexed+=1
         if(!allowDynamicSpacing)eventCounter=null
         switch (eventCounter) {
           case 1:
@@ -1111,7 +1107,8 @@ if(useBaseTextColor)when.textColor=Color.dynamic(new Color(baseTextColorLight), 
           dF.dateFormat='EEE'
           let eee = dF.string(dd)        
           let dt = eee+' '+ddd+' '
-          let multipleAllDay = (item.isAllDay && (new Date(item.startDate).getDate() != new Date(item.endDate).getDate()))
+          const _s = new Date(item.startDate), _e = new Date(item.endDate)
+          let multipleAllDay = (item.isAllDay && (_s.getFullYear() !== _e.getFullYear() || _s.getMonth() !== _e.getMonth() || _s.getDate() !== _e.getDate()))
   
           if(multipleAllDay){
             dF.dateFormat='EEE MMM d'
@@ -1186,7 +1183,6 @@ async function updateCheck(version){
     upd.title="Server Version Available"
     upd.addAction("OK")
     upd.addDestructiveAction("Later")
-    upd.add
     upd.message="Changes:\n"+uC.notes+"\n\nPress OK to get the update from GitHub"
       if (await upd.present()==0){
       Safari.open("https://raw.githubusercontent.com/mvan231/Scriptable/main/Upcoming%20Calendar%20Indicator/Upcoming%20Calendar%20Indicator.js")

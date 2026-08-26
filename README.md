@@ -163,18 +163,24 @@
 * ### [Remove Scheduled Notifications.js](Remove%20Scheduled%20Notifications.js)
     * See how many pending notifications you have in the Scriptable app and choose from them to remove them, or alternatively, remove them all with one button.
  
-* ### [Alexa to Reminders Access.js](Alexa%20To%20Reminders%20Access.js)
+* ### [Alexa To Reminders Access.js](Alexa%20To%20Reminders%20Access.js)
 
-  * Purpose: To sync alexa reminders to a iOS reminders list. previously IFTTT could do this, but Amazon revoked the Alexa IFTTT integration recently.
+  * **Purpose:** Syncs your Alexa Shopping List to an iOS Reminders list. Previously IFTTT handled this, but Amazon revoked the Alexa IFTTT integration. Each item is created as a Reminder and then removed from the Alexa list so it doesn't sync again.
 
-  * Setup: 
-    - Insert the Amazon base url your country uses (if different from default) in the "baseURL" variable below
-    - Insert the name of the desired reminders list in the "reminderListName" line. I use "Grocery and Shopping" with my wife, so i have that name entered.
-    - Insert the wording for "Sign In" for the signInKeyvariable below. sometimes this varies based on region
-    - For proper naming preference, please use the withVar and withoutVar for your local language to proeprly set naming of the reminders to be created
+  * **Setup:**
+    1. Set `baseURL` to your country's Amazon domain if not `amazon.com` (e.g. `amazon.co.uk`)
+    2. Set `reminderListName` to match your Reminders list name exactly (default: `SHOPPING`)
+    3. Optionally adjust `withVar` / `withoutVar` for your language (used for title-casing item names)
+    4. Run the script once — if not already signed in, an alert will appear. Tap **Open Amazon**, wait for your Alexa Shopping List to fully load in the WebView, then tap **Done**
 
+  * **How authentication works:**
+    - The script uses a single persistent WKWebView session. On the first run it loads `alexa.amazon.com` so you can sign in and let Amazon set all required session cookies.
+    - Once signed in, Amazon's cookies persist across runs — you won't be prompted again unless Amazon expires your session (e.g. after a password change or long inactivity).
+    - All API calls are made via XHR within the same WebView session, so auth cookies (including HttpOnly ones) are automatically included.
 
-  * When running the first time, the script will check if you are logged in. If not, it will notify and present with login page. After that, the script should run seamlessly.
+  * **Reminders list picker:** If the configured list name isn't found, the script will show a picker listing all available Reminders lists and save your choice for future runs.
+
+  * **Settings** are stored in iCloud Drive → Scriptable → `AlexaToReminders/settings.json` and persist between runs.
 
 
 ## Utilites (from others)

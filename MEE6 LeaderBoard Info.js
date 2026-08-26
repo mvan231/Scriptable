@@ -39,7 +39,7 @@ let fm = FileManager.iCloud()
 log(config.runsInWidget)
 let b, urlBase = 'https://mee6.xyz/api/plugins/levels/leaderboard/'
 
-dir=fm.documentsDirectory()
+let dir = fm.documentsDirectory()
 let path = dir+"/MEE6.json"
 log(path)
 if(!fm.fileExists(path)){
@@ -105,7 +105,6 @@ if (uC.version != version){
   upd.title="Server Version Available"
   upd.addAction("OK")
   upd.addDestructiveAction("Later")
-  upd.add
   upd.message="Changes:\n"+uC.notes+"\n\nPress OK to get the update from GitHub"
     if (await upd.present()==0){
     Safari.open("https://raw.githubusercontent.com/mvan231/Scriptable/main/MEE6%20LeaderBoard%20Info.js")
@@ -125,11 +124,6 @@ End Update Check
 get data from current url item
 ---------------------*/
 
-let wv = new WebView()
-await wv.loadURL(url)
-wv.waitForLoad()
-let html = await wv.getHTML()
-
 /*---------------------
 parse the results from the leaderboard to find your username
 ---------------------*/
@@ -140,9 +134,16 @@ json = await r.loadJSON()
 let str = json.players
 log(json)
 log(json.guild.name)
-let rank,xp,level,count,id,avatar,progress,nextLevel
-str.forEach(f)
+let rank,xp,level,count,id,avatar,progress,nextLevel,userId
+for (const [index, inp] of str.entries()) {
+  await f(inp, index)
+  if (rank !== undefined) break
+}
 log(rank)
+
+if (rank === undefined) {
+  throw new Error(`User "${b.uName}" was not found in the leaderboard. Check your username in the MEE6.json settings file.`)
+}
 
 /*---------------------
 setup the widget
@@ -179,9 +180,6 @@ log("file exists, loading now from iCloud Drive...")
 }
 pimg = fm.readImage(dir+'/'+avatar+'.png')
 
-let addIm = w.addImage(pimg)
-addIm.cornerRadius = 30
-addIm.centerAlignImage()
 rank=rank.toString()
 xp=xp.toString()
 level=level.toString()
@@ -222,10 +220,11 @@ function fonter(text,size){
 
 async function f(inp,index){
   let h = JSON.stringify(inp)
-  if(regex.exec(h))
+  const match = regex.exec(h)
+  if(match)
   {
-    log(regex.exec(h))
-    let cc = JSON.parse(regex.exec(h))
+    log(match)
+    let cc = JSON.parse(match[0])
     log(cc)
     rank = index+1
     xp = cc.xp

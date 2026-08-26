@@ -139,7 +139,9 @@ try {
 logTime('Fetching Location Data', startTime);
 if(!locFound){
   try{
-      latLong = JSON.parse(await localFm.readString(cachePath+'/locCache.json'))
+      const locRaw = localFm.readString(cachePath+'/locCache.json')
+      if (!locRaw) throw new Error('No cached location data available')
+      latLong = JSON.parse(locRaw)
       if(config.runsInApp)log('using cached location')
   }catch(e2){    
       if(config.runsInApp)log(e2+" could not get location")
@@ -221,6 +223,7 @@ try {
 } catch(e) {
   if(config.runsInApp)log("Offline mode")
   let raw = localFm.readString(cache);
+  if (!raw) throw new Error("No cached weather data available. Connect to the internet and run once to cache data.")
   weatherData = JSON.parse(raw);
   usingCachedData = true
 }
@@ -279,6 +282,7 @@ if(showHumidity){
 //end humidity legend
 
 
+var amtLabel = 0 //amtLabel flag for usage in drawPrecipitation — must be declared regardless of showPrecipitation
 //start adding precipitation POP and amount legend
 if(showPrecipitation){
   if(!percentageLinesDrawn){
@@ -290,7 +294,6 @@ if(showPrecipitation){
   drawAmountLabels()
   //add label for percentage
   if(showLegend)drawTextC("precPrb", 16, ((config.widgetFamily == "small") ? contextSize : mediumWidgetWidth) - 220,showWindspeed?5:25,180,20,new Color('1fb2b7',0.9))
-  	var amtLabel = 0 //amtLabel flag for usage in the function called within the hourData loop that starts after this
 }
 //end adding precipitation POP and amount legend
   
@@ -303,32 +306,32 @@ for (let i = 0; i <= hoursToShow; i++) {
   let hourData = (param=='daily')?weatherData.daily:weatherData.hourly;
   // start cloud cover
     let cloudCover = (param!='daily' && i==0)?weatherData.current.clouds : hourData[i].clouds
-    let cloudCoverNext = hourData[i+1].clouds
     let yPos = 220-(((220-60)/100) * cloudCover)
-    let yPosNext = 220-(((220-60)/100) * cloudCoverNext)
     if(i<hoursToShow){
+      let cloudCoverNext = hourData[i+1].clouds
+      let yPosNext = 220-(((220-60)/100) * cloudCoverNext)
       drawLine(spaceBetweenDays * (i) + xStart + (barWidth/2), yPos/*175 - (50 * delta)*/,(spaceBetweenDays * (i + 1)) + xStart + (barWidth/2), yPosNext/*175 - (50 * nextDelta)*/, 1,new Color(Color.white().hex,0.9))
     }
-    
+
   //end cloud cover
   //start humidity
     let humidity = (param!='daily' && i==0)?weatherData.current.humidity : hourData[i].humidity
-    let humidityNext = hourData[i+1].humidity
     yPos = 220-(((220-60)/100) * humidity)
-    yPosNext = 220-(((220-60)/100) * humidityNext)
     if(i<hoursToShow){
+      let humidityNext = hourData[i+1].humidity
+      let yPosNext = 220-(((220-60)/100) * humidityNext)
           drawLine(spaceBetweenDays * (i) + xStart + (barWidth/2), yPos/*175 - (50 * delta)*/,spaceBetweenDays * (i + 1) + xStart + (barWidth/2), yPosNext/*175 - (50 * nextDelta)*/, 1,new Color(Color.magenta().hex,0.9))
     }
 
   //end humidity
-  
+
   //start precip
     drawPrecipitation(hourData[i], i)
    // log(hourData[i])
   //end precip
-  
+
   //start temp and date/time
-  let nextHourTemp = shouldRound(roundedGraph, (param=='daily')?hourData[i+1]['temp']['max']:  hourData[i + 1].temp);
+  let nextHourTemp = (i < hoursToShow) ? shouldRound(roundedGraph, (param=='daily')?hourData[i+1]['temp']['max']:  hourData[i + 1].temp) : 0;
   let dF = new DateFormatter()
   dF.dateFormat = 'eee'
   let hour = (param=='daily')?dF.string(epochToDate(hourData[i].dt))+' '+epochToDate(hourData[i].dt).getDate():epochToDate(hourData[i].dt).getHours();
@@ -338,31 +341,26 @@ for (let i = 0; i <= hoursToShow; i++) {
   if(param=='daily'){
     var lowTemp = shouldRound(roundedTemp,hourData[i].temp.min)
   }
-  
+
   let delta = (diff > 0) ? (shouldRound(roundedGraph, temp) - min) / diff : 0;
   let nextDelta = (diff>0) ? (nextHourTemp - min) / diff : 0
   temp = shouldRound(roundedTemp, temp)
+
+  // compute night and freezing for every iteration so the last column renders correctly
+  let hourDay = epochToDate(hourData[i].dt);
+  for (let i2 = 0 ; i2 < weatherData.daily.length; i2++)  {
+    let day = weatherData.daily[i2];
+    if (isSameDay(epochToDate(day.dt), epochToDate(hourData[i].dt))) {
+      hourDay = day;
+      break;
+    }
+  }
+  now = new Date()
+  var night = (hourData[i].dt > hourDay.sunset || hourData[i].dt < hourDay.sunrise || (i == 0 && (now.getTime()/1000 > weatherData.current.sunset || now.getTime()/1000 < weatherData.current.sunrise)))
+  var freezing = (units=='imperial'?32:0)
+  var tempColor = (temp>freezing)?Color.orange():Color.blue()
+
   if (i < hoursToShow) {
-    let hourDay = epochToDate(hourData[i].dt);
-    for (let i2 = 0 ; i2 < weatherData.daily.length; i2++)  {
-      let day = weatherData.daily[i2];
-      if (isSameDay(epochToDate(day.dt), epochToDate(hourData[i].dt))) {
-        hourDay = day;
-        break;
-      }
-    }
-  
-    //check if it is day / night
-    now = new Date()
-    var night = (hourData[i].dt > hourDay.sunset || hourData[i].dt < hourDay.sunrise || (i == 0 && (now.getTime > weatherData.current.sunset || now.getTime < weatherData.current.sunrise)))
-
-    var freezing = (units=='imperial'?32:0)
-    var tempColor = (temp>freezing)?Color.orange():Color.blue()
-    
-    if(param == "daily" && lowTemp){
-      var lowTempColor = (lowTemp>freezing)?Color.orange():Color.blue()
-    }
-
     drawLine(spaceBetweenDays * (i) + xStart + (barWidth/2)/*spaceBetweenDays * (i) + barWidth*/, 175 - (50 * delta),spaceBetweenDays * (i + 1) + xStart + (barWidth/2), 175 - (50 * nextDelta), 2,tempColor) //Color.gray())// (night ? Color.gray() : accentColor))
   }
 
@@ -423,6 +421,7 @@ for (let i = 0; i <= hoursToShow; i++) {
 widget.backgroundImage = (drawContext.getImage())
 widget.url = cityId?`https://openweathermap.org/city/${cityId}`
 :'https://openweathermap.org'
+Script.setWidget(widget)
 Script.complete()
 widget.presentMedium()
 
@@ -485,7 +484,7 @@ function drawImage(image, x, y) {
 function drawPrecipitation(data, i) {
   
 	if (i > hoursToShow)return;
-  let precipAmount = data.rain ? data.rain['1h'] * mmToInch : data.snow ? data.snow['1h'] * mmToInch : 0;
+  let precipAmount = data.rain ? (typeof data.rain === 'object' ? data.rain['1h'] : data.rain) * mmToInch : data.snow ? (typeof data.snow === 'object' ? data.snow['1h'] : data.snow) * mmToInch : 0;
 	const pop = data.pop * 100;
 	const barHeight = ((220 - 60) / 100) * pop;
   const precipBarHeight = ((220 - 60) / 100) * (100 * (precipAmount / maxPrecip));

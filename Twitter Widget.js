@@ -130,7 +130,7 @@ End Settings
 */
 
 // run the updateCheck() function to see if there are any updates available for the script 
-let needUpdate = (checkUpdates="true")?await updateCheck(1.4):false
+let needUpdate = (checkUpdates===true)?await updateCheck(1.4):false
 const twImgB64 = twit()
 let url,w = new ListWidget()
 if (args.widgetParameter){
@@ -202,8 +202,8 @@ Begin Functions
 $$$$$$$$$$$$$$$
 */
 async function apiCall(handle){
-  let toke = Data.fromBase64String('QUFBQUFBQUFBQUFBQUFBQUFBQUFBTUdhS1FFQUFBQUExcDh0UmthNHJVdkF1a3VGRHJBNGxyU2dJNkklM0R5eHBsRnBoSFMxY2hOcTJXT1BzckNjWEFGRU5DbmtmMmZ6RE5reWtGdFBqZkpLSkFKRg==')  
-  let bearer = toke.toRawString()/*old twitter bearer token -- no longer works*///'AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA'
+  // Replace the empty string below with your own Twitter/X bearer token
+  let bearer = ''
   let firstUrl = 'https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name='+handle+'&count=50&exclude_replies=true&include_rts='+rtsOn
   let r = new Request(firstUrl)
   r.method='GET'
@@ -340,7 +340,6 @@ async function updateCheck(version){
     upd.title="Server Version Available"
     upd.addAction("OK")
     upd.addDestructiveAction("Later")
-    upd.add
     upd.message="Changes:\n"+uC.notes+"\n\nPress OK to get the update from GitHub"
       if (await upd.present()==0){
       Safari.open("https://raw.githubusercontent.com/mvan231/Scriptable/main/Twitter%20Widget.js")

@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node tests/runner.js 2>&1 | tail -20"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"$CLAUDE_TOOL_INPUT\" | grep -q 'scriptable-mocks' && echo 'BLOCK: scriptable-mocks.js is shared by all tests — confirm this change is intentional before proceeding.' || true"
+          }
+        ]
+      }
+    ]
+  }
+}

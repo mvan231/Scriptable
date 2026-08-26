@@ -32,18 +32,15 @@ const newDirName = `${dir}${backupTo}`
 
 ab.createDirectory(newDirName,true)
 
-let a = ab.listContents(dir)
-
 //provide a container for the script count
 let count = 0
-//for each item found in the directory, perform myFunction
-a.forEach(myFunction)
+backupDirectory(dir, newDirName)
 
 let aa = new Alert()
 aa.addAction("OK")
 aa.title = "Script Backup"
 aa.message = `All Done!\n${count} scripts backed up to\n${backupTo}`
-aa.present()
+await aa.present()
 //end of script
 Script.complete()
 
@@ -51,12 +48,19 @@ Script.complete()
 Begin Functions
 */
 
-function myFunction(item, index){
-  var ext = (ab.fileExtension(dir+"/"+item))
-  if (ext == "js")
-  {
-    let file = ab.read(dir+"/"+item)
-    ab.write(newDirName+"/"+item, file)
-    count++
-  }
+function backupDirectory(sourceDir, targetDir) {
+  const items = ab.listContents(sourceDir)
+  items.forEach(item => {
+    const sourcePath = sourceDir + '/' + item
+    const ext = ab.fileExtension(sourcePath)
+    if (ext === 'js') {
+      const file = ab.read(sourcePath)
+      ab.write(targetDir + '/' + item, file)
+      count++
+    } else if (ab.isDirectory(sourcePath) && item !== bDirName) {
+      const subTarget = targetDir + '/' + item
+      ab.createDirectory(subTarget, true)
+      backupDirectory(sourcePath, subTarget)
+    }
+  })
 }

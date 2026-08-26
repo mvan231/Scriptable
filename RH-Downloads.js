@@ -41,7 +41,6 @@ if (uC.version != version){
   upd.title="Server Version Available"
   upd.addAction("OK")
   upd.addDestructiveAction("Later")
-  upd.add
   upd.message="Changes:\n"+uC.notes+"\n\nPress OK to get the update from GitHub"
     if (await upd.present()==0){
     Safari.open("https://raw.githubusercontent.com/mvan231/Scriptable/main/RH-Downloads.js")
@@ -79,8 +78,8 @@ ff.dateFormat = 'd-MMM H:mm'
 let frmt = ff.string(now)
 log(frmt)
 
-ab = FileManager.iCloud()
-dir=ab.documentsDirectory()
+let ab = FileManager.iCloud()
+let dir = ab.documentsDirectory()
 let path = dir+"/RhLastUpd.json"
 log(path)
 let file
@@ -91,7 +90,6 @@ if (!ab.fileExists(path))
   file={}
 //   file.date = now.getDate()
   file.index = -1
-  ab.write(path, Data.fromString(JSON.stringify(file)))
   ab.writeString(path, JSON.stringify(file))
 }
   //parse the existing file or the newly created file
@@ -176,6 +174,9 @@ if file[name] does not exist, create it
 #####
 */
 
+if (!name) {
+  throw new Error("Could not determine page name from URL. The site HTML may have changed.")
+}
 if (!file[name])
 {
 file[name] = {
@@ -205,7 +206,7 @@ if (file[name].date != now.getDate())
   }
     
   // calculate difference between new RH count, file download count and the previous delta value. this shows the change in downloads throughout the current day
-    diff = (str - file[name].downloads) + file[name].dayDelta
+    diff = (parseInt(str, 10) - parseInt(file[name].downloads, 10)) + file[name].dayDelta
 
 /*
 #####
@@ -252,7 +253,7 @@ ab.writeString(path, JSON.stringify(file))
   sub.centerAlignText()
   
   // add downloads to widget
-  const titlew = w.addText(await str)
+  const titlew = w.addText(str)
   titlew.textColor = Color.blue()
   titlew.font = Font.boldSystemFont(13)
   titlew.centerAlignText()
